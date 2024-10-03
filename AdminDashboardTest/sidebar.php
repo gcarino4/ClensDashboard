@@ -98,21 +98,24 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
                 </span>
                 <h3>Profile</h3>
             </a>
+        <?php endif; ?>
 
-            <a href="#" id="settings-link">
+        <?php if ($role === 'Member'): ?>
+            <a href="member_payment.php" id="settings-link">
                 <span class="material-icons-sharp">
-                    settings
+                    attach_money
                 </span>
-                <h3>Settings</h3>
-            </a>
-
-            <a href="../logout.php">
-                <span class="material-icons-sharp">
-                    logout
-                </span>
-                <h3>Logout</h3>
+                <h3>Payments</h3>
             </a>
         <?php endif; ?>
+
+        <a href="../logout.php">
+            <span class="material-icons-sharp">
+                logout
+            </span>
+            <h3>Logout</h3>
+        </a>
+
     </div>
 </aside>
 <!-- End of Sidebar Section -->

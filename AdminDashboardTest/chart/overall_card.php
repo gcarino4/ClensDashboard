@@ -69,7 +69,7 @@ $conn->close();
 <div class="card" style="background-color: #00ff00;">
     <div class="card-inner">
         <h3>Equity</h3>
-        <span class="material-icons-outlined">money_off</span>
+        <span class="material-icons-outlined">scale</span>
     </div>
     <h1><?php echo number_format($total_equity, 0); ?></h1>
 </div>

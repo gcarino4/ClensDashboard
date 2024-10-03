@@ -3,6 +3,9 @@
 
 include 'connection.php';
 
+// Initialize $result_receivable to null
+$result_receivable = null;
+
 // Get the logged-in user's member_id from the session
 $logged_in_member_id = $_SESSION['member_id'];
 
@@ -12,11 +15,16 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 
     // Ensure start date is not greater than end date
     if ($start_date <= $end_date) {
-        // Modify the query to include the logged-in user's member_id
+        // Query to filter by date range
         $query_receivable = "SELECT * FROM receivable WHERE member_id = '$logged_in_member_id' AND invoice_date BETWEEN '$start_date' AND '$end_date' ORDER BY type, invoice_date";
-        $result_receivable = $conn->query($query_receivable);
     }
+} else {
+    // Default query to display all receivables for the logged-in user
+    $query_receivable = "SELECT * FROM receivable WHERE member_id = '$logged_in_member_id' ORDER BY type, invoice_date";
 }
+
+// Execute the query
+$result_receivable = $conn->query($query_receivable);
 ?>
 <div class="recent-orders" style="border=1">
     <h2 style="text-align: center; margin-bottom: 20px; cursor: pointer;" onclick="toggleCollapse('receivable-matrix')">
@@ -37,29 +45,31 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                 $type_total_receivable = 0;
                 $index_receivable = 0; // Index for unique collapsible IDs
                 
-                if ($result_receivable->num_rows > 0) {
+                // Check if $result_receivable has rows
+                if ($result_receivable && $result_receivable->num_rows > 0) {
                     while ($row_receivable = $result_receivable->fetch_assoc()) {
                         if ($current_type_receivable != $row_receivable['type']) {
                             if ($current_type_receivable !== null) {
                                 // Display the total for the previous type
                                 echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total_receivable, 2) . "</td></tr>";
-                                echo "</div>"; // Close the collapsible content
                             }
+
                             $current_type_receivable = $row_receivable['type'];
                             $type_total_receivable = 0;
                             $index_receivable++; // Increment index for the next type
                 
+                            // Group header (clickable)
                             echo "<tr>";
-                            echo "<td colspan='4' style='padding: 8px; font-weight: bold; background-color: #f2f2f2; cursor: pointer;' onclick='toggleCollapse(\"collapsible-receivable-$index_receivable\")'>";
+                            echo "<td colspan='4' style='padding: 8px; font-weight: bold; background-color: #f2f2f2; cursor: pointer;' onclick='toggleGroup(\"group-$index_receivable\")'>";
                             echo "<span>" . $current_type_receivable . "</span>";
                             echo "</td>";
                             echo "</tr>";
-                            echo "<div id='collapsible-receivable-$index_receivable' class='collapsible-content' style='display: none;'>"; // Collapsible content starts
                         }
 
                         $type_total_receivable += $row_receivable['amount_due'];
 
-                        echo "<tr class='collapsible-receivable-$index_receivable' style='display: none;'>";
+                        // Display each row and assign the same group class for collapsibility
+                        echo "<tr class='group-$index_receivable'>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['type'] . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . number_format($row_receivable['amount_due'], 2) . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['invoice_date'] . "</td>";
@@ -68,7 +78,6 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                     }
                     // Display the total for the last type
                     echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total_receivable, 2) . "</td></tr>";
-                    echo "</div>"; // Close the last collapsible content
                 } else {
                     echo "<tr><td colspan='4' style='padding: 8px; text-align: center;'>No receivables found</td></tr>";
                 }
@@ -77,3 +86,17 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
         </table>
     </div>
 </div>
+
+<script>
+    // JavaScript function to toggle collapse
+    function toggleGroup(groupClass) {
+        var rows = document.getElementsByClassName(groupClass);
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].style.display === "none") {
+                rows[i].style.display = "table-row";
+            } else {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+</script>

@@ -142,14 +142,14 @@ $conn->close();
                     labels: date, // Assumes labels from both datasets are similar
                     datasets: [
                         {
-                            label: 'Expenses',
+                            label: 'Liabilities',
                             data: data,
                             fill: false,
                             borderColor: 'rgba(75, 192, 192, 1)',
                             tension: 0.1
                         },
                         {
-                            label: 'Income',
+                            label: 'Assets',
                             data: data2,
                             fill: false,
                             borderColor: 'rgba(255, 99, 132, 1)',
@@ -177,7 +177,7 @@ $conn->close();
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Comparison of Income and Expenses'
+                            text: 'Comparison of Assets and Liabilities'
                         }
                     }
                 }
@@ -243,7 +243,7 @@ $conn->close();
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Expenses'
+                            text: 'Liabilities'
                         }
                     }
                 }
@@ -309,7 +309,7 @@ $conn->close();
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Income'
+                            text: 'Assets'
                         }
                     }
                 }

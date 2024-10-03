@@ -1,0 +1,65 @@
+body {
+    background-color: #f8f9fa; /* Light gray background for body */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin-top: 150px; /* Ensure no extra margin on body */
+}
+
+.container {
+    max-width: 500px;
+}
+
+.card {
+    border-radius: 10px; /* Slightly reduced border radius */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Slightly more pronounced shadow */
+    overflow: hidden; /* Ensure rounded corners and shadow are visible */
+    border: 1px solid #e0e0e0; /* Light gray border for card */
+    background-color: #ffffff; /* White background for card */
+}
+
+.card-header {
+    background-color: #28a745; /* Green background for card header */
+    color: #ffffff;
+    border-bottom: 1px solid #e0e0e0; /* Light gray border at the bottom */
+    padding: 1rem; /* Add padding for better spacing */
+    text-align: center; /* Center align the title text */
+    font-size: 1.5rem; /* Increased font size */
+    font-weight: bold; /* Make the title bold */
+    position: relative; /* Ensure positioning context */
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.form-control {
+    border: 2px solid #ced4da; /* Light gray border for input fields */
+    border-radius: 5px; /* Rounded corners for input fields */
+    padding: 0.75rem; /* Padding inside the input fields */
+    box-sizing: border-box; /* Include border and padding in element's total width and height */
+}
+
+.form-control:focus {
+    border-color: #28a745; /* Green border for focused input */
+    box-shadow: none; /* Remove default box shadow */
+}
+
+.btn-primary {
+    background-color: #28a745; /* Green background for primary buttons */
+    border: none;
+    border-radius: 5px; /* Rounded corners for buttons */
+    padding: 0.75rem 1.5rem; /* Increased padding for buttons */
+    font-size: 1rem; /* Standard font size for buttons */
+}
+
+.btn-primary:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.alert {
+    margin-top: 1rem;
+    padding: 1rem; /* Padding inside the alert */
+    border-radius: 5px; /* Rounded corners for alert */
+}

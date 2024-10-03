@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>CoLens Dashboard Design</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Sidebar Section -->
+        <aside>
+            <div class="toggle">
+                <div class="logo">
+                    <img src="images/CoLens.png">
+                    <h2>CoLens<span class="success">Tech</span></h2>
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">close</span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="#" id="dashboard-link" class="active">
+                    <span class="material-icons-sharp">dashboard</span>
+                    <h3>Dashboard</h3>
+                </a>
+                <a href="#" id="admin-link">
+                    <span class="material-icons-sharp">person_outline</span>
+                    <h3>Admin</h3>
+                </a>
+                <a href="#" id="general-ledger-link">
+                    <span class="material-icons-sharp">menu_book</span>
+                    <h3>General Ledger</h3>
+                </a>
+                <a href="#" id="analytics-link">
+                    <span class="material-icons-sharp">insights</span>
+                    <h3>Analytics</h3>
+                </a>
+                <a href="#" id="accounts-payable-link">
+                    <span class="material-icons-sharp">payments</span>
+                    <h3>Accounts Payable</h3>
+                    <span class="message-count">80</span>
+                </a>
+                <a href="#" id="accounts-receivable-link">
+                    <span class="material-icons-sharp">receipt_long</span>
+                    <h3>Accounts Receivable</h3>
+                    <span class="message-count">25</span>
+                </a>
+                <a href="#" id="assets-link">
+                    <span class="material-icons-sharp">real_estate_agent</span>
+                    <h3>Assets</h3>
+                </a>
+                <a href="#" id="payroll-link">
+                    <span class="material-icons-sharp">payment</span>
+                    <h3>Payroll</h3>
+                </a>
+                <a href="#" id="user-account-management-link">
+                    <span class="material-icons-sharp">person_add</span>
+                    <h3>User Account Management</h3>
+                </a>
+                <a href="#" id="settings-link">
+                    <span class="material-icons-sharp">settings</span>
+                    <h3>Settings</h3>
+                </a>
+                <a href="#" id="logout-link">
+                    <span class="material-icons-sharp">logout</span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+        </aside>
+        <!-- End of Sidebar Section -->
+
+        <!-- Main Content -->
+        <main>
+            <h1>Dashboard</h1>
+
+            <!-- Financial Summary -->
+            <div class="financial-summary">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Revenue</h3>
+                    </div>
+                    <div class="card-content">
+                        <h1>₱450,000</h1>
+                        <p>+10% from last month</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Expenses</h3>
+                    </div>
+                    <div class="card-content">
+                        <h1>₱200,000</h1>
+                        <p>-5% from last month</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Net Profit</h3>
+                    </div>
+                    <div class="card-content">
+                        <h1>₱250,000</h1>
+                        <p>+15% from last month</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPIs -->
+            <div class="kpi">
+                <div class="kpi-item">
+                    <h3>Accounts Payable</h3>
+                    <p>₱120,000</p>
+                </div>
+                <div class="kpi-item">
+                    <h3>Accounts Receivable</h3>
+                    <p>₱180,000</p>
+                </div>
+                <div class="kpi-item">
+                    <h3>Cash Flow</h3>
+                    <p>₱300,000</p>
+                </div>
+                <div class="kpi-item">
+                    <h3>Operating Margin</h3>
+                    <p>40%</p>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="recent-transactions">
+                <h2>Recent Transactions</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Account</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-05-10</td>
+                            <td>Sales</td>
+                            <td>₱50,000</td>
+                            <td>Credit</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>2024-05-09</td>
+                            <td>Supplies</td>
+                            <td>₱10,000</td>
+                            <td>Debit</td>
+                            <td>Pending</td>
+                        </tr>
+                        <tr>
+                            <td>2024-05-08</td>
+                            <td>Marketing</td>
+                            <td>₱20,000</td>
+                            <td>Debit</td>
+                            <td>Completed</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a href="#">View All Transactions</a>
+            </div>
+        </main>
+        <!-- End of Main Content -->
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="nav">
+                <button id="menu-btn">
+                    <span class="material-icons-sharp">menu</span>
+                </button>
+                <div class="dark-mode">
+                    <span class="material-icons-sharp active">light_mode</span>
+                    <span class="material-icons-sharp">dark_mode</span>
+                </div>
+
+                <div class="profile">
+                    <div class="info">
+                        <p>Hey, <b>Patorikku</b></p>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                    <div class="profile-photo">
+                        <img src="images/patorikku1.jpg">
+                    </div>
+                </div>
+            </div>
+            <!-- End of Nav -->
+
+            <div class="user-profile">
+                <div class="logo">
+                    <img src="images/CoLens.png">
+                    <h2>Accounting Management System</h2>
+                    <p>GSCTEMPCO</p>
+                </div>
+            </div>
+
+            <div class="reminders">
+                <div class="header">
+                    <h2>Reminders</h2>
+                    <span class="material-icons-sharp">notifications_none</span>
+                </div>
+
+                <div class="notification">
+                    <div class="icon">
+                        <span class="material-icons-sharp">volume_up</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Board Meeting</h3>
+                            <small class="text_muted">08:00 AM - 12:00 PM</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification deactive">
+                    <div class="icon">
+                        <span class="material-icons-sharp">edit</span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Meeting</h3>
+                            <small class="text_muted">08:00 AM - 12:00 PM</small>
+                        </div>
+                        <span class="material-icons-sharp">more_vert</span>
+                    </div>
+                </div>
+
+                <div class="notification add-reminder">
+                    <div>
+                        <span class="material-icons-sharp">add</span>
+                        <h3>Add Notes</h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End of Right Section -->
+
+    </div>
+
+    
+    <script src="index.js"></script>
+</body>
+
+</html>

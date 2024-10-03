@@ -1,0 +1,37 @@
+/* Ensure table width is 100% of its container */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* Allows horizontal scroll for the entire table */
+    overflow-y: auto;
+  }
+  
+  /* Style the table to handle overflow */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+    word-wrap:normal; /* Break long words */
+  }
+  
+  /* Make cells scrollable */
+  td {
+    max-width: 200px; /* Adjust as needed */
+    overflow: auto;
+    position: relative;
+    text-align: center;
+    word-wrap:normal;
+    
+  }
+  
+  td div {
+    max-height: 50px; /* Adjust as needed */
+    overflow: auto; /* Allows scrolling for overflowing content */
+    white-space: normal; /* Allows text wrapping */
+  }
+
+  

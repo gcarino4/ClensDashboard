@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>CoLens Dashboard Design</title>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Sidebar Section -->
+        <aside>
+            <div class="toggle">
+                <div class="logo">
+                    <img src="images/CoLens.png">
+                    <h2>CoLens<span class="success">Tech</span></h2>
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">
+                        close
+                    </span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="#" id="dashboard-link">
+                    <span class="material-icons-sharp">
+                        dashboard
+                    </span>
+                    <h3>Dashboard</h3>
+                </a>
+                <a href="#" id="admin-link" class="active">
+                    <span class="material-icons-sharp">
+                        person_outline
+                    </span>
+                    <h3>Admin</h3>
+                </a>
+                <a href="#" id="general-ledger-link">
+                    <span class="material-icons-sharp">
+                        menu_book
+                    </span>
+                    <h3>General Ledger</h3>
+                </a>
+                <a href="#" id="analytics-link" >
+                    <span class="material-icons-sharp">
+                        insights
+                    </span>
+                    <h3>Analytics</h3>
+                </a>
+                <a href="#" id="accounts-payable-link">
+                    <span class="material-icons-sharp">
+                        payments
+                    </span>
+                    <h3>Accounts Payable</h3>
+                    <span class="message-count">80</span>
+                </a>
+                <a href="#" id="accounts-receivable-link">
+                    <span class="material-icons-sharp">
+                        receipt_long
+                    </span>
+                    <h3>Accounts Receivable</h3>
+                    <span class="message-count">25</span>
+                </a>
+                <a href="#" id="assets-link">
+                    <span class="material-icons-sharp">
+                        real_estate_agent
+                    </span>
+                    <h3>Assets</h3>
+                </a>
+                <a href="#" id="payroll-link">
+                    <span class="material-icons-sharp">
+                        payment
+                    </span>
+                    <h3>Payroll</h3>
+                </a>
+                <a href="user-account-management.php">
+                    <span class="material-icons-sharp">
+                        person_add
+                    </span>
+                    <h3>User Account Management</h3>
+                </a>
+                <a href="#" id="settings-link">
+                    <span class="material-icons-sharp">
+                        settings
+                    </span>
+                    <h3>Settings</h3>
+                </a>
+                <a href="#" id="logout-link">
+                    <span class="material-icons-sharp">
+                        logout
+                    </span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+            
+        </aside>
+        <!-- End of Sidebar Section -->
+
+        <!-- Main Content -->
+        <main>
+            <h1>Admin</h1>
+            <!-- Analyses -->
+            <div class="analyse">
+                <div class="payments">
+                    <div class="status">
+                        <div class="info">
+                            <h3>Total Members</h3>
+                            <h1>3,456</h1>
+                        </div>
+                        <div class="progresss">
+                            <svg>
+                                <circle cx="38" cy="38" r="36"></circle>
+                            </svg>
+                            <div class="percentage">
+                                <p>+81%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="receivable">
+                    <div class="status">
+                        <div class="info">
+                            <h3>Total Receivable</h3>
+                            <h1>₱224,981</h1>
+                        </div>
+                        <div class="progresss">
+                            <svg>
+                                <circle cx="38" cy="38" r="36"></circle>
+                            </svg>
+                            <div class="percentage">
+                                <p>48%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="expenses">
+                    <div class="status">
+                        <div class="info">
+                            <h3>Monthly Expenses</h3>
+                            <h1>₱514,147</h1>
+                        </div>
+                        <div class="progresss">
+                            <svg>
+                                <circle cx="38" cy="38" r="36"></circle>
+                            </svg>
+                            <div class="percentage">
+                                <p>-6%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End of Analyses -->
+
+            <!-- New Users Section -->
+            <div class="new-users">
+                <h2>New Users</h2>
+                <div class="user-list">
+                    <div class="user">
+                        <img src="images/juan.jpg">
+                        <h2>Juan</h2>
+                        <p>30 Min Ago</p>
+                    </div>
+                    <div class="user">
+                        <img src="images/diego1.jpg">
+                        <h2>Diego</h2>
+                        <p>5 Hours Ago</p>
+                    </div>
+                    <div class="user">
+                        <img src="images/marie.jpg">
+                        <h2>Marie</h2>
+                        <p>12 Hours Ago</p>
+                    </div>
+                    <div class="user">
+                        <img src="images/plus.png">
+                        <h2>More</h2>
+                        <p>New User</p>
+                    </div>
+                </div>
+            </div>
+            <!-- End of New Users Section -->
+
+            <!-- Recent Orders Table -->
+            <div class="recent-orders">
+                <h2>Recent Payments</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Member ID</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <a href="#">Show All</a>
+            </div>
+            <!-- End of Recent Orders -->
+
+        </main>
+        <!-- End of Main Content -->
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="nav">
+                <button id="menu-btn">
+                    <span class="material-icons-sharp">
+                        menu
+                    </span>
+                </button>
+                <div class="dark-mode">
+                    <span class="material-icons-sharp active">
+                        light_mode
+                    </span>
+                    <span class="material-icons-sharp">
+                        dark_mode
+                    </span>
+                </div>
+
+                <div class="profile">
+                    <div class="info">
+                        <p>Hey, <b>Patorikku</b></p>
+                        <small class="text-muted">Admin</small>
+                    </div>
+                    <div class="profile-photo">
+                        <img src="images/patorikku1.jpg">
+                    </div>
+                </div>
+
+            </div>
+            <!-- End of Nav -->
+
+            <div class="user-profile">
+                <div class="logo">
+                    <img src="images/CoLens.png">
+                    <h2>Accounting Management System</h2>
+                    <p>GSCTEMPCO</p>
+                </div>
+            </div>
+
+            <div class="reminders">
+                <div class="header">
+                    <h2>Reminders</h2>
+                    <span class="material-icons-sharp">
+                        notifications_none
+                    </span>
+                </div>
+
+                <div class="notification">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            volume_up
+                        </span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Board Meeting</h3>
+                            <small class="text_muted">
+                                08:00 AM - 12:00 PM
+                            </small>
+                        </div>
+                        <span class="material-icons-sharp">
+                            more_vert
+                        </span>
+                    </div>
+                </div>
+
+                <div class="notification deactive">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            edit
+                        </span>
+                    </div>
+                    <div class="content">
+                        <div class="info">
+                            <h3>Meeting</h3>
+                            <small class="text_muted">
+                                08:00 AM - 12:00 PM
+                            </small>
+                        </div>
+                        <span class="material-icons-sharp">
+                            more_vert
+                        </span>
+                    </div>
+                </div>
+
+                <div class="notification add-reminder">
+                    <div>
+                        <span class="material-icons-sharp">
+                            add
+                        </span>
+                        <h3>Add Notes</h3>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+    <script src="orders.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>

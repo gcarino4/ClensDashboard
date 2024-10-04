@@ -15,15 +15,6 @@ $payment_amount = $data['payment_amount'];
 $conn->begin_transaction();
 
 try {
-    // Update loan amount
-    $update_sql = "UPDATE approved_loans SET loan_amount = loan_amount - ? WHERE application_id = ? AND member_id = ?";
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("iss", $payment_amount, $application_id, $member_id);
-
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to update loan amount in approved_loans: ' . $stmt->error);
-    }
-
     // Select loan data
     $select_sql = "SELECT loan_term, payment_plan, loan_amount FROM approved_loans WHERE application_id = ? AND member_id = ?";
     $select_stmt = $conn->prepare($select_sql);
@@ -39,6 +30,37 @@ try {
     $loan_term = $loan_data['loan_term'];
     $payment_plan = $loan_data['payment_plan'];
     $updated_loan_amount = $loan_data['loan_amount'];
+
+    // Calculate minimum payment amount
+    $min_payment_amount = 0;
+
+    switch ($payment_plan) {
+        case 'monthly':
+            $min_payment_amount = ($updated_loan_amount / ($loan_term * 12)); // Total payments in months
+            break;
+        case 'quarterly':
+            $min_payment_amount = ($updated_loan_amount / ($loan_term * 4)); // Total payments in quarters
+            break;
+        case 'annually':
+            $min_payment_amount = ($updated_loan_amount / $loan_term); // Total payments in years
+            break;
+        default:
+            throw new Exception('Invalid payment plan specified.');
+    }
+
+    // Check if the payment amount is less than the minimum required amount
+    if ($payment_amount < $min_payment_amount) {
+        throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount, 2));
+    }
+
+    // Update loan amount
+    $update_sql = "UPDATE approved_loans SET loan_amount = loan_amount - ? WHERE application_id = ? AND member_id = ?";
+    $stmt = $conn->prepare($update_sql);
+    $stmt->bind_param("iss", $payment_amount, $application_id, $member_id);
+
+    if (!$stmt->execute()) {
+        throw new Exception('Failed to update loan amount in approved_loans: ' . $stmt->error);
+    }
 
     // Generate transaction number
     $transaction_number = uniqid('txn_', true);

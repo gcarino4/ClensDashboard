@@ -101,9 +101,13 @@ echo '</table>';
 <div id="healthPaymentModal"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
     <div style="background-color:#fff; margin:100px auto; padding:20px; width:300px;">
-        <h5>Process Payment</h5>
+
 
         <div>
+            <h2>Process Health Insurance Payment
+                <span class="close" onclick="closehealthPaymentModal()">&times;</span>
+            </h2>
+            <br>
             <form id="healthPaymentForm">
                 <div>
                     <label for="applicationId">Application ID</label>
@@ -122,7 +126,7 @@ echo '</table>';
                     <textarea id="paymentNotes" name="payment_notes"></textarea>
                 </div>
                 <button type="submit">Submit Payment</button>
-                <button onclick="closehealthPaymentModal()">Cancel</button>
+
             </form>
         </div>
     </div>

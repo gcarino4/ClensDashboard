@@ -107,16 +107,24 @@ echo '</table>';
 <!-- Modal HTML -->
 <div id="loanPaymentModal"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+
     <div>
+
         <div style="background-color:#fff; margin:100px auto; padding:20px; width:300px;">
-            <h5>Process Payment</h5>
+            <h2>Process Loan Payment
+                <span class="close" onclick="closeLoanModal()">&times;</span>
+            </h2>
+            <br>
+
+
             <form id="paymentForm">
+
                 <input type="hidden" name="application_id" id="modalApplicationId">
                 <input type="hidden" name="member_id" id="modalMemberId">
                 <label for="paymentAmount">Payment Amount:</label>
                 <input type="number" name="payment_amount" id="paymentAmount" required>
                 <button type="submit">Submit Payment</button>
-                <button type="button" onclick="closeModal()">Cancel</button>
+
         </div>
         </form>
     </div>
@@ -140,7 +148,7 @@ echo '</table>';
         }
     });
 
-    function closeModal() {
+    function closeLoanModal() {
         document.getElementById('loanPaymentModal').style.display = 'none'; // Hide the modal
     }
 
@@ -187,7 +195,7 @@ echo '</table>';
                         loanRow.remove();
                     }
 
-                    closeModal();
+                    closeLoanModal();
                 } else {
                     alert('Error: ' + data.message);
                 }

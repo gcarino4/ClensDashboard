@@ -37,9 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 				$_SESSION['address'] = htmlspecialchars($row['address']); // Ensure this is set
 				$_SESSION['birthday'] = htmlspecialchars($row['birthday']); // Ensure this is set
 				$_SESSION['verified'] = htmlspecialchars($row['verified']); // Ensure this is set
+				$_SESSION['date_of_creation'] = htmlspecialchars($row['date_of_creation']); // Ensure this is set
 				$_SESSION['loggedin'] = true;
 				$_SESSION['role'] = htmlspecialchars($row['role']);
 				echo $row['role'];
+
 			} else {
 				echo "Incorrect Password!";
 			}

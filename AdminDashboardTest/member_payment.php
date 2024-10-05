@@ -12,8 +12,14 @@ require 'check_user.php';
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/style2.css">
+    <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/application.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
 
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <script src="index.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>CoLens Dashboard</title>
@@ -35,6 +41,9 @@ require 'check_user.php';
             <!-- Analyses -->
             <div class="analyse">
                 <!-- Your analyses content -->
+                <?php
+                include './chart/payment_cards.php';
+                ?>
             </div>
             <!-- End of Analyses -->
 
@@ -47,13 +56,19 @@ require 'check_user.php';
 
             <!-- Recent Orders Table -->
             <div class="recent-orders">
-                <h2>Transactions to Pay</h2>
+
 
 
                 <?php
+                echo " <h2>Pending Transactions</h2>";
+                include 'pending_applications.php';
+                echo "<br>";
+                echo " <h2>Transactions to Pay</h2>";
                 include 'approved_loans.php';
                 echo "<br>";
                 include 'approved_health_insurance.php';
+                echo "<br>";
+                include 'approved_ccontributions.php';
                 ?>
                 <!-- Style for the Modal (optional) -->
                 <style>

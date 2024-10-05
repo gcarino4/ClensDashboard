@@ -1,6 +1,44 @@
 <?php
 require 'check_user.php';
+include 'connection.php';
 
+// Initialize eligibility variable
+$canApply = false;
+
+// Check if the user is logged in and has a member ID
+if (isset($_SESSION['member_id'])) {
+    $member_id = $_SESSION['member_id'];
+
+    // Query to get the date_of_creation based on member_id
+    $sql = "SELECT date_of_creation FROM members WHERE member_id = ?";
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("s", $member_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $date_of_creation = new DateTime($row['date_of_creation']);
+            $current_date = new DateTime();
+            $interval = $current_date->diff($date_of_creation);
+
+            // Check if the interval is greater than or equal to 6 months
+            if ($interval->m >= 6 || $interval->y > 0) {
+                $canApply = true; // Eligible to apply
+            } else {
+                $canApply = false; // Not eligible to apply
+            }
+        } else {
+            echo "No member found!";
+        }
+        $stmt->close();
+    } else {
+        echo "Error preparing statement.";
+    }
+}
+
+// Close the database connection
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -18,8 +56,8 @@ require 'check_user.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>CoLens Dashboard</title>
     <script>
-        // Set the isVerified variable based on the PHP session
         const isVerified = <?php echo json_encode($_SESSION['verified'] === 'True'); ?>;
+        const canApply = <?php echo json_encode($canApply); ?>; // Pass eligibility status to JS
     </script>
 </head>
 
@@ -56,9 +94,6 @@ require 'check_user.php';
                     <i class="fas fa-file-medical"></i> Apply for Insurance
                 </button>
 
-                <button id="openSavingsApplicationModalBtn" class="btn-large centered" data-action="loan-application">
-                    <i class='fas fa-money-bill-wave'></i> Apply for Savings
-                </button>
 
                 <?php
                 include 'approved_loans.php';
@@ -111,7 +146,6 @@ require 'check_user.php';
 
                             <label for="loanTerm">Loan Term (in years):</label>
                             <input type="number" id="loanTerm" name="loan_term" min="1" max="30" required><br>
-
                             <label for="loanPurpose">Purpose of Loan:</label>
                             <select id="loanPurpose" name="loan_purpose" required>
                                 <option value="Home">Home</option>
@@ -241,144 +275,57 @@ require 'check_user.php';
                 </div>
 
                 <!-- JavaScript to add more beneficiaries -->
-                <script>
-                    document.getElementById('addBeneficiaryBtn').addEventListener('click', function () {
-                        const beneficiariesDiv = document.getElementById('beneficiaries');
-                        const newBeneficiaryIndex = beneficiariesDiv.getElementsByClassName('beneficiary').length + 1;
-
-                        const newBeneficiaryDiv = document.createElement('div');
-                        newBeneficiaryDiv.classList.add('beneficiary');
-                        newBeneficiaryDiv.innerHTML = `
-        <label for="beneficiaryName${newBeneficiaryIndex}">Beneficiary Name ${newBeneficiaryIndex}:</label>
-        <input type="text" name="beneficiary_name[]" required><br>
-
-        <label for="beneficiaryRelationship${newBeneficiaryIndex}">Relationship ${newBeneficiaryIndex}:</label>
-        <input type="text" name="beneficiary_relationship[]" required><br>
-
-        <label for="beneficiaryDOB${newBeneficiaryIndex}">Date of Birth ${newBeneficiaryIndex}:</label>
-        <input type="date" name="beneficiary_dob[]" required><br>
-    `;
-
-                        beneficiariesDiv.appendChild(newBeneficiaryDiv);
-                    });
-                </script>
+                <script src="add_beneficiary.js"></script>
 
                 <!-- Style for the Modal (optional) -->
                 <style>
                     .modal {
                         display: none;
+                        /* Hidden by default */
                         position: fixed;
+                        /* Stay in place */
                         z-index: 1;
-                        padding-top: 60px;
+                        /* Sit on top */
                         left: 0;
                         top: 0;
                         width: 100%;
+                        /* Full width */
                         height: 100%;
+                        /* Full height */
                         overflow: auto;
+                        /* Enable scroll if needed */
                         background-color: rgb(0, 0, 0);
+                        /* Fallback color */
                         background-color: rgba(0, 0, 0, 0.4);
+                        /* Black w/ opacity */
                     }
 
                     .modal-content {
                         background-color: #fefefe;
-                        margin: 5% auto;
+                        margin: 15% auto;
+                        /* 15% from the top and centered */
                         padding: 20px;
                         border: 1px solid #888;
                         width: 80%;
-                    }
-
-                    .close {
-                        color: #aaa;
-                        float: right;
-                        font-size: 28px;
-                        font-weight: bold;
-                    }
-
-                    .close:hover,
-                    .close:focus {
-                        color: black;
-                        text-decoration: none;
-                        cursor: pointer;
+                        /* Could be more or less, depending on screen size */
                     }
                 </style>
 
-
-
-                <div id="savingsApplicationModal" class="modal">
+                <!-- Modal for eligibility information -->
+                <div id="eligibilityModal" class="modal" style="display: none;">
                     <div class="modal-content">
-                        <span class="close" id="closeSavingsApplicationModal">&times;</span>
-
-                        <h2>Savings Application</h2>
-                        <form id="savingsApplicationForm" method="post" action="submit_savings_application.php">
-                            <!-- Member ID Field (Visible) -->
-                            <label for="memberId">Member ID:</label>
-                            <input type="text" id="memberId" name="member_id"
-                                value="<?php echo isset($_SESSION['member_id']) ? htmlspecialchars($_SESSION['member_id']) : ''; ?>"
-                                readonly><br>
-
-                            <label for="applicantName">Name:</label>
-                            <input type="text" id="applicantName" name="name"
-                                value="<?php echo isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : ''; ?>"
-                                readonly required><br>
-
-                            <label for="applicantEmail">Email:</label>
-                            <input type="email" id="applicantEmail" name="email"
-                                value="<?php echo isset($_SESSION['email']) ? htmlspecialchars($_SESSION['email']) : ''; ?>"
-                                readonly required><br>
-
-                            <label for="applicantPhone">Phone Number:</label>
-                            <input type="text" id="applicantPhone" name="phone_number"
-                                value="<?php echo isset($_SESSION['contact_no']) ? htmlspecialchars($_SESSION['contact_no']) : ''; ?>"
-                                readonly required><br>
-
-                            <label for="applicantAddress">Address:</label>
-                            <input type="text" id="applicantAddress" name="address"
-                                value="<?php echo isset($_SESSION['address']) ? htmlspecialchars($_SESSION['address']) : ''; ?>"
-                                readonly required><br>
-
-                            <label for="savingsAmount">Savings Amount:</label>
-                            <input type="number" id="savingsAmount" name="savings_amount" step="0.01" required><br>
-
-                            <label for="interestRate">Interest Rate (Annual %):</label>
-                            <input type="number" id="interestRate" name="interest_rate" step="0.01" required><br>
-
-                            <label for="savingsTerm">Savings Term (in years):</label>
-                            <input type="number" id="savingsTerm" name="savings_term" min="1" max="30" required><br>
-
-                            <label for="savingsPurpose">Purpose of Savings:</label>
-                            <select id="savingsPurpose" name="savings_purpose" required>
-                                <option value="Retirement">Retirement</option>
-                                <option value="Education">Education</option>
-                                <option value="Emergency Fund">Emergency Fund</option>
-                                <option value="Vacation">Vacation</option>
-                                <option value="Other">Other</option>
-                            </select><br>
-
-                            <label for="savingsAccountType">Savings Account Type:</label>
-                            <select id="savingsAccountType" name="savings_account_type" required>
-                                <option value="Fixed Deposit">Fixed Deposit</option>
-                                <option value="Recurring Deposit">Recurring Deposit</option>
-                                <option value="Savings Account">Savings Account</option>
-                            </select><br>
-
-                            <!-- Payment Plan Dropdown (e.g., for recurring deposits) -->
-                            <label for="paymentPlan">Deposit Frequency:</label>
-                            <select id="paymentPlan" name="payment_plan" required>
-                                <option value="">Select Frequency</option>
-                                <option value="monthly">Monthly</option>
-                                <option value="quarterly">Quarterly</option>
-                                <option value="annually">Annually</option>
-                            </select><br>
-
-                            <button type="submit" id="savingsSubmitBtn">Submit Savings Application</button>
-                        </form>
+                        <span class="close-btn" id="closeEligibilityModal">&times;</span>
+                        <!-- Ensure this matches your JavaScript -->
+                        <h2>Eligibility Information</h2>
+                        <p>You need to be at least 6 months member first.</p>
                     </div>
                 </div>
 
                 <!-- Modal for verification notice -->
                 <div id="verificationModal" class="modal" style="display: none;">
                     <div class="modal-content">
-                        <span class="close-btn">&times;</span>
+                        <span class="close-btn" id="closeVerificationModal">&times;</span>
+                        <!-- Ensure this has a unique ID -->
                         <p>Please get verified first to apply.</p>
                     </div>
                 </div>
@@ -405,88 +352,8 @@ require 'check_user.php';
                     </div>
                 </div>
 
-                <div id="savingsApplicationModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" id="closeSavingsApplicationModal">&times;</span>
-                        <h2>Health Insurance Application</h2>
-                        <form id="savingsApplicationForm" method="post" action="">
-                            <!-- Your form fields -->
-                        </form>
-                    </div>
-                </div>
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // Modal elements
-                        const loanApplicationModal = document.getElementById('loanApplicationModal');
-                        const healthInsuranceModal = document.getElementById('healthInsuranceModal');
-                        const savingsApplicationModal = document.getElementById('savingsApplicationModal');
-                        const verificationModal = document.getElementById('verificationModal');
-
-                        // Open buttons
-                        const openLoanApplicationModalBtn = document.getElementById('openLoanApplicationModalBtn');
-                        const openHealthInsuranceModalBtn = document.getElementById('openHealthInsuranceModalBtn');
-                        const openSavingsApplicationModalBtn = document.getElementById('openSavingsApplicationModalBtn');
-
-                        // Close buttons
-                        const closeLoanApplicationModal = document.getElementById('closeLoanApplicationModal');
-                        const closeHealthInsuranceModal = document.getElementById('closeHealthInsuranceModal');
-                        const closeSavingsApplicationModal = document.getElementById('closeSavingsApplicationModal');
-                        const closeVerificationModal = document.querySelector('.close-btn');
-
-                        // Function to open the modal if verified
-                        function openModal(modal) {
-                            if (isVerified) {
-                                modal.style.display = 'block';
-                            } else {
-                                verificationModal.style.display = 'block';
-                            }
-                        }
-
-                        // Open modals based on verification
-                        openLoanApplicationModalBtn.onclick = function () {
-                            openModal(loanApplicationModal);
-                        };
-
-                        openHealthInsuranceModalBtn.onclick = function () {
-                            openModal(healthInsuranceModal);
-                        };
-
-                        openSavingsApplicationModalBtn.onclick = function () {
-                            openModal(savingsApplicationModal);
-                        };
-
-                        // Close modals
-                        closeLoanApplicationModal.onclick = function () {
-                            loanApplicationModal.style.display = 'none';
-                        };
-
-                        closeHealthInsuranceModal.onclick = function () {
-                            healthInsuranceModal.style.display = 'none';
-                        };
-
-                        closeSavingsApplicationModal.onclick = function () {
-                            savingsApplicationModal.style.display = 'none';
-                        };
-
-                        closeVerificationModal.onclick = function () {
-                            verificationModal.style.display = 'none';
-                        };
-
-                        // Close modals if user clicks outside of them
-                        window.onclick = function (event) {
-                            if (event.target === loanApplicationModal) {
-                                loanApplicationModal.style.display = 'none';
-                            } else if (event.target === healthInsuranceModal) {
-                                healthInsuranceModal.style.display = 'none';
-                            } else if (event.target === savingsApplicationModal) {
-                                savingsApplicationModal.style.display = 'none';
-                            } else if (event.target === verificationModal) {
-                                verificationModal.style.display = 'none';
-                            }
-                        };
-                    });
-                </script>
+                <script src="application_form.js"></script>
 
             </div>
 

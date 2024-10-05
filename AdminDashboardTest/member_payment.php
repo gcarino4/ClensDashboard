@@ -60,12 +60,12 @@ require 'check_user.php';
 
 
                 <?php
-                echo " <h2>Pending Transactions</h2>";
                 include 'pending_applications.php';
                 echo "<br>";
-                echo " <h2>Transactions to Pay</h2>";
+                echo " <h2>Loans To Pay</h2>";
                 include 'approved_loans.php';
                 echo "<br>";
+                echo " <h2>Insurance Premium To Pay</h2>";
                 include 'approved_health_insurance.php';
                 echo "<br>";
                 include 'approved_ccontributions.php';

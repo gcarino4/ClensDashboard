@@ -17,14 +17,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeVerificationModal = document.getElementById('closeVerificationModal');
     const closeEligibilityModal = document.getElementById('closeEligibilityModal');
 
-    // Function to open the modal based on verification and eligibility
-    function openModal(modal, eligibility) {
-        if (!isVerified && !eligibility) {
+    // Assuming isVerified, canApply, and isContributionEligible variables are set from the server-side PHP code
+    const isVerified = <?php echo json_encode($_SESSION['verified']); ?>; // Pass verified status to JS
+    const canApply = <?php echo json_encode($canApply); ?>; // Pass eligibility to JS
+    const isContributionEligible = <?php echo json_encode($isContributionEligible); ?>; // Pass contribution eligibility to JS
+
+    // Function to open the modal based on verification, eligibility, and contribution status
+    function openModal(modal) {
+        if (!isVerified) {
             verificationModal.style.display = 'block'; // Show verification modal if not verified
-        } else if (!isVerified) {
-            verificationModal.style.display = 'block'; // Show verification modal if not verified
-        } else if (!eligibility) {
+        } else if (!canApply) {
             eligibilityModal.style.display = 'block'; // Show eligibility modal if not eligible
+        } else if (!isContributionEligible) {
+            eligibilityModal.style.display = 'block'; // Show eligibility modal if contribution is not eligible
         } else {
             modal.style.display = 'block'; // Show the intended modal if both verified and eligible
         }
@@ -32,11 +37,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Open modals based on verification and eligibility
     openLoanApplicationModalBtn.onclick = function () {
-        openModal(loanApplicationModal, canApply); // Pass canApply status
+        openModal(loanApplicationModal); // Pass intended modal
     };
 
     openHealthInsuranceModalBtn.onclick = function () {
-        openModal(healthInsuranceModal, canApply); // Pass canApply status
+        openModal(healthInsuranceModal); // Pass intended modal
     };
 
     // Close modals

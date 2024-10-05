@@ -57,7 +57,7 @@ $result = $conn->query($sql);
     <div id="contributionPaymentModal" class="modal">
         <div class="modal-content">
             <h2>Process Contribution Payment
-                <span class="close" onclick="closehealthPaymentModal()">&times;</span>
+                <span class="close" onclick="closeContributionModal()">&times;</span>
             </h2>
             <br>
             <form id="contributionPaymentForm">

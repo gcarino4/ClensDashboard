@@ -2,15 +2,28 @@
 // Database connection
 include 'connection.php';
 
+// Query to get the sum of payments made from loan_payments
+$sql_loan_payments = "SELECT SUM(payment_amount) as total_loaned_paid FROM loan_payments";
+
+$result_loan_payments = $conn->query($sql_loan_payments);
+
+if ($result_loan_payments->num_rows > 0) {
+    $row_loan_payments = $result_loan_payments->fetch_assoc();
+    $total_loaned_paid = $row_loan_payments['total_loaned_paid'];
+}
+
 // Query to total amount_due from receivable table
 $sql_amount_due = "SELECT SUM(amount_paid) as total_due FROM receivable";
 $result_due = $conn->query($sql_amount_due);
 
-$total_due = 0;
+
 if ($result_due->num_rows > 0) {
     $row_due = $result_due->fetch_assoc();
     $total_due = $row_due['total_due'];
 }
+
+$total_due = $total_due + $total_loaned_paid;
+
 
 // Query to total amount from payments table
 $sql_payments = "SELECT SUM(amount) as total_payments FROM payments";

@@ -1,25 +1,24 @@
 <?php
-include 'connection.php';
+include 'connection.php'; // Assuming this file contains your database connection details
 
-if (isset($_GET['member_id'])) {
-    $member_id = $_GET['member_id'];
+if (isset($_POST['member_id'])) {
+    $member_id = $_POST['member_id'];
 
-    // Prepare SQL query to fetch the member name
+    // Prepare the SQL query to fetch the member name based on the member_id
     $sql = "SELECT name FROM members WHERE member_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $member_id);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $stmt->bind_result($member_name);
+    $stmt->fetch();
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        echo json_encode(['success' => true, 'member_name' => $row['name']]);
+    if ($member_name) {
+        echo $member_name;
     } else {
-        echo json_encode(['success' => false]);
+        echo ''; // No member found
     }
 
     $stmt->close();
+    $conn->close();
 }
-
-$conn->close();
 ?>

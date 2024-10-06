@@ -4,7 +4,6 @@ include 'check_user.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $member_id = $_POST['member_id'];
-    $application_id = $_POST['application_id']; // Add this line
     $member_name = $_POST['member_name'];
     $invoice_date = $_POST['invoice_date'];
     $amount_paid = $_POST['amount_paid'];
@@ -13,11 +12,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiced_by = $_SESSION['name'];
 
     if (!empty($invoice_date)) {
-        $sql = "INSERT INTO receivable (member_id, application_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO receivable (member_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssss", $member_id, $application_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
+        $stmt->bind_param("sssssss", $member_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
 
         if ($stmt->execute()) {
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -30,10 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
 $conn->close();
-
 ?>
+
 
 
 <!DOCTYPE html>
@@ -85,29 +83,23 @@ $conn->close();
             <!-- Recent Orders Table -->
             <div class="recent-orders">
                 <h2>Recent Payments By Members</h2>
-                <button id="openModalBtn">Add Payment Receivable</button>
+                <!-- New Payment Receivable Section -->
+                <button id="openReceivableModalBtn">Add Payment Receivable</button>
 
-                <div id="myModal" class="modal">
+                <div id="receivableModal" class="modal">
                     <div class="modal-content">
-                        <form id="apForm" action="" method="POST" onsubmit="return validateForm()">
-
-                            <label for="member_name">Invoiced By</label>
-                            <input id="invoiced_by" name="invoiced_by" value="<?php echo $_SESSION['name']; ?>" required
-                                readonly>
-
+                        <form id="receivableForm" action="" method="POST">
                             <label for="member_id">Member ID</label>
-                            <input type="text" id="member_id" name="member_id" required oninput="fetchMemberName()">
+                            <input type="text" id="member_id" name="member_id" required
+                                oninput="fetchMemberName(this.value)">
 
                             <label for="member_name">Member Name</label>
-                            <input id="member_name" name="member_name" required readonly>
+                            <input id="member_name" name="member_name" readonly>
+
 
                             <label for="invoice_date">Invoice Date</label>
                             <input type="date" id="invoice_date" name="invoice_date"
-                                value="<?php echo date('Y-m-d'); ?>" readonly>
-
-                            <label for="application_id">Application ID</label>
-                            <input type="text" id="application_id" name="application_id">
-
+                                value="<?php echo date('Y-m-d'); ?>" required>
 
                             <label for="amount_paid">Amount Paid</label>
                             <input type="number" id="amount_paid" name="amount_paid" step="0.01" required>
@@ -116,13 +108,13 @@ $conn->close();
                             <textarea id="note" name="note" rows="4"></textarea>
 
                             <label for="type">Type</label>
-                            <input id="type" name="type"></input>
+                            <input id="type" name="type" required>
 
-                            <button type="submit">Submit</button>
+                            <button type="submit" name="receivable_submit">Submit</button>
                         </form>
-
                     </div>
                 </div>
+
 
                 <?php
                 include 'connection.php';
@@ -231,68 +223,52 @@ $conn->close();
 
 
     <script>
+        // Get the button that opens the receivable modal
+        var receivableBtn = document.getElementById("openReceivableModalBtn");
+
         // Get the modal
-        var modal = document.getElementById("myModal");
+        var receivableModal = document.getElementById("receivableModal");
 
-        // Get the button that opens the modal
-        var btn = document.getElementById("openModalBtn");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("close")[0];
-
-        // When the user clicks the button, open the modal 
-        btn.onclick = function () {
-            modal.style.display = "block";
-        }
-
-        // When the user clicks on <span> (x), close the modal
-        span.onclick = function () {
-            modal.style.display = "none";
+        // When the user clicks the button, open the modal
+        receivableBtn.onclick = function () {
+            receivableModal.style.display = "block";
         }
 
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function (event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
+            if (event.target == receivableModal) {
+                receivableModal.style.display = "none";
             }
         }
 
-        function fetchMemberName() {
-            const memberId = document.getElementById('member_id').value;
 
+
+        function fetchMemberName(memberId) {
             if (memberId) {
-                // Send AJAX request to get the member name
-                fetch('get_member_name.php?member_id=' + memberId)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById('member_name').value = data.member_name;
-                        } else {
-                            document.getElementById('member_name').value = ''; // Clear if not found
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
+                // Create an AJAX request
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", "get_member_name.php", true);
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Populate the member_name field with the response
+                        document.getElementById('member_name').value = xhr.responseText;
+                    }
+                };
+
+                // Send the member_id to the server
+                xhr.send("member_id=" + memberId);
             } else {
-                document.getElementById('member_name').value = ''; // Clear if empty input
+                // Clear the member_name field if no member_id is entered
+                document.getElementById('member_name').value = '';
             }
         }
 
-        function validateForm() {
-            const member_name = document.getElementById('member_name').value;
-            const invoice_date = document.getElementById('invoice_date').value;
-            const amount_paid = document.getElementById('amount_paid').value;
-            const payment_status = document.getElementById('payment_status').value;
-            const note = document.getElementById('note').value;
-            const type = document.getElementById('type').value;
 
-            if (!member_name || !invoice_date || !amount_paid || !payment_status) {
-                alert('All fields are required.');
-                return false;
-            }
 
-            return true;
-        }
     </script>
+
 </body>
 
 </html>

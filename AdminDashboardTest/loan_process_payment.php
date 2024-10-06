@@ -30,7 +30,7 @@ try {
     $member_data = $member_name_result->fetch_assoc();
     $member_name = $member_data['name'];
 
-    // Select loan data
+    // Select loan data (updated_loan_amount is the original loan amount before any deductions)
     $select_sql = "SELECT loan_term, payment_plan, loan_amount FROM approved_loans WHERE application_id = ? AND member_id = ?";
     $select_stmt = $conn->prepare($select_sql);
     $select_stmt->bind_param("ss", $application_id, $member_id);
@@ -44,20 +44,20 @@ try {
     $loan_data = $select_result->fetch_assoc();
     $loan_term = $loan_data['loan_term'];
     $payment_plan = $loan_data['payment_plan'];
-    $updated_loan_amount = $loan_data['loan_amount'];
+    $original_loan_amount = $loan_data['loan_amount']; // This is the current amount before the payment
 
     // Calculate minimum payment amount
     $min_payment_amount = 0;
 
     switch ($payment_plan) {
         case 'monthly':
-            $min_payment_amount = ($updated_loan_amount / ($loan_term * 12)); // Total payments in months
+            $min_payment_amount = ($original_loan_amount / ($loan_term * 12)); // Total payments in months
             break;
         case 'quarterly':
-            $min_payment_amount = ($updated_loan_amount / ($loan_term * 4)); // Total payments in quarters
+            $min_payment_amount = ($original_loan_amount / ($loan_term * 4)); // Total payments in quarters
             break;
         case 'annually':
-            $min_payment_amount = ($updated_loan_amount / $loan_term); // Total payments in years
+            $min_payment_amount = ($original_loan_amount / $loan_term); // Total payments in years
             break;
         default:
             throw new Exception('Invalid payment plan specified.');
@@ -68,10 +68,13 @@ try {
         throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount, 2));
     }
 
-    // Update loan amount
-    $update_sql = "UPDATE approved_loans SET loan_amount = loan_amount - ? WHERE application_id = ? AND member_id = ?";
+    // Calculate the new loan balance after payment
+    $updated_loan_amount = $original_loan_amount - $payment_amount;
+
+    // Update loan amount in approved_loans table
+    $update_sql = "UPDATE approved_loans SET loan_amount = ? WHERE application_id = ? AND member_id = ?";
     $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("iss", $payment_amount, $application_id, $member_id);
+    $stmt->bind_param("dss", $updated_loan_amount, $application_id, $member_id);
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to update loan amount in approved_loans: ' . $stmt->error);
@@ -80,15 +83,16 @@ try {
     // Generate transaction number
     $transaction_number = uniqid('txn_', true);
 
-    // Insert payment transaction including member_name
+    // Insert payment transaction including the updated loan amount after payment
     $insert_sql = "INSERT INTO loan_payments (application_id, member_id, member_name, loan_term, payment_plan, payment_amount, transaction_number, updated_loan_amount) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $insert_stmt = $conn->prepare($insert_sql);
     $insert_stmt->bind_param("ssssssss", $application_id, $member_id, $member_name, $loan_term, $payment_plan, $payment_amount, $transaction_number, $updated_loan_amount);
 
     if (!$insert_stmt->execute()) {
         throw new Exception('Failed to record the payment transaction: ' . $insert_stmt->error);
     }
+
 
     // Commit transaction
     $conn->commit();

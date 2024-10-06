@@ -4,6 +4,7 @@ include 'check_user.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $member_id = $_POST['member_id'];
+    $application_id = $_POST['application_id']; // Add this line
     $member_name = $_POST['member_name'];
     $invoice_date = $_POST['invoice_date'];
     $amount_paid = $_POST['amount_paid'];
@@ -12,11 +13,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiced_by = $_SESSION['name'];
 
     if (!empty($invoice_date)) {
-        $sql = "INSERT INTO receivable (member_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO receivable (member_id, application_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssss", $member_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
+        $stmt->bind_param("ssssssss", $member_id, $application_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
 
         if ($stmt->execute()) {
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -28,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Error: Invoice date cannot be empty.";
     }
 }
+
 
 $conn->close();
 
@@ -103,6 +105,10 @@ $conn->close();
                             <input type="date" id="invoice_date" name="invoice_date"
                                 value="<?php echo date('Y-m-d'); ?>" readonly>
 
+                            <label for="application_id">Application ID</label>
+                            <input type="text" id="application_id" name="application_id">
+
+
                             <label for="amount_paid">Amount Paid</label>
                             <input type="number" id="amount_paid" name="amount_paid" step="0.01" required>
 
@@ -142,6 +148,7 @@ $conn->close();
                     echo '<th>Amount Paid</th>';
                     echo '<th>Note</th>';
                     echo '<th>Type</th>';
+                    echo '<th>Application ID</th>';
                     echo '</tr>';
                     echo '</thead>';
 
@@ -157,6 +164,7 @@ $conn->close();
                         echo '<td>' . htmlspecialchars($row["amount_paid"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["note"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["type"]) . '</td>';
+                        echo '<td>' . htmlspecialchars($row["application_id"]) . '</td>';
                         echo '</tr>';
                     }
 

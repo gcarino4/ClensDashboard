@@ -66,12 +66,12 @@ $result_receivable = $conn->query($query_receivable);
                             echo "</tr>";
                         }
 
-                        $type_total_receivable += $row_receivable['amount_due'];
+                        $type_total_receivable += $row_receivable['amount_paid'];
 
                         // Display each row and assign the same group class for collapsibility
                         echo "<tr class='group-$index_receivable'>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['type'] . "</td>";
-                        echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . number_format($row_receivable['amount_due'], 2) . "</td>";
+                        echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . number_format($row_receivable['amount_paid'], 2) . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['invoice_date'] . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['note'] . "</td>";
                         echo "</tr>";

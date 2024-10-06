@@ -55,11 +55,11 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                             echo "<div id='collapsible-receivable-$index_receivable' class='collapsible-content' style='display: none;'>"; // Collapsible content starts
                         }
 
-                        $type_total_receivable += $row_receivable['amount_due'];
+                        $type_total_receivable += $row_receivable['amount_paid'];
 
                         echo "<tr class='collapsible-receivable-$index_receivable' style='display: none;'>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['type'] . "</td>";
-                        echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . number_format($row_receivable['amount_due'], 2) . "</td>";
+                        echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . number_format($row_receivable['amount_paid'], 2) . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['invoice_date'] . "</td>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row_receivable['note'] . "</td>";
                         echo "</tr>";

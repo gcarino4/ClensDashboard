@@ -2,16 +2,21 @@
 
 include 'connection.php';
 
-// Define the SQL query to retrieve all records
-$sql = "SELECT * FROM members";
+// Define the SQL query to retrieve all records from members
+// and join with the contributions table to get contribution_amount
+$sql = "
+    SELECT m.*, COALESCE(c.contribution_amount, 0) AS contribution_amount
+    FROM members m
+    LEFT JOIN contributions c ON m.member_id = c.member_id
+";
 
 // Execute the query and store the results
 $result = $conn->query($sql);
 
 // Check if there are any records returned
 if ($result->num_rows > 0) {
-    // Start the HTML table and output the column headers
-    echo "<div class='table-container'>
+  // Start the HTML table and output the column headers
+  echo "<div class='table-container'>
     <table>
       <tr>
         <th>Member ID</th>
@@ -24,12 +29,13 @@ if ($result->num_rows > 0) {
         <th>Contact Number</th>
         <th>Role</th>
         <th>Verification</th>
+        <th>Contribution Amount</th>
         <th>Action</th>
       </tr>";
 
-    // Loop through the results and display the table rows
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>
+  // Loop through the results and display the table rows
+  while ($row = $result->fetch_assoc()) {
+    echo "<tr>
       <td>" . htmlspecialchars($row["member_id"]) . "</td>
       <td>" . htmlspecialchars($row["name"]) . "</td>
       <td>" . htmlspecialchars($row["age"]) . "</td>
@@ -39,20 +45,21 @@ if ($result->num_rows > 0) {
       <td>" . htmlspecialchars($row["address"]) . "</td>
       <td>" . htmlspecialchars($row["contact_no"]) . "</td>
       <td>" . htmlspecialchars($row["role"]) . "</td>
-      <td>" . htmlspecialchars($row["verified"]) . "</td>";
+      <td>" . htmlspecialchars($row["verified"]) . "</td>
+      <td>" . htmlspecialchars($row["contribution_amount"]) . "</td>"; // Display contribution amount
 
-        // Action buttons
-        echo "<td>
+    // Action buttons
+    echo "<td>
         <button class='editBtn' data-id='" . htmlspecialchars($row["id"]) . "'>✏️</button>
         <button class='archiveBtn' data-id='" . htmlspecialchars($row["id"]) . "'>📁</button>
       </td>
     </tr>";
-    }
-    echo "</table></div>";
+  }
+  echo "</table></div>";
 
 } else {
-    // No records found
-    echo "0 results";
+  // No records found
+  echo "0 results";
 }
 
 // Close the database connection

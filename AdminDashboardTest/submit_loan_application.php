@@ -17,8 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $collateral = $conn->real_escape_string($_POST['collateral']);
     $payment_plan = $conn->real_escape_string($_POST['payment_plan']);  // Collect the selected payment plan
 
-    // Generate a 10-digit auto-generated application ID
-    $application_id = mt_rand(1000000000, 9999999999);
+    // Generate a 10-digit auto-generated application ID with prefix 'loan'
+    $random_number = mt_rand(100000000, 999999999); // Generate a 9-digit random number
+    $application_id = 'loan' . $random_number; // Concatenate 'loan' with the random number
+
 
     // Default status for a new application
     $status = 'Pending';

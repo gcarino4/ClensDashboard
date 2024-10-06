@@ -12,9 +12,24 @@ $application_id = $data['application_id'];
 $member_id = $data['member_id'];
 $payment_amount = $data['payment_amount'];
 
+// Start transaction
 $conn->begin_transaction();
 
 try {
+    // Fetch member_name from the members table
+    $member_name_sql = "SELECT name FROM members WHERE member_id = ?";
+    $member_name_stmt = $conn->prepare($member_name_sql);
+    $member_name_stmt->bind_param("s", $member_id);
+    $member_name_stmt->execute();
+    $member_name_result = $member_name_stmt->get_result();
+
+    if ($member_name_result->num_rows === 0) {
+        throw new Exception('Member not found.');
+    }
+
+    $member_data = $member_name_result->fetch_assoc();
+    $member_name = $member_data['name'];
+
     // Select loan data
     $select_sql = "SELECT loan_term, payment_plan, loan_amount FROM approved_loans WHERE application_id = ? AND member_id = ?";
     $select_stmt = $conn->prepare($select_sql);
@@ -65,11 +80,11 @@ try {
     // Generate transaction number
     $transaction_number = uniqid('txn_', true);
 
-    // Insert payment transaction
-    $insert_sql = "INSERT INTO loan_payments (application_id, member_id, loan_term, payment_plan, payment_amount, transaction_number, updated_loan_amount) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?)";
+    // Insert payment transaction including member_name
+    $insert_sql = "INSERT INTO loan_payments (application_id, member_id, member_name, loan_term, payment_plan, payment_amount, transaction_number, updated_loan_amount) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param("sssssss", $application_id, $member_id, $loan_term, $payment_plan, $payment_amount, $transaction_number, $updated_loan_amount);
+    $insert_stmt->bind_param("ssssssss", $application_id, $member_id, $member_name, $loan_term, $payment_plan, $payment_amount, $transaction_number, $updated_loan_amount);
 
     if (!$insert_stmt->execute()) {
         throw new Exception('Failed to record the payment transaction: ' . $insert_stmt->error);
@@ -91,6 +106,9 @@ try {
     }
     if (isset($select_stmt)) {
         $select_stmt->close();
+    }
+    if (isset($member_name_stmt)) {
+        $member_name_stmt->close();
     }
     $conn->close();
 }

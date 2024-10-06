@@ -4,6 +4,10 @@ namespace approved_health_insurance;
 include 'connection.php';
 
 // Ensure session is started and member_id is set
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($_SESSION['member_id'])) {
     die('Member ID is not set in the session.');
 }
@@ -27,6 +31,20 @@ $result = $stmt->get_result();
 // Step 2: Insert the approved insurance into the `approved_health_insurance` table
 if ($result->num_rows > 0) {
     while ($insurance = $result->fetch_assoc()) {
+        // Check for missing or null values
+        if (
+            empty($insurance['application_id']) ||
+            empty($insurance['member_id']) ||
+            empty($insurance['insurance_type']) ||
+            empty($insurance['coverage_amount']) ||
+            empty($insurance['payment_plan']) ||
+            empty($insurance['coverage_term']) ||
+            empty($insurance['payment_due'])
+        ) {
+            echo "Skipping record due to missing data.";
+            continue;
+        }
+
         // Insert into approved_health_insurance
         $insert_sql = "INSERT IGNORE INTO approved_health_insurance (application_id, member_id, insurance_type, coverage_amount, payment_plan, coverage_term, payment_due) 
                        VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -43,7 +61,10 @@ if ($result->num_rows > 0) {
                 $insurance['coverage_term'],
                 $insurance['payment_due']
             );
-            $insert_stmt->execute();
+            if (!$insert_stmt->execute()) {
+                // Log any insertion errors
+                echo "Error inserting record: " . $insert_stmt->error;
+            }
         } else {
             echo "Error preparing insert statement: " . $conn->error;
         }
@@ -96,6 +117,7 @@ if ($result->num_rows > 0) {
 
 echo '</table>';
 ?>
+
 
 <!-- Payment Modal -->
 <div id="healthPaymentModal"

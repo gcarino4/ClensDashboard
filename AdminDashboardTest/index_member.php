@@ -122,13 +122,6 @@ $conn->close();
                 </button>
 
 
-                <?php
-
-                include 'loan_payments_table.php';
-                echo "<br>";
-                include 'health_payments_table.php';
-                ?>
-
                 <div id="loanApplicationModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeLoanApplicationModal">&times;</span>

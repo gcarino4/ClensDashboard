@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Registration</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/register.css" rel="stylesheet">
 </head>
@@ -16,7 +15,7 @@
                 <h4>Member Registration</h4>
             </div>
             <div class="card-body">
-                <form action="register.php" id="registration-form">
+                <form action="register.php" id="registration-form" method="POST">
                     <input type="hidden" id="member_id" name="member_id">
                     <input type="hidden" id="age" name="age"> <!-- Hidden age field -->
 
@@ -27,7 +26,7 @@
 
                     <div class="mb-3">
                         <label for="contact_no" class="form-label">Contact Number:</label>
-                        <input placeholder="(09******)" type="text" id="contact_no" name="contact_no" class="form-control" required>
+                        <input placeholder="(09******)" type="text" id="contact_no" name="contact_no" class="form-control" required pattern="\d{11}">
                     </div>
 
                     <div class="mb-3">
@@ -68,7 +67,7 @@
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Password:</label>
-                        <input id="password" name="password" class="form-control" required>
+                        <input type="password" id="password" name="password" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
@@ -82,7 +81,6 @@
         </div>
     </div>
 
-    <!-- Modal for displaying errors -->
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -90,9 +88,7 @@
                     <h5 class="modal-title" id="errorModalLabel">Error</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="modalErrorMessage">
-                    <!-- Error message will be displayed here -->
-                </div>
+                <div class="modal-body" id="modalErrorMessage"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
@@ -100,15 +96,13 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Function to calculate age based on birthday
         function calculateAge(birthday) {
-            var today = new Date();
-            var birthDate = new Date(birthday);
-            var age = today.getFullYear() - birthDate.getFullYear();
-            var monthDifference = today.getMonth() - birthDate.getMonth();
+            const today = new Date();
+            const birthDate = new Date(birthday);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
 
             if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
@@ -117,68 +111,44 @@
         }
 
         document.getElementById('birthday').addEventListener('change', function() {
-            var birthday = this.value;
-            var age = calculateAge(birthday);
+            const birthday = this.value;
+            const age = calculateAge(birthday);
             document.getElementById('age').value = age; // Update hidden age field
         });
 
         document.getElementById('registration-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            // Fetch form fields
-            var contact_no = document.getElementById('contact_no').value;
-            var password = document.getElementById('password').value;
-            var confirmPassword = document.getElementById('confirmPassword').value;
+            const contact_no = document.getElementById('contact_no').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-            // Initialize error array
-            var errors = [];
+            const errors = [];
 
-            if (contact_no.length < 6) {
-                errors.push("Invalid contact number");
+            if (contact_no.length < 11) {
+                errors.push("Invalid contact number.");
             }
-            // Password validation: minimum 6 characters
             if (password.length < 6) {
                 errors.push("Password must be at least 6 characters.");
             }
-
-            // Password confirmation
             if (password !== confirmPassword) {
                 errors.push("Passwords do not match.");
             }
 
-            // If there are any validation errors, display them in the modal
             if (errors.length > 0) {
                 document.getElementById('modalErrorMessage').innerHTML = errors.join('<br>');
-                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                 errorModal.show();
                 return;
             }
 
             // Generate member_id
-            var date = new Date();
-            var year = date.getFullYear();
-            var month = String(date.getMonth() + 1).padStart(2, '0');
-            var day = String(date.getDate()).padStart(2, '0');
-            var uniqueId = String(Math.floor(Math.random() * 1000000000)).padStart(10, '0');
-            var member_id = year + month + day + uniqueId;
-
-            // Assign the generated member_id to the hidden input field
+            const date = new Date();
+            const member_id = date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0') + String(Math.floor(Math.random() * 1000000000)).padStart(10, '0');
             document.getElementById('member_id').value = member_id;
 
-            // Prepare form data for submission
-            var formData = new FormData();
-            formData.append('member_id', member_id);
-            formData.append('username', document.getElementById('username').value);
-            formData.append('contact_no', document.getElementById('contact_no').value);
-            formData.append('birthday', document.getElementById('birthday').value);
-            formData.append('sex', document.getElementById('sex').value);
-            formData.append('civil_status', document.getElementById('civil_status').value);
-            formData.append('address', document.getElementById('address').value);
-            formData.append('email', document.getElementById('email').value);
-            formData.append('password', password);
-            formData.append('confirmPassword', confirmPassword);
+            const formData = new FormData(this);
 
-            // Submit the form via fetch
             fetch('register.php', {
                 method: 'POST',
                 body: formData
@@ -186,16 +156,16 @@
             .then(response => response.text())
             .then(data => {
                 if (data.includes('New record created successfully!')) {
-                    window.location.href = 'index.php'; // Redirect on success
+                    window.location.href = 'index.php';
                 } else {
                     document.getElementById('modalErrorMessage').innerHTML = data;
-                    var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                     errorModal.show();
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 document.getElementById('modalErrorMessage').innerHTML = "An error occurred. Please try again later.";
-                var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
                 errorModal.show();
             });
         });

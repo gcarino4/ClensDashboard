@@ -6,21 +6,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $member_id = $_POST['member_id'];
     $member_name = $_POST['member_name'];
     $invoice_date = $_POST['invoice_date'];
-    $due_date = $_POST['due_date'];
-    $amount_due = $_POST['amount_due'];
-    $amount_paid = $_POST['amount_paid']; // Capture amount paid from form
-    $payment_status = $_POST['payment_status']; // Capture payment status from form
+    $amount_paid = $_POST['amount_paid'];
     $note = $_POST['note'];
     $type = $_POST['type'];
     $invoiced_by = $_SESSION['name'];
 
-    if (!empty($invoice_date) && !empty($due_date)) {
-        $sql = "INSERT INTO receivable (member_id, invoiced_by, member_name, invoice_date, due_date, amount_due, amount_paid, payment_status, note, type)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    if (!empty($invoice_date)) {
+        $sql = "INSERT INTO receivable (member_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssdsss", $member_id, $invoiced_by, $member_name, $invoice_date, $due_date, $amount_due, $amount_paid, $payment_status, $note, $type);
-
+        $stmt->bind_param("sssssss", $member_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
 
         if ($stmt->execute()) {
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -29,15 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error: " . $stmt->error;
         }
     } else {
-        echo "Error: Invoice date or due date cannot be empty.";
+        echo "Error: Invoice date cannot be empty.";
     }
 }
 
-
-
-
-// Close connection
 $conn->close();
+
 ?>
 
 
@@ -110,24 +103,8 @@ $conn->close();
                             <input type="date" id="invoice_date" name="invoice_date"
                                 value="<?php echo date('Y-m-d'); ?>" readonly>
 
-                            <label for="due_date">Due Date</label>
-                            <input type="date" id="due_date" name="due_date" required>
-
-                            <label for="amount_due">Amount Due</label>
-                            <input type="number" id="amount_due" name="amount_due" step="0.01" required>
-
-
                             <label for="amount_paid">Amount Paid</label>
                             <input type="number" id="amount_paid" name="amount_paid" step="0.01" required>
-
-                            <label for="payment_status_select">Payment Status</label>
-                            <select id="payment_status_select" name="payment_status" required>
-                                <option value="Ongoing" selected>Ongoing</option>
-                                <option value="Paid">Paid</option>
-                                <option value="Overdue">Overdue</option>
-                                <option value="Due">Due</option>
-                            </select>
-
 
                             <label for="note">Note</label>
                             <textarea id="note" name="note" rows="4"></textarea>
@@ -162,10 +139,7 @@ $conn->close();
                     echo '<th>TRX CODE</th>';
                     echo '<th>Member Name</th>';
                     echo '<th>Invoice Date</th>';
-                    echo '<th>Due Date</th>';
-                    echo '<th>Amount Due</th>';
                     echo '<th>Amount Paid</th>';
-                    echo '<th>Payment Status</th>';
                     echo '<th>Note</th>';
                     echo '<th>Type</th>';
                     echo '</tr>';
@@ -180,10 +154,7 @@ $conn->close();
                         echo '<td>' . htmlspecialchars($row["transaction_code"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["member_name"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["invoice_date"]) . '</td>';
-                        echo '<td>' . htmlspecialchars($row["due_date"]) . '</td>';
-                        echo '<td>' . htmlspecialchars($row["amount_due"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["amount_paid"]) . '</td>';
-                        echo '<td>' . htmlspecialchars($row["payment_status"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["note"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["type"]) . '</td>';
                         echo '</tr>';
@@ -301,20 +272,13 @@ $conn->close();
         function validateForm() {
             const member_name = document.getElementById('member_name').value;
             const invoice_date = document.getElementById('invoice_date').value;
-            const due_date = document.getElementById('due_date').value;
-            const amount_due = document.getElementById('amount_due').value;
             const amount_paid = document.getElementById('amount_paid').value;
             const payment_status = document.getElementById('payment_status').value;
             const note = document.getElementById('note').value;
             const type = document.getElementById('type').value;
 
-            if (!member_name || !invoice_date || !due_date || !amount_due || !amount_paid || !payment_status) {
+            if (!member_name || !invoice_date || !amount_paid || !payment_status) {
                 alert('All fields are required.');
-                return false;
-            }
-
-            if (amount_due <= 0 || amount_paid < 0) {
-                alert('Amount Due must be a positive number and Amount Paid cannot be negative.');
                 return false;
             }
 

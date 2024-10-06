@@ -33,18 +33,33 @@ if ($result_due->num_rows > 0) {
     exit;
 }
 
+// Fetch the member_name from the members table
+$sql_member = "SELECT name FROM members WHERE member_id = ?";
+$stmt_member = $conn->prepare($sql_member);
+$stmt_member->bind_param("s", $session_member_id);
+$stmt_member->execute();
+$result_member = $stmt_member->get_result();
+
+if ($result_member->num_rows > 0) {
+    $member_data = $result_member->fetch_assoc();
+    $member_name = $member_data['name'];
+} else {
+    echo json_encode(['success' => false, 'message' => 'Member name not found.']);
+    exit;
+}
+
 // Validate payment amount
 if (abs(floatval($payment_amount) - $payment_due) > 1) { // Adjust the tolerance as needed
-    echo json_encode(['success' => false, 'message' => 'We only accept whole number payments']);
+    echo json_encode(['success' => false, 'message' => 'We only accept payments with more than 1 decimal of payment']);
     exit;
 }
 
 // Generate a unique transaction number using uniqid
 $transaction_number = uniqid('txn_', true);  // Example: txn_651a1bd8bdf9c1.17650468
 
-// Prepare the SQL statement to insert payment details including the transaction number
-$sql = "INSERT INTO health_payments (application_id, member_id, payment_amount, payment_date, notes, payment_due, transaction_number) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)";
+// Prepare the SQL statement to insert payment details including the transaction number and member_name
+$sql = "INSERT INTO health_payments (application_id, member_id, member_name, payment_amount, payment_date, notes, payment_due, transaction_number) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
 
 if (!$stmt) {
@@ -52,8 +67,8 @@ if (!$stmt) {
     exit;
 }
 
-// Bind parameters to the statement, including the transaction number
-$stmt->bind_param("sssssss", $application_id, $session_member_id, $payment_amount, $payment_date, $payment_notes, $payment_due, $transaction_number);
+// Bind parameters to the statement, including the transaction number and member_name
+$stmt->bind_param("ssssssss", $application_id, $session_member_id, $member_name, $payment_amount, $payment_date, $payment_notes, $payment_due, $transaction_number);
 
 // Execute the statement and check for success
 if ($stmt->execute()) {
@@ -65,4 +80,5 @@ if ($stmt->execute()) {
 // Close the statement and connection
 $stmt->close();
 $conn->close();
+
 ?>

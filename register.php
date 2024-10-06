@@ -19,7 +19,6 @@ if ($conn->connect_error) {
 // Sanitize and validate input
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = htmlspecialchars($_POST['username']);
-    $age = htmlspecialchars($_POST['age']);
     $birthday = htmlspecialchars($_POST['birthday']);
     $sex = htmlspecialchars($_POST['sex']);
     $civil_status = htmlspecialchars($_POST['civil_status']);
@@ -29,6 +28,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirmPassword = htmlspecialchars($_POST['confirmPassword']);
     $contact_no = htmlspecialchars($_POST['contact_no']);
     $member_id = htmlspecialchars($_POST['member_id']); // Retrieve member_id from hidden field
+
+    // Calculate age from birthday
+    $age = date_diff(date_create($birthday), date_create('now'))->y;  // Calculate age
 
     // Check if passwords match
     if ($password !== $confirmPassword) {
@@ -45,28 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->num_rows > 0) {
         echo "Email already exists!";
-        $stmt->close();
-        $conn->close();
         exit;
     }
 
-    // Autofill the role and verified status
-    $role = "Member";
-    $verified = "False";
-
-    // Hash the password
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    // Set date_of_creation to current timestamp and expiration to five years from now
-    $date_of_creation = date("Y-m-d H:i:s");
-    $expiration = date("Y-m-d", strtotime("+5 years"));
-
-    $valid_id = htmlspecialchars($_POST['valid_id']); // Base64 encoded
-
-    $sql = "INSERT INTO members (member_id, role, name, contact_no, age, birthday, sex, civil_status, address, email, password, verified, date_of_creation, expiration, valid_id) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // Insert new member
+    $sql = "INSERT INTO members (member_id, name, age, birthday, sex, civil_status, address, contact_no, email, password, role, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Member', 'False')";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssssssssssss", $member_id, $role, $name, $contact_no, $age, $birthday, $sex, $civil_status, $address, $email, $hashed_password, $verified, $date_of_creation, $expiration, $valid_id);
+    $stmt->bind_param("ssisssssss", $member_id, $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $email, password_hash($password, PASSWORD_DEFAULT));
 
     if ($stmt->execute()) {
         echo "New record created successfully!";

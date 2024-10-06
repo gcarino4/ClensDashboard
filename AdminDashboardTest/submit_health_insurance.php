@@ -45,8 +45,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
     }
 
-    // Generate a 10-digit auto-generated application ID
-    $application_id = mt_rand(1000000000, 9999999999);
+    // Generate a 10-digit auto-generated application ID with prefix 'hlt'
+    $random_number = mt_rand(100000000, 999999999); // Generate a 9-digit random number
+    $application_id = 'hlt' . $random_number; // Concatenate 'hlt' with the random number
+
 
     // Default status for a new application
     $status = 'Pending';

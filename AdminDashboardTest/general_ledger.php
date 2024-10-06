@@ -56,12 +56,15 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 <?php
 
                 if ($role === 'Admin'):
+
                     include 'general_ledger_payments.php';
                     echo "<br>";
                     include 'general_ledger_receivables.php';
                     echo "<br>";
+                    echo "<h2>Loan Payments</h2>";
                     include 'loan_payments_table.php';
                     echo "<br>";
+                    echo "<h2>Health Insurance Payments</h2>";
                     include 'health_payments_table.php';
                 endif;
                 if ($role === 'Member'):

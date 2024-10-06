@@ -66,6 +66,15 @@ if ($result_loan_payments->num_rows > 0) {
     $total_loaned_paid = $row_loan_payments['total_loaned_paid'];
 }
 
+$sql_total_contributions = "SELECT SUM(contribution_amount) as total_contribution FROM contributions";
+
+$result_total_contributions = $conn->query($sql_total_contributions);
+
+if ($result_total_contributions->num_rows > 0) {
+    $row_contribution_payments = $result_total_contributions->fetch_assoc();
+    $total_contributions = $row_contribution_payments['total_contribution'];
+}
+
 ?>
 <?php
 include 'overall_card.php';
@@ -133,4 +142,12 @@ include 'overall_card.php';
         <span class="material-icons-outlined">payment</span>
     </div>
     <h1><?php echo number_format($total_loaned_paid, 2); ?></h1>
+</div>
+
+<div class="card" style="background-color: #fbc02d;">
+    <div class="card-inner">
+        <h3>Total Contributions</h3>
+        <span class="material-icons-outlined">payment</span>
+    </div>
+    <h1><?php echo number_format($total_contributions, 2); ?></h1>
 </div>

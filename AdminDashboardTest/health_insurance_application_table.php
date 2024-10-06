@@ -135,7 +135,7 @@ if ($result->num_rows > 0) {
                 <button class='btn btn-danger btn-sm custom-button rejectBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Reject</button>
             </td>
         </tr>
-        <script src='health_insurance_application_table.js></script>
+         <script src='health_insurance_application_table.js'></script>
         ";
 
         // Print the beneficiary rows
@@ -146,7 +146,9 @@ if ($result->num_rows > 0) {
                     <strong>Relationship:</strong> " . htmlspecialchars($beneficiary['relationship']) . " <br>
                     <strong>DOB:</strong> " . htmlspecialchars($beneficiary['dob']) . "
                 </td>
-            </tr>";
+            </tr>
+           
+            ";
         }
     }
 

@@ -54,43 +54,7 @@ require 'check_user.php';
         </main>
         <!-- End of Main Content -->
 
-        <!-- Right Section -->
-        <div class="right-section">
-            <div class="nav">
-                <button id="menu-btn">
-                    <span class="material-icons-sharp">
-                        menu
-                    </span>
-                </button>
-                <div class="dark-mode">
-                    <span class="material-icons-sharp active">
-                        light_mode
-                    </span>
-                    <span class="material-icons-sharp">
-                        dark_mode
-                    </span>
-                </div>
 
-                <?php
-                include 'profile.php';
-                ?>
-
-            </div>
-            <!-- End of Nav -->
-
-            <div class="user-profile">
-                <div class="logo">
-                    <img src="images/CoLens.png">
-                    <h2>Accounting Management System</h2>
-                    <p>GSCTEMPCO</p>
-                </div>
-            </div>
-
-            <?php
-            include 'verified_notification.php';
-            ?>
-
-        </div>
 
 
     </div>

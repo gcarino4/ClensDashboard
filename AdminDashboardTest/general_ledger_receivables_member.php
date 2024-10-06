@@ -86,6 +86,7 @@ $result_receivable = $conn->query($query_receivable);
         </table>
     </div>
     <?php
+    echo "<br>";
     include 'loan_payments_table.php';
     echo "<br>";
     include 'health_payments_table.php';

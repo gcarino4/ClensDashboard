@@ -2,10 +2,18 @@
 include 'connection.php';
 
 $session_member_id = $_SESSION['member_id']; // Get the current member_id from the session
+$session_role = $_SESSION['role'];
 
-$sql = "SELECT * FROM health_payments WHERE member_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $session_member_id);
+if ($session_role === 'Admin') {
+    $sql = "SELECT * FROM health_payments";
+    $stmt = $conn->prepare($sql);
+} else {
+    $sql = "SELECT * FROM health_payments WHERE member_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $session_member_id);
+
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 

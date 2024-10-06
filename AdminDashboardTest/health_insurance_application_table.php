@@ -134,7 +134,9 @@ if ($result->num_rows > 0) {
                 <button class='btn btn-success btn-sm custom-button approveBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Approve</button>
                 <button class='btn btn-danger btn-sm custom-button rejectBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Reject</button>
             </td>
-        </tr>";
+        </tr>
+        <script src='health_insurance_application_table.js></script>
+        ";
 
         // Print the beneficiary rows
         foreach ($beneficiaryRows as $beneficiary) {

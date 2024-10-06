@@ -123,6 +123,7 @@ $conn->close();
 
 
                 <?php
+
                 include 'loan_payments_table.php';
                 echo "<br>";
                 include 'health_payments_table.php';
@@ -167,8 +168,13 @@ $conn->close();
                             <label for="loanAmount">Loan Amount Requested:</label>
                             <input type="number" id="loanAmount" name="loan_amount" step="0.01" required><br>
 
-                            <label for="loanTerm">Loan Term (in years):</label>
-                            <input type="number" id="loanTerm" name="loan_term" min="1" max="30" required><br>
+                            <label for="loanTerm">Loan Term:</label>
+                            <select id="loanTerm" name="loan_term" required>
+                                <option value="1">6 Months - 1 Year</option>
+                                <option value="3">1 Year - 3 Years</option>
+                                <option value="5">3 Years - 5 Years</option>
+                            </select><br>
+
                             <label for="loanPurpose">Purpose of Loan:</label>
                             <select id="loanPurpose" name="loan_purpose" required>
                                 <option value="Home">Home</option>
@@ -265,13 +271,13 @@ $conn->close();
                             <div id="beneficiaries">
                                 <div class="beneficiary">
                                     <label for="beneficiaryName">Beneficiary Name:</label>
-                                    <input type="text" name="beneficiary_name[]" required><br>
+                                    <input type="text" name="beneficiary_name[]"><br>
 
                                     <label for="beneficiaryRelationship">Relationship:</label>
-                                    <input type="text" name="beneficiary_relationship[]" required><br>
+                                    <input type="text" name="beneficiary_relationship[]"><br>
 
                                     <label for="beneficiaryDOB">Date of Birth:</label>
-                                    <input type="date" name="beneficiary_dob[]" required><br>
+                                    <input type="date" name="beneficiary_dob[]"><br>
                                 </div>
                             </div>
                             <button type="button" id="addBeneficiaryBtn">Add Another Beneficiary</button><br>

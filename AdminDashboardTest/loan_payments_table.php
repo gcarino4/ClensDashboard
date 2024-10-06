@@ -2,10 +2,20 @@
 include 'connection.php';
 
 $session_member_id = $_SESSION['member_id']; // Get the current member_id from the session
+$session_role = $_SESSION['role']; // Get the current user's role from the session
 
-$sql = "SELECT * FROM loan_payments WHERE member_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $session_member_id);
+// Check if the user is an Admin or Member
+if ($session_role === 'Admin') {
+    // Admin: Fetch all loan payment records
+    $sql = "SELECT * FROM loan_payments";
+    $stmt = $conn->prepare($sql);
+} else {
+    // Member: Fetch loan payment records only for the current member
+    $sql = "SELECT * FROM loan_payments WHERE member_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $session_member_id);
+}
+
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -29,7 +39,7 @@ if ($result->num_rows > 0) {
         echo '</tr>';
     }
 } else {
-    echo '<tr><td colspan="5">No payment records found for this member.</td></tr>';
+    echo '<tr><td colspan="5">No payment records found.</td></tr>';
 }
 
 echo '</table>';

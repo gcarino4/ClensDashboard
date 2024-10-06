@@ -35,7 +35,7 @@ if ($result_due->num_rows > 0) {
 
 // Validate payment amount
 if (abs(floatval($payment_amount) - $payment_due) > 1) { // Adjust the tolerance as needed
-    echo json_encode(['success' => false, 'message' => 'Payment amount must be equal to the payment due.']);
+    echo json_encode(['success' => false, 'message' => 'We only accept whole number payments']);
     exit;
 }
 

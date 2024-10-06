@@ -7,13 +7,13 @@ document.getElementById('addBeneficiaryBtn').addEventListener('click', function 
     newBeneficiaryDiv.classList.add('beneficiary');
     newBeneficiaryDiv.innerHTML = `
 <label for="beneficiaryName${newBeneficiaryIndex}">Beneficiary Name ${newBeneficiaryIndex}:</label>
-<input type="text" name="beneficiary_name[]" required><br>
+<input type="text" name="beneficiary_name[]" ><br>
 
 <label for="beneficiaryRelationship${newBeneficiaryIndex}">Relationship ${newBeneficiaryIndex}:</label>
-<input type="text" name="beneficiary_relationship[]" required><br>
+<input type="text" name="beneficiary_relationship[]" ><br>
 
 <label for="beneficiaryDOB${newBeneficiaryIndex}">Date of Birth ${newBeneficiaryIndex}:</label>
-<input type="date" name="beneficiary_dob[]" required><br>
+<input type="date" name="beneficiary_dob[]" ><br>
 `;
 
     beneficiariesDiv.appendChild(newBeneficiaryDiv);

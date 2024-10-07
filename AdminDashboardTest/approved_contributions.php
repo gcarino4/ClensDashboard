@@ -63,7 +63,7 @@ $result = $conn->query($sql);
                 <label for="payment_amount">Payment Amount:</label>
                 <input type="number" name="payment_amount" id="payment_amount" required>
                 <label for="payment_image">Upload Image:</label>
-                <input type="file" name="payment_image" id="payment_image" accept="image/*">
+                <input type="file" name="payment_image" id="payment_image" accept="image/*" required>
                 <button type="submit">Submit Payment</button>
             </form>
         </div>

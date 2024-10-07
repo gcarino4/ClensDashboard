@@ -21,6 +21,12 @@ if (!isset($_POST['contribution_id']) || !isset($_POST['payment_amount'])) {
 $contribution_id = $_POST['contribution_id'];
 $payment_amount = $_POST['payment_amount'];
 
+// Validate payment amount
+if ($payment_amount < 1000) {
+    echo json_encode(['success' => false, 'message' => 'Payment amount must not be less than 1000.']);
+    exit;
+}
+
 // Get the Base64 image data
 $image_data = isset($_POST['payment_image_base64']) ? $_POST['payment_image_base64'] : null;
 

@@ -133,7 +133,7 @@ echo '</table>';
         if (row) {
             const applicationId = row.getAttribute('data-application-id');
             const memberId = row.getAttribute('data-member-id');
-            const loanAmount = 1 + row.querySelector('.loan-amount').textContent;
+            const loanAmount = row.querySelector('.loan-amount').textContent;
 
             document.getElementById('modalApplicationId').value = applicationId;
             document.getElementById('modalMemberId').value = memberId;

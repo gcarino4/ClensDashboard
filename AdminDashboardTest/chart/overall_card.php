@@ -60,6 +60,7 @@ if ($result->num_rows > 0) {
 $total_equity = $total_due - $total_payments;
 
 
+
 $conn->close();
 ?>
 

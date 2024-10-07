@@ -146,7 +146,7 @@ echo '</table>';
                 </div>
                 <div>
                     <label for="paymentImage">Upload Receipt Image</label>
-                    <input type="file" id="paymentImage" name="payment_image" accept="image/*">
+                    <input type="file" id="paymentImage" name="payment_image" accept="image/*" required>
                     <img id="imagePreview" style="display:none; width:100px; height:100px; margin-top:10px;" />
                 </div>
                 <button type="submit">Submit Payment</button>

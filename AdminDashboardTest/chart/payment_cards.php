@@ -32,7 +32,7 @@ if ($result_payments->num_rows > 0) {
 }
 
 // Query to total loan_amount for the current member_id from loan_applications table
-$sql_loans = "SELECT SUM(loan_amount) as total_loans FROM loan_applications WHERE member_id = ?";
+$sql_loans = "SELECT SUM(payment_amount) as total_loans FROM loan_payments WHERE member_id = ?";
 $stmt_loans = $conn->prepare($sql_loans);
 $stmt_loans->bind_param("s", $member_id); // Use "s" for string
 $stmt_loans->execute();
@@ -70,20 +70,20 @@ if ($result_contributions->num_rows > 0) {
 }
 
 // Query to total payment_due for the current member_id from health_insurance_applications table
-$sql_health_insurance = "SELECT SUM(payment_due) as total_payment_due FROM health_insurance_applications WHERE member_id = ?";
+$sql_health_insurance = "SELECT SUM(payment_amount) as total_payment_amount FROM health_payments WHERE member_id = ?";
 $stmt_health_insurance = $conn->prepare($sql_health_insurance);
 $stmt_health_insurance->bind_param("s", $member_id); // Use "s" for string
 $stmt_health_insurance->execute();
 $result_health_insurance = $stmt_health_insurance->get_result();
 
-$total_payment_due = 0;
+$total_payment_amount = 0;
 if ($result_health_insurance->num_rows > 0) {
     $row_health_insurance = $result_health_insurance->fetch_assoc();
-    $total_payment_due = $row_health_insurance['total_payment_due'];
+    $total_payment_amount = $row_health_insurance['total_payment_amount'];
 }
 
-// Calculate total equity
-$total_equity = $total_due - $total_payments;
+
+$total_payments = $total_payment_amount + $total_contributions + $total_loans;
 
 $conn->close();
 ?>
@@ -100,7 +100,7 @@ $conn->close();
 <!-- New Card for Loans -->
 <div class="card" style="background-color: #00ff00;">
     <div class="card-inner">
-        <h3>Total Loans</h3>
+        <h3>Total Loan Payment</h3>
         <span class="material-icons-outlined">attach_money</span> <!-- You can change the icon as needed -->
     </div>
     <h1><?php echo number_format($total_loans, 2); ?></h1>
@@ -109,8 +109,17 @@ $conn->close();
 <!-- New Card for Health Insurance Payment Due -->
 <div class="card" style="background-color: #00ff00;">
     <div class="card-inner">
-        <h3>Health Insurance Payment Due</h3>
+        <h3>Total Health Insurance Payment</h3>
         <span class="material-icons-outlined">payment</span> <!-- You can change the icon as needed -->
     </div>
-    <h1><?php echo number_format($total_payment_due, 2); ?></h1>
+    <h1><?php echo number_format($total_payment_amount, 2); ?></h1>
+</div>
+
+<!-- New Card for Health Insurance Payment Due -->
+<div class="card" style="background-color: #fbc02d;">
+    <div class="card-inner">
+        <h3>Overall Payment</h3>
+        <span class="material-icons-outlined">payment</span> <!-- You can change the icon as needed -->
+    </div>
+    <h1><?php echo number_format($total_payments, 2); ?></h1>
 </div>

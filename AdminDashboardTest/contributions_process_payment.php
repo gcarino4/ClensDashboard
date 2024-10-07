@@ -21,6 +21,9 @@ if (!isset($_POST['contribution_id']) || !isset($_POST['payment_amount'])) {
 $contribution_id = $_POST['contribution_id'];
 $payment_amount = $_POST['payment_amount'];
 
+// Get the Base64 image data
+$image_data = isset($_POST['payment_image_base64']) ? $_POST['payment_image_base64'] : null;
+
 // Start transaction
 $conn->begin_transaction();
 
@@ -50,9 +53,9 @@ try {
     $new_contribution_amount = $row['contribution_amount'];
 
     // Record the payment in the contribution_payments table
-    $insert_sql = "INSERT INTO contribution_payments (contribution_id, member_id, payment_amount) VALUES (?, ?, ?)";
+    $insert_sql = "INSERT INTO contribution_payments (contribution_id, member_id, payment_amount, payment_image) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_sql);
-    $stmt->bind_param("ssd", $contribution_id, $member_id, $payment_amount); // Use "sid" for string, integer, double
+    $stmt->bind_param("ssds", $contribution_id, $member_id, $payment_amount, $image_data); // Use "ssds" for string, string, double, string
     if (!$stmt->execute()) {
         error_log("Error inserting into contribution_payments: " . $stmt->error);
         throw new Exception("Database error inserting into contribution_payments.");

@@ -107,25 +107,20 @@ echo '</table>';
 <!-- Modal HTML -->
 <div id="loanPaymentModal"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
+    <div class="modal-content">
+        <span class="close" onclick="closeLoanModal()">&times;</span>
+        <h2>Make a Payment</h2>
+        <form id="paymentForm">
+            <input type="hidden" id="modalApplicationId">
+            <input type="text" id="modalMemberId" readonly>
 
-    <div>
+            <label for="paymentAmount">Payment Amount:</label>
+            <input type="number" id="paymentAmount" required>
 
-        <div style="background-color:#fff; margin:100px auto; padding:20px; width:300px;">
-            <h2>Process Loan Payment
-                <span class="close" onclick="closeLoanModal()">&times;</span>
-            </h2>
-            <br>
+            <label for="paymentImage">Upload Payment Image:</label>
+            <input type="file" id="paymentImage" accept="image/*" required>
 
-
-            <form id="paymentForm">
-
-                <input type="hidden" name="application_id" id="modalApplicationId">
-                <input type="hidden" name="member_id" id="modalMemberId">
-                <label for="paymentAmount">Payment Amount:</label>
-                <input type="number" name="payment_amount" id="paymentAmount" required>
-                <button type="submit">Submit Payment</button>
-
-        </div>
+            <button type="submit">Submit Payment</button>
         </form>
     </div>
 </div>
@@ -138,7 +133,7 @@ echo '</table>';
         if (row) {
             const applicationId = row.getAttribute('data-application-id');
             const memberId = row.getAttribute('data-member-id');
-            const loanAmount = row.querySelector('.loan-amount').textContent;
+            const loanAmount = 1 + row.querySelector('.loan-amount').textContent;
 
             document.getElementById('modalApplicationId').value = applicationId;
             document.getElementById('modalMemberId').value = memberId;
@@ -159,49 +154,70 @@ echo '</table>';
         const memberId = document.getElementById('modalMemberId').value;
         const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
 
-        // Send payment data to the server using fetch
-        fetch('loan_process_payment.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                application_id: applicationId,
-                member_id: memberId,
-                payment_amount: paymentAmount
+        // Get the uploaded image
+        const paymentImageInput = document.getElementById('paymentImage');
+        const paymentImageFile = paymentImageInput.files[0];
+
+        // Check if an image is uploaded
+        if (!paymentImageFile) {
+            alert("Please upload a payment image.");
+            return;
+        }
+
+        // Create a FileReader to convert the image file to Base64
+        const reader = new FileReader();
+        reader.onloadend = function () {
+            const paymentImageBase64 = reader.result.split(',')[1]; // Get Base64 data without metadata
+
+            // Send payment data to the server using fetch
+            fetch('loan_process_payment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    application_id: applicationId,
+                    member_id: memberId,
+                    payment_amount: paymentAmount,
+                    payment_image_base64: paymentImageBase64 // Include Base64-encoded image
+                })
             })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Payment processed successfully!');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Payment processed successfully!');
 
-                    // Update loan amount display in the table
-                    const loanRow = document.querySelector(`tr[data-application-id="${applicationId}"]`);
-                    const currentAmountCell = loanRow.querySelector('.loan-amount');
-                    let currentAmount = parseFloat(currentAmountCell.textContent);
-                    let newAmount = currentAmount - paymentAmount;
+                        // Update loan amount display in the table
+                        const loanRow = document.querySelector(`tr[data-application-id="${applicationId}"]`);
+                        const currentAmountCell = loanRow.querySelector('.loan-amount');
+                        let currentAmount = parseFloat(currentAmountCell.textContent);
+                        let newAmount = currentAmount - paymentAmount;
 
-                    // Ensure that newAmount does not go below zero
-                    if (newAmount < 0) {
-                        newAmount = 0;
+                        // Ensure the new amount does not go below zero
+                        if (newAmount < 0) {
+                            newAmount = 0;
+                        }
+
+                        // Update displayed loan amount
+                        currentAmountCell.textContent = newAmount.toFixed(2);
+
+                        // Optionally remove the row if the loan amount is 0
+                        if (newAmount === 0) {
+                            loanRow.remove();
+                        }
+
+                        closeLoanModal();
+                    } else {
+                        alert('Error: ' + data.message);
                     }
+                })
+                .catch(error => {
+                    console.error('Error processing payment:', error);
+                });
+        };
 
-                    // Update displayed loan amount
-                    currentAmountCell.textContent = newAmount.toFixed(2);
-
-                    // Optionally remove the row if the loan amount is 0
-                    if (newAmount === 0) {
-                        loanRow.remove();
-                    }
-
-                    closeLoanModal();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error processing payment:', error);
-            });
+        // Read the image file as a Base64-encoded string
+        reader.readAsDataURL(paymentImageFile);
     });
+
 </script>

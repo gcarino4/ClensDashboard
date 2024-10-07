@@ -62,7 +62,6 @@ if ($result->num_rows > 0) {
                 $insurance['payment_due']
             );
             if (!$insert_stmt->execute()) {
-                // Log any insertion errors
                 echo "Error inserting record: " . $insert_stmt->error;
             }
         } else {
@@ -101,7 +100,7 @@ echo '</tr>';
 
 if ($result->num_rows > 0) {
     while ($insurance = $result->fetch_assoc()) {
-        echo '<tr onclick="openhealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ')">';
+        echo '<tr onclick="openHealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ')">';
         echo '<td>' . htmlspecialchars($insurance['application_id']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['member_id']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['insurance_type']) . '</td>';
@@ -118,16 +117,14 @@ if ($result->num_rows > 0) {
 echo '</table>';
 ?>
 
-
 <!-- Payment Modal -->
 <div id="healthPaymentModal"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
-    <div style="background-color:#fff; margin:100px auto; padding:20px; width:300px;">
-
-
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index: 999;">
+    <div style="background-color:#fff; margin:100px auto; padding:20px; width:300px; position:relative;">
         <div>
             <h2>Process Health Insurance Payment
-                <span class="close" onclick="closehealthPaymentModal()">&times;</span>
+                <span class="close" onclick="closeHealthPaymentModal()"
+                    style="cursor:pointer; position:absolute; top:10px; right:10px;">&times;</span>
             </h2>
             <br>
             <form id="healthPaymentForm">
@@ -147,8 +144,12 @@ echo '</table>';
                     <label for="paymentNotes">Notes</label>
                     <textarea id="paymentNotes" name="payment_notes"></textarea>
                 </div>
+                <div>
+                    <label for="paymentImage">Upload Receipt Image</label>
+                    <input type="file" id="paymentImage" name="payment_image" accept="image/*">
+                    <img id="imagePreview" style="display:none; width:100px; height:100px; margin-top:10px;" />
+                </div>
                 <button type="submit">Submit Payment</button>
-
             </form>
         </div>
     </div>
@@ -156,7 +157,7 @@ echo '</table>';
 
 <script>
     // Function to open the payment modal and set the current date
-    function openhealthPaymentModal(applicationId, paymentValue) {
+    function openHealthPaymentModal(applicationId, paymentValue) {
         document.getElementById('applicationId').value = applicationId;
         document.getElementById('paymentAmount').value = paymentValue;
 
@@ -168,28 +169,26 @@ echo '</table>';
     }
 
     // Function to close the payment modal
-    function closehealthPaymentModal() {
+    function closeHealthPaymentModal() {
         document.getElementById('healthPaymentModal').style.display = 'none';
     }
 
-    // Handle form submission
     // Handle form submission
     document.getElementById('healthPaymentForm').addEventListener('submit', function (event) {
         event.preventDefault();
 
         const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
-        const paymentDue = parseFloat(document.getElementById('paymentAmount').value); // This line should get the correct value instead
-        // Use this as a placeholder
+        const paymentDue = parseFloat(document.getElementById('paymentAmount').value); // Placeholder for real value
 
-        // Check if payment amount is valid
-        if (paymentAmount !== paymentDue) { // Changed from < or > to != for equality check
+        // Validate the payment amount
+        if (paymentAmount !== paymentDue) {
             alert('Payment amount must be equal to the payment due.');
             return; // Stop submission if validation fails
         }
 
-        const formData = new FormData(this); // Get form data
+        const formData = new FormData(this); // Get form data, including the uploaded file
 
-        fetch('health_process_payment.php', { // Adjust the path as needed
+        fetch('health_process_payment.php', {
             method: 'POST',
             body: formData
         })
@@ -197,7 +196,7 @@ echo '</table>';
             .then(data => {
                 if (data.success) {
                     alert('Payment recorded successfully.');
-                    closehealthPaymentModal(); // Close modal on success
+                    closeHealthPaymentModal(); // Close modal on success
                     // Optionally, refresh the table or update the UI
                 } else {
                     alert('Error: ' + data.message);
@@ -208,5 +207,18 @@ echo '</table>';
             });
     });
 
+    // Image preview function
+    document.getElementById('paymentImage').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
 
+        reader.onload = function (e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        };
+
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    });
 </script>

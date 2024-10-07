@@ -23,12 +23,10 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contributions Table</title>
+
 </head>
 
 <body>
-
-    <h2>Contributions</h2>
 
     <table>
         <tr>
@@ -60,10 +58,12 @@ $result = $conn->query($sql);
                 <span class="close" onclick="closeContributionModal()">&times;</span>
             </h2>
             <br>
-            <form id="contributionPaymentForm">
+            <form id="contributionPaymentForm" enctype="multipart/form-data">
                 <input type="text" name="contribution_id" id="contribution_id" readonly>
                 <label for="payment_amount">Payment Amount:</label>
                 <input type="number" name="payment_amount" id="payment_amount" required>
+                <label for="payment_image">Upload Image:</label>
+                <input type="file" name="payment_image" id="payment_image" accept="image/*">
                 <button type="submit">Submit Payment</button>
             </form>
         </div>
@@ -86,23 +86,51 @@ $result = $conn->query($sql);
             e.preventDefault(); // Prevent default form submission
 
             const formData = new FormData(this);
-            console.log([...formData.entries()]); // This will log the form data to the console
 
-            fetch('contributions_process_payment.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data); // Check the response from the server
-                    if (data.success) {
-                        document.getElementById('amount_' + data.contribution_id).innerText = data.new_amount;
-                        closeContributionModal(); // Close the modal
-                    } else {
-                        alert('Payment failed: ' + data.message);
-                    }
+            // Read the image file and convert it to Base64
+            const fileInput = document.getElementById('payment_image');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    formData.append('payment_image_base64', reader.result); // Append Base64 image data
+
+                    fetch('contributions_process_payment.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data); // Check the response from the server
+                            if (data.success) {
+                                document.getElementById('amount_' + data.contribution_id).innerText = data.new_amount;
+                                closeContributionModal(); // Close the modal
+                            } else {
+                                alert('Payment failed: ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                };
+                reader.readAsDataURL(file); // Convert the file to Base64
+            } else {
+                // Handle case where no file is selected
+                fetch('contributions_process_payment.php', {
+                    method: 'POST',
+                    body: formData
                 })
-                .catch(error => console.error('Error:', error));
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data); // Check the response from the server
+                        if (data.success) {
+                            document.getElementById('amount_' + data.contribution_id).innerText = data.new_amount;
+                            closeContributionModal(); // Close the modal
+                        } else {
+                            alert('Payment failed: ' + data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
         });
 
         // Close the modal when clicking outside
@@ -113,6 +141,7 @@ $result = $conn->query($sql);
             }
         }
     </script>
+
 
 </body>
 

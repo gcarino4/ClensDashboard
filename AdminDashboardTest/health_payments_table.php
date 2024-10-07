@@ -34,6 +34,15 @@ if ($result->num_rows > 0) {
         echo '<td>' . htmlspecialchars($payment['payment_amount']) . '</td>';
         echo '<td>' . htmlspecialchars($payment['payment_due']) . '</td>';
         echo '<td>' . htmlspecialchars($payment['payment_date']) . '</td>'; // Ensure you have a column for payment_date in your database
+        // Convert Base64 text to an image
+        if (!empty($payment['payment_image'])) {
+            // Directly use the Base64 string
+            $imageSrc = htmlspecialchars($payment['payment_image']); // Make sure this is valid Base64
+            echo '<td><img src="' . $imageSrc . '" alt="Payment Proof" style="width:100px;height:auto;"></td>';
+        } else {
+            echo '<td>No image available</td>';
+        }
+
         echo '</tr>';
     }
 } else {

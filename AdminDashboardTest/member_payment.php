@@ -31,7 +31,7 @@ require 'check_user.php';
 
 <body>
 
-    <div class="container">
+    <div class="container" style="overflow-y: auto">
         <?php include "sidebar.php"; ?>
 
         <!-- Main Content -->
@@ -62,13 +62,16 @@ require 'check_user.php';
                 <?php
                 include 'pending_applications.php';
                 echo "<br>";
+                echo " <h2>Contributions To Pay</h2>";
+                include 'approved_contributions.php';
+                echo "<br>";
                 echo " <h2>Loans To Pay</h2>";
                 include 'approved_loans.php';
                 echo "<br>";
                 echo " <h2>Insurance Premium To Pay</h2>";
                 include 'approved_health_insurance.php';
-                echo "<br>";
-                include 'approved_ccontributions.php';
+
+
                 ?>
                 <!-- Style for the Modal (optional) -->
                 <style>

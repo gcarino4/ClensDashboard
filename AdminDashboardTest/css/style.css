@@ -119,6 +119,7 @@ b{
     margin: 0 auto;
     gap: 1.8rem;
     grid-template-columns: 12rem auto 23rem;
+    overflow-y: auto;
 }
 
 aside{
@@ -539,6 +540,7 @@ main .recent-orders a{
     .container{
         width: 95%;
         grid-template-columns: 7rem auto 23rem;
+        overflow-y: auto;
     }
 
     aside .logo h2{
@@ -596,6 +598,7 @@ main .recent-orders a{
         width: 100%;
         grid-template-columns: 1fr;
         padding: 0 var(--padding-1);
+        overflow-y: auto;
     }
 
     aside{
@@ -717,6 +720,7 @@ body {
 
 .container {
     display: flex;
+    overflow-y: auto;
 }
 
 aside {

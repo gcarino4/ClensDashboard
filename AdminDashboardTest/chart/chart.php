@@ -13,10 +13,10 @@ if ($conn->connect_error) {
 }
 
 // Query to sum amount by type and date in payments table
-$sql = "SELECT type, DATE(date) as date, SUM(amount) as total_amount FROM payments GROUP BY type, DATE(date)";
+$sql = "SELECT type, DATE(date) as date, SUM(amount) as total_amount FROM payments GROUP BY type";
 
 // Query to sum amount_paid by type and invoice_date in receivable table
-$sql2 = "SELECT type, DATE(invoice_date) as invoice_date, SUM(amount_paid) as total_amount_paid FROM receivable GROUP BY type, DATE(invoice_date)";
+$sql2 = "SELECT type, DATE(invoice_date) as invoice_date, SUM(amount_paid) as total_amount_paid FROM receivable GROUP BY type";
 
 $result = $conn->query($sql);
 $result2 = $conn->query($sql2);

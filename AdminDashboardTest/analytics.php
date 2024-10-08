@@ -46,9 +46,6 @@ require 'check_user.php';
 
             <!-- New Users Section -->
             <div class="analyse">
-                <?php
-                include 'chart/overall_card.php';
-                ?>
             </div>
             <br><br><br><br>
             <!-- End of New Users Section -->

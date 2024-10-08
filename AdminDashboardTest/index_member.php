@@ -112,6 +112,8 @@ $conn->close();
 
             <!-- Recent Orders Table -->
             <div class="recent-orders">
+
+
                 <h2>Application</h2>
                 <!-- Buttons to open modals -->
                 <button id="openLoanApplicationModalBtn" class="btn-large centered" data-action="loan-application">
@@ -155,6 +157,10 @@ $conn->close();
                                 value="<?php echo isset($_SESSION['address']) ? htmlspecialchars($_SESSION['address']) : ''; ?>"
                                 readonly required><br>
 
+                            <label for="bank_info">Bank Detail:</label>
+                            <input type="text" id="bank_info" name="bank_info" required><br>
+
+
                             <label for="applicantIncome">Annual Income:</label>
                             <input type="number" id="applicantIncome" name="annual_income" step="0.01" required><br>
 
@@ -185,8 +191,10 @@ $conn->close();
                                 <option value="Retired">Retired</option>
                             </select><br>
 
-                            <label for="collateral">Collateral:</label>
-                            <input type="text" id="collateral" name="collateral"><br>
+                            <!-- Add File Uploads for Supporting Documents -->
+                            <label for="collateral_image">Collatteral:</label>
+                            <input type="file" id="collateral_image" name="collateral_image" accept="image/*">
+                            <br>
 
                             <!-- Payment Plan Dropdown -->
                             <label for="paymentPlan">Payment Plan:</label>
@@ -198,11 +206,11 @@ $conn->close();
                             </select><br>
 
                             <!-- Add File Uploads for Supporting Documents -->
-                            <label for="supportingDocument1">Supporting Document 1 (Image):</label>
+                            <label for="supportingDocument1">Co- Makers Statement document (Image):</label>
                             <input type="file" id="supportingDocument1" name="supporting_document_1" accept="image/*"
                                 required><br>
 
-                            <label for="supportingDocument2">Supporting Document 2 (Image):</label>
+                            <label for="supportingDocument2">Deed of Assignment document (Image):</label>
                             <input type="file" id="supportingDocument2" name="supporting_document_2"
                                 accept="image/*"><br>
 
@@ -295,6 +303,10 @@ $conn->close();
                         </form>
                     </div>
                 </div>
+
+                <?php
+                include 'pending_applications.php';
+                ?>
 
                 <!-- JavaScript to add more beneficiaries -->
                 <script src="add_beneficiary.js"></script>

@@ -22,8 +22,8 @@ $contribution_id = $_POST['contribution_id'];
 $payment_amount = $_POST['payment_amount'];
 
 // Validate payment amount
-if ($payment_amount < 1000) {
-    echo json_encode(['success' => false, 'message' => 'Payment amount must not be less than 1000.']);
+if ($payment_amount < 1500 && $payment_amount > 5000) {
+    echo json_encode(['success' => false, 'message' => 'Payment amount must not be less than 1500 or more than 5000.']);
     exit;
 }
 

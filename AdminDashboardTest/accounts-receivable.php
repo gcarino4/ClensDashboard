@@ -3,8 +3,6 @@ include 'connection.php'; // Assuming this file contains your database connectio
 include 'check_user.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $member_id = $_POST['member_id'];
-    $member_name = $_POST['member_name'];
     $invoice_date = $_POST['invoice_date'];
     $amount_paid = $_POST['amount_paid'];
     $note = $_POST['note'];
@@ -12,11 +10,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiced_by = $_SESSION['name'];
 
     if (!empty($invoice_date)) {
-        $sql = "INSERT INTO receivable (member_id, invoiced_by, invoice_date, member_name, amount_paid, note, type)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO receivable (invoiced_by, invoice_date, amount_paid, note, type)
+                VALUES (?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssss", $member_id, $invoiced_by, $invoice_date, $member_name, $amount_paid, $note, $type);
+        $stmt->bind_param("sssss", $invoiced_by, $invoice_date, $amount_paid, $note, $type);
 
         if ($stmt->execute()) {
             header("Location: " . $_SERVER['PHP_SELF']);
@@ -31,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $conn->close();
 ?>
+
 
 
 
@@ -88,14 +87,9 @@ $conn->close();
 
                 <div id="receivableModal" class="modal">
                     <div class="modal-content">
+
                         <form id="receivableForm" action="" method="POST">
-                            <label for="member_id">Member ID</label>
-                            <input type="text" id="member_id" name="member_id" required
-                                oninput="fetchMemberName(this.value)">
-
-                            <label for="member_name">Member Name</label>
-                            <input id="member_name" name="member_name" readonly>
-
+                            <!-- Removed member_id and member_name fields -->
 
                             <label for="invoice_date">Invoice Date</label>
                             <input type="date" id="invoice_date" name="invoice_date"
@@ -112,6 +106,7 @@ $conn->close();
 
                             <button type="submit" name="receivable_submit">Submit</button>
                         </form>
+
                     </div>
                 </div>
 
@@ -135,12 +130,10 @@ $conn->close();
                     echo '<tr>';
                     echo '<th>Invoiced By</th>';
                     echo '<th>TRX CODE</th>';
-                    echo '<th>Member Name</th>';
                     echo '<th>Invoice Date</th>';
                     echo '<th>Amount Paid</th>';
                     echo '<th>Note</th>';
                     echo '<th>Type</th>';
-                    echo '<th>Application ID</th>';
                     echo '</tr>';
                     echo '</thead>';
 
@@ -151,12 +144,11 @@ $conn->close();
                         echo '<tr>';
                         echo '<td>' . htmlspecialchars($row["invoiced_by"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["transaction_code"]) . '</td>';
-                        echo '<td>' . htmlspecialchars($row["member_name"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["invoice_date"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["amount_paid"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["note"]) . '</td>';
                         echo '<td>' . htmlspecialchars($row["type"]) . '</td>';
-                        echo '<td>' . htmlspecialchars($row["application_id"]) . '</td>';
+
                         echo '</tr>';
                     }
 
@@ -242,32 +234,6 @@ $conn->close();
                 receivableModal.style.display = "none";
             }
         }
-
-
-
-        function fetchMemberName(memberId) {
-            if (memberId) {
-                // Create an AJAX request
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", "get_member_name.php", true);
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        // Populate the member_name field with the response
-                        document.getElementById('member_name').value = xhr.responseText;
-                    }
-                };
-
-                // Send the member_id to the server
-                xhr.send("member_id=" + memberId);
-            } else {
-                // Clear the member_name field if no member_id is entered
-                document.getElementById('member_name').value = '';
-            }
-        }
-
-
 
     </script>
 

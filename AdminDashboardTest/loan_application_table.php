@@ -105,10 +105,12 @@ if ($result->num_rows > 0) {
                         <th>Phone Number</th>
                         <th>Address</th>
                         <th>Annual Income</th>
+                        <th>Bank Information</th>
                         <th>Loan Amount</th>
                         <th>Payment Plan</th>
                         <th>Loan Term</th>
                         <th>Loan Purpose</th>
+                        <th>Collateral Image</th>
                         <th>Collateral</th>
                         <th>Application Date</th>
                         <th>Status</th>
@@ -128,11 +130,14 @@ if ($result->num_rows > 0) {
             <td>" . htmlspecialchars($row["phone_number"]) . "</td>
             <td>" . htmlspecialchars($row["address"]) . "</td>
             <td>" . htmlspecialchars($row["annual_income"]) . "</td>
+            <td>" . htmlspecialchars($row["bank_info"]) . "</td>
             <td>" . htmlspecialchars($row["loan_amount"]) . "</td>
             <td>" . htmlspecialchars($row["payment_plan"]) . "</td>
             <td>" . htmlspecialchars($row["loan_term"]) . "</td>
             <td>" . htmlspecialchars($row["loan_purpose"]) . "</td>
-            <td>" . htmlspecialchars($row["collateral"]) . "</td>
+            <td>
+                <img src='data:image/jpeg;base64," . htmlspecialchars($row["collateral_image"]) . "' class='img-preview' alt='No Collateral Image' onclick='openModal(this.src)'/>
+            </td>
             <td>" . htmlspecialchars($row["application_date"]) . "</td>
             <td>" . htmlspecialchars($row["status"]) . "</td>
             <td>

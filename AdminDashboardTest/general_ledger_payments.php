@@ -2,19 +2,24 @@
 // Assuming you have a database connection established
 include "connection.php";
 
+// Check if start_date and end_date are set
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
     $start_date = $_GET['start_date'];
     $end_date = $_GET['end_date'];
 
     // Ensure start date is not greater than end date
     if ($start_date <= $end_date) {
+        // Prepare the query
         $query = "SELECT * FROM payments WHERE date BETWEEN '$start_date' AND '$end_date' ORDER BY type, date";
         $result = $conn->query($query);
+
+        // Check if the query execution was successful
+        if ($result === false) {
+            echo "<p style='color: red; text-align: center;'>Error in SQL query: " . $conn->error . "</p>";
+        }
     } else {
         echo "<p style='color: red; text-align: center;'>Start date cannot be greater than end date.</p>";
     }
-
-
 } else {
     echo "<p style='color: red; text-align: center;'>Please select a valid date range.</p>";
 }
@@ -36,11 +41,12 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
             </thead>
             <tbody>
                 <?php
-                $current_type = null;
-                $type_total = 0;
-                $index = 0; // Index for unique collapsible IDs
+                // Only proceed if $result is set and the query was successful
+                if (isset($result) && $result->num_rows > 0) {
+                    $current_type = null;
+                    $type_total = 0;
+                    $index = 0; // Index for unique collapsible IDs
                 
-                if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {
                         if ($current_type != $row['type']) {
                             if ($current_type !== null) {

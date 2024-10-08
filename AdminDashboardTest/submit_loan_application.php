@@ -13,14 +13,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $loan_amount = (float) $_POST['loan_amount'];
     $loan_term = (int) $_POST['loan_term']; // Make sure the name matches here
     $loan_purpose = $conn->real_escape_string($_POST['loan_purpose']);
+    $bank_info = isset($_POST['bank_info']) ? $conn->real_escape_string($_POST['bank_info']) : null;
     $employment_status = $conn->real_escape_string($_POST['employment_status']);
-    $collateral = $conn->real_escape_string($_POST['collateral']);
+    $collateral_image = isset($_FILES['collateral_image']['tmp_name']) ? $_FILES['collateral_image']['tmp_name'] : null; // Handle upload
     $payment_plan = $conn->real_escape_string($_POST['payment_plan']);  // Collect the selected payment plan
 
     // Generate a 10-digit auto-generated application ID with prefix 'loan'
     $random_number = mt_rand(100000000, 999999999); // Generate a 9-digit random number
     $application_id = 'loan' . $random_number; // Concatenate 'loan' with the random number
-
 
     // Default status for a new application
     $status = 'Pending';
@@ -52,12 +52,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Check if files are uploaded and convert them to Base64
+    $collateral_image = $collateral_image ? base64_encode_image($collateral_image) : null;
     $supporting_document_1 = isset($_FILES['supporting_document_1']['tmp_name']) ? base64_encode_image($_FILES['supporting_document_1']['tmp_name']) : null;
     $supporting_document_2 = isset($_FILES['supporting_document_2']['tmp_name']) ? base64_encode_image($_FILES['supporting_document_2']['tmp_name']) : null;
 
     // Prepare SQL statement
-    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, annual_income, loan_amount, loan_term, interest_rate, loan_purpose, employment_status, collateral, payment_plan, status, supporting_document_1, supporting_document_2)
-            VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', $annual_income, $loan_amount, $loan_term, $interest_rate,  '$loan_purpose', '$employment_status', '$collateral', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+    // Corrected SQL statement
+    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, annual_income, loan_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
+VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+
 
     if ($conn->query($sql) === TRUE) {
         echo "<script>alert('Application submitted successfully.'); window.location = 'index_member.php';</script>";

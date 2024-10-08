@@ -66,6 +66,9 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     echo "<br>";
                     echo "<h2>Health Insurance Payments</h2>";
                     include 'health_payments_table.php';
+                    echo "<br>";
+                    echo "<h2>Member Contribution Payments</h2>";
+                    include 'contribution_payments_table.php';
                 endif;
                 if ($role === 'Member'):
                     include 'general_ledger_receivables_member.php';

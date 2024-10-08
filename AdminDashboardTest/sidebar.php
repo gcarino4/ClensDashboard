@@ -33,19 +33,30 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
                 <span class="material-symbols-outlined">
                     widgets
                 </span>
-                <h3>Main</h3>
+                <h3>Services</h3>
             </a>
+
+            <a href="general_ledger.php" id="general-ledger-link">
+                <span class="material-icons-sharp">
+                    menu_book
+                </span>
+                <h3>Journal</h3>
+            </a>
+
         <?php endif; ?>
 
 
-        <a href="general_ledger.php" id="general-ledger-link">
-            <span class="material-icons-sharp">
-                menu_book
-            </span>
-            <h3>General Ledger</h3>
-        </a>
+
 
         <?php if ($role === 'Admin'): ?>
+
+            <a href="general_ledger.php" id="general-ledger-link">
+                <span class="material-icons-sharp">
+                    menu_book
+                </span>
+                <h3>General Ledger</h3>
+            </a>
+
             <a href="admin.php" id="admin-link">
                 <span class="material-icons-sharp">
                     person_outline

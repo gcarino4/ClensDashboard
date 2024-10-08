@@ -1,7 +1,8 @@
-<!-- Ledger Table for Receivables -->
 <?php
 
 include 'connection.php';
+
+$result_receivable = false; // Initialize with a default value
 
 if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
     $start_date = $_GET['start_date'];
@@ -35,7 +36,8 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                 $type_total_receivable = 0;
                 $index_receivable = 0; // Index for unique collapsible IDs
                 
-                if ($result_receivable->num_rows > 0) {
+                // Check if the query returned valid results
+                if ($result_receivable && $result_receivable->num_rows > 0) {
                     while ($row_receivable = $result_receivable->fetch_assoc()) {
                         if ($current_type_receivable != $row_receivable['type']) {
                             if ($current_type_receivable !== null) {

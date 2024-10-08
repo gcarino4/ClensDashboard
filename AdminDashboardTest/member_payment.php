@@ -60,8 +60,6 @@ require 'check_user.php';
 
 
                 <?php
-                include 'pending_applications.php';
-                echo "<br>";
                 echo " <h2>Contributions To Pay</h2>";
                 include 'approved_contributions.php';
                 echo "<br>";

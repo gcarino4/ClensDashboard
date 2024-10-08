@@ -16,6 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $loan_amount = (float) $_POST['loan_amount'];
     $loan_term = (int) $_POST['loan_term']; // Make sure the name matches here
     $loan_purpose = $conn->real_escape_string($_POST['loan_purpose']);
+    $collateral = $conn->real_escape_string($_POST['collateral']);
     $bank_info = isset($_POST['bank_info']) ? $conn->real_escape_string($_POST['bank_info']) : null;
     $employment_status = $conn->real_escape_string($_POST['employment_status']);
     $collateral_image = isset($_FILES['collateral_image']['tmp_name']) ? $_FILES['collateral_image']['tmp_name'] : null; // Handle upload
@@ -71,56 +72,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Set loan limits based on contribution amount
     if ($contribution_amount > 10000 && $contribution_amount < 20000) {
-        if ($loan_amount >= 30000) {
-            echo "<script>alert('Your loan amount must be less than 30,000.'); window.history.back();</script>";
+        if ($loan_amount > 30000) {
+            echo "<script>alert('You can only loan up to 30,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 20000 && $contribution_amount < 30000) {
-        if ($loan_amount >= 50000) {
-            echo "<script>alert('Your loan amount must be less than 50,000.'); window.history.back();</script>";
+        if ($loan_amount > 60000) {
+            echo "<script>alert('You can only loan up to 60,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 30000 && $contribution_amount < 40000) {
-        if ($loan_amount >= 70000) {
-            echo "<script>alert('Your loan amount must be less than 70,000.'); window.history.back();</script>";
+        if ($loan_amount > 90000) {
+            echo "<script>alert('You can only loan up to 90,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 40000 && $contribution_amount < 50000) {
-        if ($loan_amount >= 100000) {
-            echo "<script>alert('Your loan amount must be less than 100,000.'); window.history.back();</script>";
+        if ($loan_amount > 120000) {
+            echo "<script>alert('You can only loan up to 120,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 50000 && $contribution_amount < 60000) {
-        if ($loan_amount >= 200000) {
-            echo "<script>alert('Your loan amount must be less than 200,000.'); window.history.back();</script>";
+        if ($loan_amount > 150000) {
+            echo "<script>alert('You can only loan up to 150,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 60000 && $contribution_amount < 70000) {
-        if ($loan_amount >= 300000) {
-            echo "<script>alert('Your loan amount must be less than 300,000.'); window.history.back();</script>";
+        if ($loan_amount > 180000) {
+            echo "<script>alert('You can only loan up to 180,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 70000 && $contribution_amount < 80000) {
-        if ($loan_amount >= 400000) {
-            echo "<script>alert('Your loan amount must be less than 400,000.'); window.history.back();</script>";
+        if ($loan_amount > 210000) {
+            echo "<script>alert('You can only loan up to 210,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 80000 && $contribution_amount < 90000) {
-        if ($loan_amount >= 500000) {
-            echo "<script>alert('Your loan amount must be less than 500,000.'); window.history.back();</script>";
+        if ($loan_amount > 240000) {
+            echo "<script>alert('You can only loan up to 240,000.'); window.history.back();</script>";
             exit;
         }
     } elseif ($contribution_amount >= 90000) {
-        if ($loan_amount >= 1000000) {
-            echo "<script>alert('Your loan amount must be less than 1,000,000.'); window.history.back();</script>";
+        if ($loan_amount > 270000) {
+            echo "<script>alert('You can only loan up to 270,000.'); window.history.back();</script>";
             exit;
         }
     }
 
+    $total_size = strlen($application_id) + strlen($member_id) + strlen($name) + strlen($email) +
+        strlen($phone_number) + strlen($address) +
+        strlen($annual_income) + strlen($loan_amount) +
+        strlen($bank_info) + strlen($loan_term) +
+        strlen($interest_rate) + strlen($loan_purpose) +
+        strlen($employment_status) + strlen($collateral_image) +
+        strlen($payment_plan) + strlen($status) +
+        strlen($supporting_document_1) + strlen($supporting_document_2);
+
+    echo "Total query size: $total_size bytes<br>";
+
+
     // Prepare SQL statement
     // Corrected SQL statement
-    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, annual_income, loan_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
-    VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
+    VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', $collateral,  $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
 
     if ($conn->query($sql) === TRUE) {
         echo "<script>alert('Application submitted successfully.'); window.location = 'index_member.php';</script>";

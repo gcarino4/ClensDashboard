@@ -191,6 +191,9 @@ $conn->close();
                                 <option value="Retired">Retired</option>
                             </select><br>
 
+                            <label for="collateral">Collateral:</label>
+                            <input type="text" id="collateral" name="collateral"><br>
+
                             <!-- Add File Uploads for Supporting Documents -->
                             <label for="collateral_image">Collatteral:</label>
                             <input type="file" id="collateral_image" name="collateral_image" accept="image/*">

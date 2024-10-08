@@ -110,8 +110,9 @@ if ($result->num_rows > 0) {
                         <th>Payment Plan</th>
                         <th>Loan Term</th>
                         <th>Loan Purpose</th>
-                        <th>Collateral Image</th>
                         <th>Collateral</th>
+                        <th>Collateral Image</th>
+                        
                         <th>Application Date</th>
                         <th>Status</th>
                         <th>Supporting Document 1</th>
@@ -135,6 +136,7 @@ if ($result->num_rows > 0) {
             <td>" . htmlspecialchars($row["payment_plan"]) . "</td>
             <td>" . htmlspecialchars($row["loan_term"]) . "</td>
             <td>" . htmlspecialchars($row["loan_purpose"]) . "</td>
+            <td>" . htmlspecialchars($row["collateral"]) . "</td>
             <td>
                 <img src='data:image/jpeg;base64," . htmlspecialchars($row["collateral_image"]) . "' class='img-preview' alt='No Collateral Image' onclick='openModal(this.src)'/>
             </td>

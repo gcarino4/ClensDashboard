@@ -336,38 +336,33 @@ include 'check_user.php';
     </script>
 
     <script>
-      // Get all the delete buttons on the page
-      const archiveButtons = document.querySelectorAll('.archiveBtn');
-
-      // Loop through the buttons and add a click event listener to each
-      archiveButtons.forEach(button => {
+      document.querySelectorAll('.archiveBtn').forEach(button => {
         button.addEventListener('click', function () {
-          // Get the id of the user from the data-id attribute
-          const id = button.getAttribute('data-id');
-
-          // Ask for confirmation before archiving
-          if (confirm(`Are you sure you want to delete this record:?`)) {
-            // Create a new XMLHttpRequest object
-            const xhr = new XMLHttpRequest();
-
-            // Define the POST request parameters
-            xhr.open('POST', 'delete_user.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-            // Define the request payload
-            const data = `id=${id}`;
-
-            // Send the request
-            xhr.send(data);
-
-            // Hide the row from the table
-            const row = button.parentNode.parentNode;
-            row.style.display = 'none';
+          const memberId = this.getAttribute('data-id');
+          if (confirm('Are you sure you want to delete this member and their contributions?')) {
+            // Send the member_id via AJAX to delete the record
+            fetch('delete_user.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+              },
+              body: 'member_id=' + encodeURIComponent(memberId)
+            })
+              .then(response => response.text())
+              .then(data => {
+                alert(data); // Show response message
+                if (data.includes('successfully')) {
+                  location.reload(); // Reload the page to refresh the table only if successful
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error); // Log any errors from the AJAX request
+              });
           }
         });
       });
-
     </script>
+
 
 
     <!-- End of Main Content -->

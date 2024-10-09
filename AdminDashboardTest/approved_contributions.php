@@ -33,6 +33,7 @@ $result = $conn->query($sql);
             <th>Contribution ID</th>
             <th>Member ID</th>
             <th>Contribution Amount</th>
+            <th>Action</th>
         </tr>
 
         <?php
@@ -43,6 +44,7 @@ $result = $conn->query($sql);
                 echo "<td>" . $row["contribution_id"] . "</td>";
                 echo "<td>" . $row["member_id"] . "</td>";
                 echo "<td id='amount_" . $row["contribution_id"] . "'>" . $row["contribution_amount"] . "</td>";
+                echo "<td><button onClick='opencontributionPaymentForm'>Make Payment</button</td>";
                 echo "</tr>";
             }
         } else {

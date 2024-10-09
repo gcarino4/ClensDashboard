@@ -50,8 +50,8 @@ if ($result->num_rows > 0) {
 
     // Action buttons
     echo "<td>
-        <button class='editBtn' data-id='" . htmlspecialchars($row["id"]) . "'>✏️</button>
-        <button class='archiveBtn' data-id='" . htmlspecialchars($row["id"]) . "'>📁</button>
+        <button class='editBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>✏️</button>
+        <button class='archiveBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>📁</button>
       </td>
     </tr>";
   }

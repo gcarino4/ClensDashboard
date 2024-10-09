@@ -82,6 +82,7 @@ echo '<th>Member ID</th>';
 echo '<th>Loan Term</th>';
 echo '<th>Payment Plan</th>';
 echo '<th>Loan Amount</th>';
+echo '<th>Action</th>'; // New Action column for payment button
 echo '</tr>';
 
 if ($result->num_rows > 0) {
@@ -92,14 +93,15 @@ if ($result->num_rows > 0) {
         echo '<td>' . htmlspecialchars($loan['loan_term']) . '</td>';
         echo '<td>' . htmlspecialchars($loan['payment_plan']) . '</td>';
         echo '<td class="loan-amount">' . htmlspecialchars($loan['loan_amount']) . '</td>';
+        echo '<td><button class="openLoanModal">Make Payment</button></td>'; // Add payment button
         echo '</tr>';
     }
 } else {
-    echo '<tr><td colspan="5">No approved loans found.</td></tr>';
+    echo '<tr><td colspan="6">No approved loans found.</td></tr>';
 }
 
-$stmt->close();
 echo '</table>';
+
 ?>
 
 
@@ -111,7 +113,7 @@ echo '</table>';
         <span class="close" onclick="closeLoanModal()">&times;</span>
         <h2>Make a Payment</h2>
         <form id="paymentForm">
-            <input type="hidden" id="modalApplicationId">
+            <input type="text" id="modalApplicationId">
             <input type="text" id="modalMemberId" readonly>
 
             <label for="paymentAmount">Payment Amount:</label>
@@ -128,9 +130,9 @@ echo '</table>';
 <script>
     var loansTable = document.getElementById('loansTable');
 
-    loansTable.addEventListener('click', function (event) {
-        const row = event.target.closest('tr');
-        if (row) {
+    document.querySelectorAll('.openLoanModal').forEach(button => {
+        button.addEventListener('click', function (event) {
+            const row = event.target.closest('tr');
             const applicationId = row.getAttribute('data-application-id');
             const memberId = row.getAttribute('data-member-id');
             const loanAmount = row.querySelector('.loan-amount').textContent;
@@ -140,8 +142,9 @@ echo '</table>';
             document.getElementById('paymentAmount').setAttribute('max', loanAmount); // Set max payment to loan amount
 
             document.getElementById('loanPaymentModal').style.display = 'block'; // Show the modal
-        }
+        });
     });
+
 
     function closeLoanModal() {
         document.getElementById('loanPaymentModal').style.display = 'none'; // Hide the modal

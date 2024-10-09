@@ -65,6 +65,17 @@ try {
         throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount));
     }
 
+    $application_check_sql = "SELECT application_id FROM loan_applications WHERE application_id = ?";
+    $application_check_stmt = $conn->prepare($application_check_sql);
+    $application_check_stmt->bind_param("s", $application_id);
+    $application_check_stmt->execute();
+    $application_check_result = $application_check_stmt->get_result();
+
+    if ($application_check_result->num_rows === 0) {
+        throw new Exception('The application_id does not exist in loan_applications.');
+    }
+
+
     // Update loan amount
     $updated_loan_amount = $original_loan_amount - $payment_amount;
     $update_sql = "UPDATE approved_loans SET loan_amount = ? WHERE application_id = ? AND member_id = ?";

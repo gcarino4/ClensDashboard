@@ -49,7 +49,7 @@ if (isset($_SESSION['member_id'])) {
             $totalContribution = $row['total_contribution'];
 
             // Check if total contribution is over 10,000
-            if ($totalContribution > 10000) {
+            if ($totalContribution >= 10000) {
                 $isContributionEligible = true; // Eligible based on contribution
             } else {
                 $isContributionEligible = false; // Not eligible based on contribution

@@ -45,8 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             break;
     }
 
-    // Calculate the final loan amount based on the interest rate
-    $loan_amount = $loan_amount + ($loan_amount * ($interest_rate / 100));
+
 
     // Handling file upload and converting to Base64
     function base64_encode_image($file)
@@ -118,6 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    // Calculate the final loan amount based on the interest rate
+    $loan_amount = $loan_amount + ($loan_amount * ($interest_rate / 100));
+
     $total_size = strlen($application_id) + strlen($member_id) + strlen($name) + strlen($email) +
         strlen($phone_number) + strlen($address) +
         strlen($annual_income) + strlen($loan_amount) +
@@ -130,10 +132,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "Total query size: $total_size bytes<br>";
 
 
+
     // Prepare SQL statement
     // Corrected SQL statement
+    // Prepare SQL statement
     $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
-    VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', $collateral,  $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', '$collateral', $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+
 
     if ($conn->query($sql) === TRUE) {
         echo "<script>alert('Application submitted successfully.'); window.location = 'index_member.php';</script>";

@@ -96,11 +96,12 @@ echo '<th>Coverage Amount</th>';
 echo '<th>Payment Plan</th>';
 echo '<th>Coverage Term</th>';
 echo '<th>Payment Due</th>';
+echo '<th>Actions</th>'; // Add a new Actions column for the button
 echo '</tr>';
 
 if ($result->num_rows > 0) {
     while ($insurance = $result->fetch_assoc()) {
-        echo '<tr onclick="openHealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ')">';
+        echo '<tr>';
         echo '<td>' . htmlspecialchars($insurance['application_id']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['member_id']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['insurance_type']) . '</td>';
@@ -108,13 +109,15 @@ if ($result->num_rows > 0) {
         echo '<td>' . htmlspecialchars($insurance['payment_plan']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['coverage_term']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['payment_due']) . '</td>';
+        // Add "Pay Now" button
+        echo '<td><button onclick="openHealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ')">Make Payment</button></td>';
         echo '</tr>';
     }
 } else {
-    echo '<tr><td colspan="7">No approved health insurance found.</td></tr>';
+    echo '<tr><td colspan="8">No approved health insurance found.</td></tr>'; // Update colspan to 8
 }
-
 echo '</table>';
+
 ?>
 
 <!-- Payment Modal -->
@@ -144,11 +147,13 @@ echo '</table>';
                     <label for="paymentNotes">Notes</label>
                     <textarea id="paymentNotes" name="payment_notes"></textarea>
                 </div>
+
                 <div>
                     <label for="paymentImage">Upload Receipt Image</label>
                     <input type="file" id="paymentImage" name="payment_image" accept="image/*" required>
                     <img id="imagePreview" style="display:none; width:100px; height:100px; margin-top:10px;" />
                 </div>
+
                 <button type="submit">Submit Payment</button>
             </form>
         </div>

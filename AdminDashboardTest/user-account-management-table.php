@@ -1,5 +1,8 @@
 <?php
 
+namespace user_account_table;
+
+
 include 'connection.php';
 
 // Define the SQL query to retrieve all records from members

@@ -5,6 +5,7 @@
             const applicationId = this.getAttribute('data-id');
             console.log('Approve button clicked for ID:', applicationId); // Debug log
             updateStatus(applicationId, 'approved');
+            
         });
     });
 

@@ -1,4 +1,5 @@
 <?php
+namespace user_account_management;
 
 include 'check_user.php';
 

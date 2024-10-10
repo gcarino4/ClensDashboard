@@ -83,7 +83,7 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <title>CoLens Dashboard</title>
     <script>
-        const isVerified = <?php echo json_encode($_SESSION['verified'] === 'True'); ?>;
+
         const canApply = <?php echo json_encode($canApply); ?>; // Pass eligibility status to JS
     </script>
 </head>
@@ -421,7 +421,7 @@ $conn->close();
                         const closeContributionModal = document.getElementById('closeContributionModal');
 
                         // Assuming isVerified, canApply, and isContributionEligible variables are set from the server-side PHP code
-                        const isVerified = <?php echo json_encode($_SESSION['verified']); ?>; // Pass verified status to JS
+                        const isVerified = <?php echo json_encode($_SESSION['verified'] === 'True'); ?>; // Pass verified status to JS
                         const canApply = <?php echo json_encode($canApply); ?>; // Pass eligibility to JS
                         const isContributionEligible = <?php echo json_encode($isContributionEligible); ?>; // Pass contribution eligibility to JS
 
@@ -429,13 +429,20 @@ $conn->close();
                         function openModal(modal) {
                             if (!isVerified) {
                                 verificationModal.style.display = 'block'; // Show verification modal if not verified
-                            } else if (!canApply) {
+                            }
+
+                            else if (!canApply) {
                                 eligibilityModal.style.display = 'block'; // Show eligibility modal if not eligible
-                            } else if (!isContributionEligible) {
+                            }
+
+                            else if (!isContributionEligible) {
                                 contributionModal.style.display = 'block'; // Show eligibility modal if contribution is not eligible
-                            } else {
+                            }
+                            else {
                                 modal.style.display = 'block'; // Show the intended modal if both verified and eligible
                             }
+
+
                         }
 
                         // Open modals based on verification and eligibility
@@ -487,6 +494,13 @@ $conn->close();
 
                 </script>
 
+                <?php
+
+                echo "<script>console.log('isVerified: ', " . json_encode($_SESSION['verified'] === 'True') . ");</script>";
+                echo "<script>console.log('canApply: ', " . json_encode($canApply) . ");</script>";
+                echo "<script>console.log('isContributionEligible: ', " . json_encode($isContributionEligible) . ");</script>";
+
+                ?>
             </div>
 
             <!-- End of Recent Orders Table -->

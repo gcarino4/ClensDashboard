@@ -1,4 +1,7 @@
 <?php
+namespace update_record;
+
+
 include 'connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -17,15 +20,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "<pre>";
     var_dump($_POST);
     echo "</pre>";
+    $sql = "UPDATE members 
+    SET name = COALESCE(?, name), 
+        age = COALESCE(?, age), 
+        birthday = COALESCE(?, birthday), 
+        sex = COALESCE(?, sex), 
+        civil_status = COALESCE(?, civil_status), 
+        address = COALESCE(?, address), 
+        contact_no = COALESCE(?, contact_no), 
+        role = COALESCE(?, role), 
+        verified = COALESCE(?, verified) 
+    WHERE id = ?";
 
-    // Prepare the SQL query
-    $sql = "UPDATE members SET name=?, age=?, birthday=?, sex=?, civil_status=?, address=?, contact_no=?, role=?, verified=? WHERE id=?";
-
-    // Determine the type of the `verified` column
     $stmt = $conn->prepare($sql);
-
-    // Adjust the bind_param types if `verified` is not a string
-    $stmt->bind_param("sssssssssi", $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $id);
+    $stmt->bind_param("ssssssssssi", $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $id);
 
     // Execute the query
     if ($stmt->execute()) {

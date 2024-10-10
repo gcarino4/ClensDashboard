@@ -9,12 +9,11 @@ if (!isset($_SESSION['member_id'])) {
 $session_member_id = $_SESSION['member_id'];
 
 // Step 1: Query the `loan_applications` table for approved loans
-$sql = "SELECT application_id, member_id, loan_term, payment_plan, loan_amount 
+$sql = "SELECT application_id, member_id, loan_term, payment_plan, loan_amount, due_date
         FROM loan_applications 
         WHERE member_id = ? AND status = 'approved'";
 
 $stmt = $conn->prepare($sql);
-
 if (!$stmt) {
     die("Failed to prepare statement for loan_applications: " . $conn->error);
 }
@@ -23,49 +22,81 @@ $stmt->bind_param("s", $session_member_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Step 2: Insert the approved loans into the `approved_loans` table
+$approvedLoans = [];
 if ($result->num_rows > 0) {
     while ($loan = $result->fetch_assoc()) {
-        // Check if the loan already exists in approved_loans to avoid duplicate inserts
-        $check_sql = "SELECT * FROM approved_loans WHERE application_id = ?";
-        $check_stmt = $conn->prepare($check_sql);
-        $check_stmt->bind_param("s", $loan['application_id']);
-        $check_stmt->execute();
-        $check_result = $check_stmt->get_result();
+        // Calculate next payment due date based on payment plan
+        $currentDueDate = new DateTime($loan['due_date']);
+        $paymentPlan = $loan['payment_plan'];
+        $loanTerm = $loan['loan_term'];
 
-        if ($check_result->num_rows == 0) { // If the loan is not already in approved_loans
-            // Insert into approved_loans
-            $insert_sql = "INSERT INTO approved_loans (application_id, member_id, loan_term, payment_plan, loan_amount) 
-                           VALUES (?, ?, ?, ?, ?)";
-            $insert_stmt = $conn->prepare($insert_sql);
-
-            if ($insert_stmt) {
-                $insert_stmt->bind_param(
-                    "sssss",
-                    $loan['application_id'],
-                    $loan['member_id'],
-                    $loan['loan_term'],
-                    $loan['payment_plan'],
-                    $loan['loan_amount']
-                );
-                $insert_stmt->execute();
-            } else {
-                echo "Error preparing insert statement: " . $conn->error;
-            }
+        // Adjust due date based on payment plan
+        if ($paymentPlan === 'monthly') {
+            $currentDueDate->modify('+1 month');
+        } elseif ($paymentPlan === 'quarterly') {
+            $currentDueDate->modify('+3 months');
+        } elseif ($paymentPlan === 'annually') {
+            $currentDueDate->modify('+1 year');
         }
-        $check_stmt->close();
+
+        // Ensure due dates do not exceed loan term
+        $loanStartDate = new DateTime($loan['due_date']);
+        $loanEndDate = clone $loanStartDate;
+
+        if ($loanTerm == '1 year') {
+            $loanEndDate->modify('+1 year');
+        } elseif ($loanTerm == '3 years') {
+            $loanEndDate->modify('+3 years');
+        } elseif ($loanTerm == '5 years') {
+            $loanEndDate->modify('+5 years');
+        }
+
+        if ($currentDueDate > $loanEndDate) {
+            $currentDueDate = $loanEndDate;
+        }
+
+        $loan['next_payment_due_date'] = $currentDueDate->format('Y-m-d');
+        $approvedLoans[] = $loan;
     }
-} else {
-    echo '<p>No approved loans found in loan_applications.</p>';
 }
 $stmt->close();
 
+// Step 2: Insert the approved loans into the `approved_loans` table if not already present
+foreach ($approvedLoans as $loan) {
+    $check_sql = "SELECT * FROM approved_loans WHERE application_id = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("s", $loan['application_id']);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+
+    if ($check_result->num_rows == 0) {
+        $insert_sql = "INSERT INTO approved_loans (application_id, member_id, loan_term, payment_plan, loan_amount, next_payment_due_date) 
+                       VALUES (?, ?, ?, ?, ?, ?)";
+        $insert_stmt = $conn->prepare($insert_sql);
+        if ($insert_stmt) {
+            $insert_stmt->bind_param(
+                "ssssss",
+                $loan['application_id'],
+                $loan['member_id'],
+                $loan['loan_term'],
+                $loan['payment_plan'],
+                $loan['loan_amount'],
+                $loan['next_payment_due_date']
+            );
+            $insert_stmt->execute();
+        } else {
+            echo "Error preparing insert statement: " . $conn->error;
+        }
+    }
+    $check_stmt->close();
+}
+
 // Step 3: Display the loans from `approved_loans`
-$sql = "SELECT application_id, member_id, loan_term, payment_plan, loan_amount 
+$sql = "SELECT application_id, member_id, loan_term, payment_plan, loan_amount, next_payment_due_date 
         FROM approved_loans 
         WHERE member_id = ?";
-$stmt = $conn->prepare($sql);
 
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Failed to prepare statement for approved_loans: " . $conn->error);
 }
@@ -82,29 +113,31 @@ echo '<th>Member ID</th>';
 echo '<th>Loan Term</th>';
 echo '<th>Payment Plan</th>';
 echo '<th>Loan Amount</th>';
+echo '<th>Next Payment Due Date</th>';
 echo '<th>Action</th>'; // New Action column for payment button
 echo '</tr>';
 
 if ($result->num_rows > 0) {
     while ($loan = $result->fetch_assoc()) {
-        echo '<tr data-application-id="' . htmlspecialchars($loan['application_id']) . '" data-member-id="' . htmlspecialchars($loan['member_id']) . '" data-loan-amount="' . htmlspecialchars($loan['loan_amount']) . '">';
+        echo '<tr data-application-id="' . htmlspecialchars($loan['application_id']) . '" 
+                  data-member-id="' . htmlspecialchars($loan['member_id']) . '" 
+                  data-loan-amount="' . htmlspecialchars($loan['loan_amount']) . '" 
+                  data-next-payment-due-date="' . htmlspecialchars($loan['next_payment_due_date']) . '">';
         echo '<td>' . htmlspecialchars($loan['application_id']) . '</td>';
         echo '<td>' . htmlspecialchars($loan['member_id']) . '</td>';
         echo '<td>' . htmlspecialchars($loan['loan_term']) . '</td>';
         echo '<td>' . htmlspecialchars($loan['payment_plan']) . '</td>';
         echo '<td class="loan-amount">' . htmlspecialchars($loan['loan_amount']) . '</td>';
+        echo '<td>' . htmlspecialchars($loan['next_payment_due_date']) . '</td>';
         echo '<td><button class="openLoanModal">Make Payment</button></td>'; // Add payment button
         echo '</tr>';
     }
 } else {
-    echo '<tr><td colspan="6">No approved loans found.</td></tr>';
+    echo '<tr><td colspan="7">No approved loans found.</td></tr>';
 }
 
 echo '</table>';
-
 ?>
-
-
 
 <!-- Modal HTML -->
 <div id="loanPaymentModal"
@@ -113,7 +146,7 @@ echo '</table>';
         <span class="close" onclick="closeLoanModal()">&times;</span>
         <h2>Make a Payment</h2>
         <form id="paymentForm">
-            <input type="text" id="modalApplicationId">
+            <input type="text" id="modalApplicationId" hidden>
             <input type="text" id="modalMemberId" readonly>
 
             <label for="paymentAmount">Payment Amount:</label>
@@ -136,6 +169,7 @@ echo '</table>';
             const applicationId = row.getAttribute('data-application-id');
             const memberId = row.getAttribute('data-member-id');
             const loanAmount = row.querySelector('.loan-amount').textContent;
+            const nextPaymentDueDate = row.getAttribute('data-next-payment-due-date');
 
             document.getElementById('modalApplicationId').value = applicationId;
             document.getElementById('modalMemberId').value = memberId;
@@ -145,11 +179,12 @@ echo '</table>';
         });
     });
 
-
     function closeLoanModal() {
         document.getElementById('loanPaymentModal').style.display = 'none'; // Hide the modal
     }
 
+
+    // Handle payment submission
     document.getElementById('paymentForm').addEventListener('submit', function (event) {
         event.preventDefault(); // Prevent form submission
 
@@ -188,30 +223,10 @@ echo '</table>';
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Payment processed successfully!');
-
-                        // Update loan amount display in the table
-                        const loanRow = document.querySelector(`tr[data-application-id="${applicationId}"]`);
-                        const currentAmountCell = loanRow.querySelector('.loan-amount');
-                        let currentAmount = parseFloat(currentAmountCell.textContent);
-                        let newAmount = currentAmount - paymentAmount;
-
-                        // Ensure the new amount does not go below zero
-                        if (newAmount < 0) {
-                            newAmount = 0;
-                        }
-
-                        // Update displayed loan amount
-                        currentAmountCell.textContent = newAmount.toFixed(2);
-
-                        // Optionally remove the row if the loan amount is 0
-                        if (newAmount === 0) {
-                            loanRow.remove();
-                        }
-
+                        alert('Payment processed successfully! Transaction Number: ' + data.transaction_number);
                         closeLoanModal();
                     } else {
-                        alert('Error: ' + data.message);
+                        alert('Error: ' + data.message); // Display the error message for overdue payment
                     }
                 })
                 .catch(error => {
@@ -222,5 +237,4 @@ echo '</table>';
         // Read the image file as a Base64-encoded string
         reader.readAsDataURL(paymentImageFile);
     });
-
 </script>

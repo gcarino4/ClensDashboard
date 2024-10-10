@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $phone_number = $conn->real_escape_string($_POST['phone_number']);
     $address = $conn->real_escape_string($_POST['address']);
     $annual_income = (float) $_POST['annual_income'];
+
     $loan_amount = (float) $_POST['loan_amount'];
     $loan_term = (int) $_POST['loan_term']; // Make sure the name matches here
     $loan_purpose = $conn->real_escape_string($_POST['loan_purpose']);
@@ -32,13 +33,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Determine the interest rate based on loan term
     switch ($loan_term) {
         case 1:
-            $interest_rate = 2;  // 2% interest rate for 1 year term
+            $interest_rate = (2 / 100) * $loan_amount;  // 2% interest rate for 1 year term
             break;
         case 3:
-            $interest_rate = 6;  // 6% interest rate for 3 years term
+            $interest_rate = (6 / 100) * $loan_amount;  // 6% interest rate for 3 years term
             break;
         case 5:
-            $interest_rate = 10; // 10% interest rate for 5 years term
+            $interest_rate = (10 / 100) * $loan_amount; // 10% interest rate for 5 years term
             break;
         default:
             $interest_rate = 0;  // Default to 0 if the term doesn't match
@@ -117,8 +118,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
+    $principal_amount = $loan_amount;
     // Calculate the final loan amount based on the interest rate
-    $loan_amount = $loan_amount + ($loan_amount * ($interest_rate / 100));
+    $loan_amount = $loan_amount + $interest_rate;
 
     $total_size = strlen($application_id) + strlen($member_id) + strlen($name) + strlen($email) +
         strlen($phone_number) + strlen($address) +
@@ -136,8 +138,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Prepare SQL statement
     // Corrected SQL statement
     // Prepare SQL statement
-    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
-VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', '$collateral', $annual_income, $loan_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, principal_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
+
+VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', '$collateral', $annual_income, $loan_amount, $principal_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
 
 
     if ($conn->query($sql) === TRUE) {

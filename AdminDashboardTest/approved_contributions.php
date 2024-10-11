@@ -102,17 +102,28 @@ $result = $conn->query($sql);
                         method: 'POST',
                         body: formData
                     })
-                        .then(response => response.json())
+                        .then(response => response.json())  // Parse JSON response
                         .then(data => {
-                            console.log(data); // Check the response from the server
+                            console.log('Response:', data);  // Debugging: Log response
+
                             if (data.success) {
+                                // Update the contribution amount
                                 document.getElementById('amount_' + data.contribution_id).innerText = data.new_amount;
-                                closeContributionModal(); // Close the modal
+
+                                // Show success alert
+                                alert(data.message);
+
+                                // Close the modal
+                                closeContributionModal();
                             } else {
+                                // Show error alert
                                 alert('Payment failed: ' + data.message);
                             }
                         })
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => {
+                            console.error('Error:', error); // Debugging: Log fetch errors
+                            alert('An error occurred while processing the payment.');
+                        });
                 };
                 reader.readAsDataURL(file); // Convert the file to Base64
             } else {
@@ -121,17 +132,28 @@ $result = $conn->query($sql);
                     method: 'POST',
                     body: formData
                 })
-                    .then(response => response.json())
+                    .then(response => response.json())  // Parse JSON response
                     .then(data => {
-                        console.log(data); // Check the response from the server
+                        console.log('Response:', data);  // Debugging: Log response
+
                         if (data.success) {
+                            // Update the contribution amount
                             document.getElementById('amount_' + data.contribution_id).innerText = data.new_amount;
-                            closeContributionModal(); // Close the modal
+
+                            // Show success alert
+                            alert(data.message);
+
+                            // Close the modal
+                            closeContributionModal();
                         } else {
+                            // Show error alert
                             alert('Payment failed: ' + data.message);
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error:', error); // Debugging: Log fetch errors
+                        alert('An error occurred while processing the payment.');
+                    });
             }
         });
 

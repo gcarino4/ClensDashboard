@@ -8,10 +8,11 @@ include 'connection.php';
 // Define the SQL query to retrieve all records from members
 // and join with the contributions table to get contribution_amount
 $sql = "
-    SELECT m.*, COALESCE(c.contribution_amount, 0) AS contribution_amount
+    SELECT m.*, m.date_of_creation, COALESCE(c.contribution_amount, 0) AS contribution_amount
     FROM members m
     LEFT JOIN contributions c ON m.member_id = c.member_id
 ";
+
 
 // Execute the query and store the results
 $result = $conn->query($sql);
@@ -32,7 +33,8 @@ if ($result->num_rows > 0) {
         <th>Contact Number</th>
         <th>Role</th>
         <th>Verification</th>
-        <th>Contribution Amount</th>";
+        <th>Contribution Amount</th>
+        <th>Date of Creation</th>";
 
   // Check if the session role is Admin or Admin Officer to show the Action column
   if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
@@ -54,7 +56,10 @@ if ($result->num_rows > 0) {
       <td>" . htmlspecialchars($row["contact_no"]) . "</td>
       <td>" . htmlspecialchars($row["role"]) . "</td>
       <td>" . htmlspecialchars($row["verified"]) . "</td>
-      <td>" . htmlspecialchars($row["contribution_amount"]) . "</td>";
+      <td>" . htmlspecialchars($row["contribution_amount"]) . "</td>
+      <td>" . htmlspecialchars($row["date_of_creation"]) . "</td>"; // Add this line
+
+
 
     // Conditionally display the action buttons based on the session role
     if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {

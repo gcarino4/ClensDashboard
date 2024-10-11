@@ -221,6 +221,10 @@ include 'check_user.php';
             <option value="Finance Officer">Finance Officer</option>
           </select><br>
 
+          <label for="editDateOfCreation">Date of Creation:</label>
+          <input type="date" id="editDateOfCreation" name="date_of_creation"><br>
+
+
           <label for="editVerified">Verified:</label>
           <select id="editVerified" name="verified">
             <option value="True">True</option>
@@ -312,6 +316,7 @@ include 'check_user.php';
         document.getElementById("editContactNumber").value = row.cells[7].textContent;
         document.getElementById("editRole").value = row.cells[8].textContent;
         document.getElementById("editVerified").value = row.cells[9].textContent;
+        document.getElementById("editDateOfCreation").value = row.cells[10].textContent;
 
         // Show the modal
         document.getElementById("editModal").style.display = 'block';

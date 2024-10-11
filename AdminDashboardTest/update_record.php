@@ -15,19 +15,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contact_no = $_POST['contact_number'];
     $role = $_POST['role'];
     $verified = $_POST['verified'];
+    $date_of_creation = $_POST['date_of_creation'];
 
     // Prepare the SQL query to update the user record
     $sql = "UPDATE members 
-            SET name = ?, 
-                age = ?, 
-                birthday = ?, 
-                sex = ?, 
-                civil_status = ?, 
-                address = ?, 
-                contact_no = ?, 
-                role = ?, 
-                verified = ? 
-            WHERE member_id = ?";  // Assuming `member_id` is the primary key
+        SET name = ?, 
+            age = ?, 
+            birthday = ?, 
+            sex = ?, 
+            civil_status = ?, 
+            address = ?, 
+            contact_no = ?, 
+            role = ?, 
+            verified = ?, 
+            date_of_creation = ? 
+        WHERE member_id = ?";
+
 
     // Prepare the statement
     $stmt = $conn->prepare($sql);
@@ -35,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error preparing the statement: " . $conn->error);
     }
 
-    // Bind parameters (make sure to match data types)
-    $stmt->bind_param("sssssssssi", $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $id);
+    $stmt->bind_param("ssssssssssi", $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $date_of_creation, $id);
+
 
     // Execute the query
     if ($stmt->execute()) {

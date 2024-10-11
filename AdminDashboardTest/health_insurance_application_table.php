@@ -18,27 +18,6 @@ if ($result->num_rows > 0) {
     // Start the HTML table and output the column headers
     echo "
     <link href='https://fonts.googleapis.com/icon?family=Material+Icons+Sharp' rel='stylesheet'>
-    <style>
-        .custom-table-container {
-            margin-top: 20px;
-            overflow-x: auto; /* Makes the container scrollable */
-        }
-        .custom-table th,
-        .custom-table td {
-            text-align: center;
-            vertical-align: middle; /* Aligns content vertically in the center */
-        }
-        .custom-table .thead-dark th {
-            background-color: #343a40;
-            color: #fff;
-        }
-        .custom-button {
-            margin: 0 5px;
-        }
-        .beneficiary-row {
-            display: none; /* Initially hide the beneficiary rows */
-        }
-    </style>
     <div class='container custom-table-container'>
         <div class='table-responsive'>
             <table class='table table-striped table-bordered custom-table'>
@@ -166,6 +145,7 @@ if ($result->num_rows > 0) {
 
     echo "</tbody>
         </table>
+        <script src='health_insurance_application_table.js'></script>
     </div>
     <script>
         // JavaScript to toggle the visibility of beneficiary rows

@@ -38,13 +38,13 @@ if ($result->num_rows > 0) {
             padding: 15px;
         }
 
-        .custom-button-reject {
+        .custom-button-reject, .rejectBtn {
             margin: 5px 5px;
             background-color: red;
             padding: 5px;
             color: white;
         }
-        .custom-button-approve {
+        .custom-button-approve, .approveBtn {
             margin: 5px 5px;
             background-color: green;
             padding: 5px;

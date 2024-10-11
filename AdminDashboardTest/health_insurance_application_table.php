@@ -2,6 +2,7 @@
 
 include 'connection.php';
 
+
 // Define the SQL query to retrieve all records, including beneficiaries
 $sql = "
     SELECT h.*, b.beneficiary_name, b.beneficiary_relationship, b.beneficiary_dob
@@ -53,9 +54,14 @@ if ($result->num_rows > 0) {
                         <th>Insurance Type</th>
                         <th>Coverage Amount</th>
                         <th>Application Date</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
+                        <th>Status</th>";
+
+    // Check if the session role is Admin or Admin Officer to show the Action column
+    if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+        echo "<th>Action</th>";
+    }
+
+    echo "          </tr>
                 </thead>
                 <tbody class='application-data'>";
 
@@ -79,12 +85,17 @@ if ($result->num_rows > 0) {
                     <td>" . htmlspecialchars($prevRow["insurance_type"]) . "</td>
                     <td>" . htmlspecialchars($prevRow["coverage_amount"]) . "</td>
                     <td>" . htmlspecialchars($prevRow["application_date"]) . "</td>
-                    <td>" . htmlspecialchars($prevRow["status"]) . "</td>
-                    <td>
+                    <td>" . htmlspecialchars($prevRow["status"]) . "</td>";
+
+                // Conditionally show the action buttons for Admin or Admin Officer
+                if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+                    echo "<td>
                         <button class='btn btn-success btn-sm custom-button approveBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Approve</button>
                         <button class='btn btn-danger btn-sm custom-button rejectBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Reject</button>
-                    </td>
-                </tr>";
+                    </td>";
+                }
+
+                echo "</tr>";
 
                 // Print the beneficiary rows
                 foreach ($beneficiaryRows as $beneficiary) {
@@ -129,14 +140,17 @@ if ($result->num_rows > 0) {
             <td>" . htmlspecialchars($prevRow["insurance_type"]) . "</td>
             <td>" . htmlspecialchars($prevRow["coverage_amount"]) . "</td>
             <td>" . htmlspecialchars($prevRow["application_date"]) . "</td>
-            <td>" . htmlspecialchars($prevRow["status"]) . "</td>
-            <td>
+            <td>" . htmlspecialchars($prevRow["status"]) . "</td>";
+
+        // Conditionally show the action buttons for Admin or Admin Officer
+        if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+            echo "<td>
                 <button class='btn btn-success btn-sm custom-button approveBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Approve</button>
                 <button class='btn btn-danger btn-sm custom-button rejectBtn' data-id='" . htmlspecialchars($prevRow["application_id"]) . "'>Reject</button>
-            </td>
-        </tr>
-         <script src='health_insurance_application_table.js'></script>
-        ";
+            </td>";
+        }
+
+        echo "</tr>";
 
         // Print the beneficiary rows
         foreach ($beneficiaryRows as $beneficiary) {
@@ -146,9 +160,7 @@ if ($result->num_rows > 0) {
                     <strong>Relationship:</strong> " . htmlspecialchars($beneficiary['relationship']) . " <br>
                     <strong>DOB:</strong> " . htmlspecialchars($beneficiary['dob']) . "
                 </td>
-            </tr>
-           
-            ";
+            </tr>";
         }
     }
 

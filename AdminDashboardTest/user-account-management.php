@@ -217,6 +217,8 @@ include 'check_user.php';
           <select id="editRole" name="role">
             <option value="Admin">Admin</option>
             <option value="Member">Member</option>
+            <option value="Admin Officer">Admin Officer</option>
+            <option value="Finance Officer">Finance Officer</option>
           </select><br>
 
           <label for="editVerified">Verified:</label>

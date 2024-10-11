@@ -2,6 +2,7 @@
 
 include 'connection.php';
 
+
 // Define the SQL query to retrieve all records
 $sql = "SELECT * FROM loan_applications";
 
@@ -17,18 +18,18 @@ if ($result->num_rows > 0) {
         .custom-table-container {
             margin-top: 20px;
             overflow-x: auto;
-             overflow-y: auto; /* Makes the container scrollable */
+            overflow-y: auto; /* Makes the container scrollable */
             width: 900px;
             height: 400px;
         }
-            
+
         .custom-table th {
-    position: sticky;
-    top: 0; /* Position the sticky header at the top */
-    background-color: white; /* Background color to cover content below */
-    z-index: 1; /* Ensure it stays above other content */
-}
-    
+            position: sticky;
+            top: 0; /* Position the sticky header at the top */
+            background-color: white; /* Background color to cover content below */
+            z-index: 1; /* Ensure it stays above other content */
+        }
+
         .custom-table th,
         .custom-table td {
             overflow: auto;
@@ -36,8 +37,6 @@ if ($result->num_rows > 0) {
             vertical-align: middle; /* Aligns content vertically in the center */
             padding: 15px;
         }
-        
-        
 
         .custom-button-reject {
             margin: 5px 5px;
@@ -45,7 +44,7 @@ if ($result->num_rows > 0) {
             padding: 5px;
             color: white;
         }
-            .custom-button-approve {
+        .custom-button-approve {
             margin: 5px 5px;
             background-color: green;
             padding: 5px;
@@ -112,13 +111,17 @@ if ($result->num_rows > 0) {
                         <th>Loan Purpose</th>
                         <th>Collateral</th>
                         <th>Collateral Image</th>
-                        
                         <th>Application Date</th>
                         <th>Status</th>
                         <th>Supporting Document 1</th>
-                        <th>Supporting Document 2</th>
-                        <th>Action</th>
-                    </tr>
+                        <th>Supporting Document 2</th>";
+
+    // Conditionally display the action column if the user is Admin or Admin Officer
+    if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+        echo "<th>Action</th>";
+    }
+
+    echo "      </tr>
                 </thead>
                 <tbody class='application-data'>";
 
@@ -147,17 +150,21 @@ if ($result->num_rows > 0) {
             </td>
             <td>
                 <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_2"]) . "' class='img-preview' alt='Supporting Document 2' onclick='openModal(this.src)'/>
-            </td>
-            <td>
-                <button class='custom-button-approve approveBtn' data-id='" . htmlspecialchars($row["application_id"]) . "'>
-    <i class='fas fa-check-square'></i> Approve
-</button>
-<button class='custom-button-reject rejectBtn' data-id='" . htmlspecialchars($row["application_id"]) . "'>
-    <i class='fas fa-ban'></i> Reject
-</button>
+            </td>";
 
-            </td>
-        </tr>";
+        // Conditionally display the action buttons for Admin or Admin Officer
+        if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+            echo "<td>
+                    <button class='custom-button-approve approveBtn' data-id='" . htmlspecialchars($row["application_id"]) . "'>
+                        <i class='fas fa-check-square'></i> Approve
+                    </button>
+                    <button class='custom-button-reject rejectBtn' data-id='" . htmlspecialchars($row["application_id"]) . "'>
+                        <i class='fas fa-ban'></i> Reject
+                    </button>
+                </td>";
+        }
+
+        echo "</tr>";
     }
 
     echo "</tbody>

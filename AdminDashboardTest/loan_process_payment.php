@@ -80,6 +80,7 @@ try {
         $min_payment_amount += $min_payment_amount * 0.01;
     }
 
+
     // Check if the payment amount is valid (should be at least the minimum payment)
     if ($payment_amount < $min_payment_amount) {
         throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount, 2));

@@ -32,9 +32,14 @@ if ($result->num_rows > 0) {
         <th>Contact Number</th>
         <th>Role</th>
         <th>Verification</th>
-        <th>Contribution Amount</th>
-        <th>Action</th>
-      </tr>";
+        <th>Contribution Amount</th>";
+
+  // Check if the session role is Admin or Admin Officer to show the Action column
+  if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+    echo "<th>Action</th>";
+  }
+
+  echo "</tr>";
 
   // Loop through the results and display the table rows
   while ($row = $result->fetch_assoc()) {
@@ -49,14 +54,17 @@ if ($result->num_rows > 0) {
       <td>" . htmlspecialchars($row["contact_no"]) . "</td>
       <td>" . htmlspecialchars($row["role"]) . "</td>
       <td>" . htmlspecialchars($row["verified"]) . "</td>
-      <td>" . htmlspecialchars($row["contribution_amount"]) . "</td>"; // Display contribution amount
+      <td>" . htmlspecialchars($row["contribution_amount"]) . "</td>";
 
-    // Action buttons
-    echo "<td>
-        <button class='editBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>✏️</button>
-        <button class='archiveBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>📁</button>
-      </td>
-    </tr>";
+    // Conditionally display the action buttons based on the session role
+    if (isset($_SESSION['role']) && ($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Admin Officer')) {
+      echo "<td>
+              <button class='editBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>✏️</button>
+              <button class='archiveBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>📁</button>
+            </td>";
+    }
+
+    echo "</tr>";
   }
   echo "</table></div>";
 

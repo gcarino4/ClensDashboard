@@ -240,7 +240,7 @@
                             type: 'POST',
                             data: $(this).serialize(),
                             success: function (response) {
-                                if (response == "Admin") {
+                                if (response == "Admin" || 'Admin Officer' || 'Finance Officer') {
                                     location.replace("AdminDashboardTest/index.php");
 
                                 } else if (response == "Member") {

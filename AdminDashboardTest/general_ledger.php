@@ -55,7 +55,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 <!-- Ledger Table -->
                 <?php
 
-                if ($role === 'Admin'):
+                if ($role === 'Admin' || 'Finance Officer'):
 
                     include 'general_ledger_payments.php';
                     echo "<br>";

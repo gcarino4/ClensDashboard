@@ -46,7 +46,6 @@ require 'check_user.php';
                 include 'loan_application_table.php';
                 echo "<br>";
                 echo "<br>";
-                echo "<br>";
                 echo "<h2>Health Insurance Applications</h2>";
                 include 'health_insurance_application_table.php';
                 ?>

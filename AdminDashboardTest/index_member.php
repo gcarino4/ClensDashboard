@@ -124,11 +124,73 @@ $conn->close();
                 </button>
 
 
+                <!-- Loan Option Explanation Modal -->
+                <div id="openLoanOptionModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeOpenLoanOptionModal">&times;</span>
+                        <h2>Loan Eligibility Based on Contribution</h2>
+                        <p>Your loan amount eligibility is determined by your contribution amount:</p>
+                        <ul>
+                            <li>If your contribution is between <strong>10,000 and 20,000</strong>, you can loan up to
+                                <strong>30,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>20,000 and 30,000</strong>, you can loan up to
+                                <strong>60,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>30,000 and 40,000</strong>, you can loan up to
+                                <strong>90,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>40,000 and 50,000</strong>, you can loan up to
+                                <strong>120,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>50,000 and 60,000</strong>, you can loan up to
+                                <strong>150,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>60,000 and 70,000</strong>, you can loan up to
+                                <strong>180,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>70,000 and 80,000</strong>, you can loan up to
+                                <strong>210,000</strong>.
+                            </li>
+                            <li>If your contribution is between <strong>80,000 and 90,000</strong>, you can loan up to
+                                <strong>240,000</strong>.
+                            </li>
+                            <li>If your contribution is <strong>90,000 or more</strong>, you can loan up to
+                                <strong>270,000</strong>.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div id="reviewModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeReviewModal">&times;</span>
+                        <h2>Review Your Application</h2>
+                        <div id="reviewContent"></div> <!-- This will be populated with reviewContent -->
+                        <button id="confirmSubmitBtn">Confirm Submission</button>
+                    </div>
+                </div>
+
+
+
+                <!-- Loan Modal -->
                 <div id="loanApplicationModal" class="modal">
                     <div class="modal-content">
-                        <span class="close" id="closeLoanApplicationModal">&times;</span>
-
                         <h2>Loan Application</h2>
+                        <div class="loan-option-container" style="text-align: right; size: 10px;">
+
+                            <button>
+                                <span class="fa fa-question" id="openLoanOption"></span>
+                            </button>
+
+                            <button style="background-color: red;">
+                                <span class="fa fa-window-close" id="closeLoanApplicationModal"></span>
+                            </button>
+
+
+                        </div>
+
                         <form id="loanApplicationForm" method="post" action="submit_loan_application.php"
                             enctype="multipart/form-data">
                             <!-- Member ID Field (Visible) -->
@@ -160,7 +222,6 @@ $conn->close();
                             <label for="bank_info">Bank Detail:</label>
                             <input type="text" id="bank_info" name="bank_info" required><br>
 
-
                             <label for="applicantIncome">Annual Income:</label>
                             <input type="number" id="applicantIncome" name="annual_income" step="0.01" required><br>
 
@@ -191,15 +252,20 @@ $conn->close();
                                 <option value="Retired">Retired</option>
                             </select><br>
 
-                            <label for="collateral">Collateral:</label>
-                            <input type="text" id="collateral" name="collateral"><br>
+                            <!-- Collateral Checkbox -->
+                            <label for="useCollateral">Use Collateral: <input type="checkbox" id="useCollateral"
+                                    name="use_collateral"></label>
 
-                            <!-- Add File Uploads for Supporting Documents -->
-                            <label for="collateral_image">Collatteral:</label>
-                            <input type="file" id="collateral_image" name="collateral_image" accept="image/*">
-                            <br>
 
-                            <!-- Payment Plan Dropdown -->
+                            <!-- Collateral Fields (Initially Hidden) -->
+                            <div id="collateralFields" style="display: none;">
+                                <label for="collateral">Collateral:</label>
+                                <input type="text" id="collateral" name="collateral"><br>
+
+                                <label for="collateral_image">Collateral Image:</label>
+                                <input type="file" id="collateral_image" name="collateral_image" accept="image/*"><br>
+                            </div>
+
                             <label for="paymentPlan">Payment Plan:</label>
                             <select id="paymentPlan" name="payment_plan" required>
                                 <option value="">Select Payment Plan</option>
@@ -208,8 +274,7 @@ $conn->close();
                                 <option value="annually">Annually</option>
                             </select><br>
 
-                            <!-- Add File Uploads for Supporting Documents -->
-                            <label for="supportingDocument1">Co- Makers Statement document (Image):</label>
+                            <label for="supportingDocument1">Co-Makers Statement document (Image):</label>
                             <input type="file" id="supportingDocument1" name="supporting_document_1" accept="image/*"
                                 required><br>
 
@@ -217,12 +282,13 @@ $conn->close();
                             <input type="file" id="supportingDocument2" name="supporting_document_2"
                                 accept="image/*"><br>
 
-                            <button type="submit" id="loanSubmitBtn">Submit Application</button>
+                            <button id="loanSubmitBtn">Submit Application</button>
                         </form>
                     </div>
                 </div>
 
 
+                <!-- Health Modal -->
                 <div id="healthInsuranceModal" class="modal">
                     <div class="modal-content">
                         <span class="close" id="closeHealthInsuranceModal">&times;</span>
@@ -306,6 +372,20 @@ $conn->close();
                         </form>
                     </div>
                 </div>
+
+                <script src="reviewModal.js"></script>
+
+                <script>
+                    // Toggle visibility of collateral fields
+                    document.getElementById('useCollateral').addEventListener('change', function () {
+                        var collateralFields = document.getElementById('collateralFields');
+                        if (this.checked) {
+                            collateralFields.style.display = 'block';
+                        } else {
+                            collateralFields.style.display = 'none';
+                        }
+                    });
+                </script>
 
                 <?php
                 include 'pending_applications.php';

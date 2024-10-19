@@ -203,6 +203,7 @@ echo '</table>';
                     alert('Payment recorded successfully.');
                     closeHealthPaymentModal(); // Close modal on success
                     // Optionally, refresh the table or update the UI
+                    location.reload(true);
                 } else {
                     alert('Error: ' + data.message);
                 }

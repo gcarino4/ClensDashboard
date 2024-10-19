@@ -65,6 +65,7 @@ try {
     $conn->commit();
     echo json_encode(['success' => true, 'message' => 'Payment processed successfully.', 'contribution_id' => $contribution_id, 'new_amount' => $new_contribution_amount]);
 
+
 } catch (Exception $e) {
     $conn->rollback();
     echo json_encode(['success' => false, 'message' => 'Error processing payment: ' . $e->getMessage()]);

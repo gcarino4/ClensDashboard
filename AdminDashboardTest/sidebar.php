@@ -21,36 +21,36 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
     <div class="sidebar">
 
         <?php if ($role === 'Admin' || $role === 'Admin Officer' || $role === 'Finance Officer'): ?>
-                            <a href="index.php" id="dashboard-link">
-                                <span class="material-icons-sharp">
-                                    dashboard
-                                </span>
-                                <h3>Dashboard</h3>
-                            </a>
+            <a href="index.php" id="dashboard-link">
+                <span class="material-icons-sharp">
+                    dashboard
+                </span>
+                <h3>Dashboard</h3>
+            </a>
         <?php endif; ?>
 
 
         <?php if ($role === 'Member'): ?>
-                            <a href="index_member.php" id="main-menu-link">
-                                <span class="material-symbols-outlined">
-                                    widgets
-                                </span>
-                                <h3>Services</h3>
-                            </a>
+            <a href="index_member.php" id="main-menu-link">
+                <span class="material-symbols-outlined">
+                    widgets
+                </span>
+                <h3>Services</h3>
+            </a>
 
-                            <a href="general_ledger.php" id="general-ledger-link">
-                                <span class="material-icons-sharp">
-                                    menu_book
-                                </span>
-                                <h3>Journal</h3>
-                            </a>
+            <a href="general_ledger.php" id="general-ledger-link">
+                <span class="material-icons-sharp">
+                    menu_book
+                </span>
+                <h3>Journal</h3>
+            </a>
 
-                            <a href="member_payment.php" id="settings-link">
-                                <span class="material-icons-sharp">
-                                    attach_money
-                                </span>
-                                <h3>Payments</h3>
-                            </a>
+            <a href="member_payment.php" id="settings-link">
+                <span class="material-icons-sharp">
+                    attach_money
+                </span>
+                <h3>Payments</h3>
+            </a>
 
         <?php endif; ?>
 
@@ -59,64 +59,71 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
 
         <?php if ($role === 'Admin' || $role === 'Finance Officer'): ?>
 
-                            <a href="general_ledger.php" id="general-ledger-link">
-                                <span class="material-icons-sharp">
-                                    menu_book
-                                </span>
-                                <h3>General Ledger</h3>
-                            </a>
+            <a href="general_ledger.php" id="general-ledger-link">
+                <span class="material-icons-sharp">
+                    menu_book
+                </span>
+                <h3>General Ledger</h3>
+            </a>
 
 
-                            <a href="analytics.php" id="analytics-link">
-                                <span class="material-icons-sharp">
-                                    insights
-                                </span>
-                                <h3>Analytics</h3>
-                            </a>
+            <a href="contribution_admin.php" id="general-ledger-link">
+                <span class="material-icons-sharp">
+                    payment
+                </span>
+                <h3>Add Contribution</h3>
+            </a>
 
-                            <a href="accounts-payable.php">
-                                <span class="material-icons-sharp">
-                                    payments
-                                </span>
-                                <h3>Accounts Payable</h3>
-                                <span class="message-count">80</span>
-                            </a>
+            <a href="analytics.php" id="analytics-link">
+                <span class="material-icons-sharp">
+                    insights
+                </span>
+                <h3>Analytics</h3>
+            </a>
 
-                            <a href="accounts-receivable.php">
-                                <span class="material-icons-sharp">
-                                    receipt_long
-                                </span>
-                                <h3>Accounts Receivable</h3>
-                                <span class="message-count">25</span>
-                            </a>
+            <a href="accounts-payable.php">
+                <span class="material-icons-sharp">
+                    payments
+                </span>
+                <h3>Accounts Payable</h3>
+                <span class="message-count">80</span>
+            </a>
+
+            <a href="accounts-receivable.php">
+                <span class="material-icons-sharp">
+                    receipt_long
+                </span>
+                <h3>Accounts Receivable</h3>
+                <span class="message-count">25</span>
+            </a>
 
         <?php endif; ?>
 
 
         <?php if ($role === 'Admin' || $role === 'Admin Officer'): ?>
-                            <a href="./user-account-management.php" id="user-account-management-link">
-                                <span class="material-icons-sharp">
-                                    person_add
-                                </span>
-                                <h3>User Account Management</h3>
-                            </a>
+            <a href="./user-account-management.php" id="user-account-management-link">
+                <span class="material-icons-sharp">
+                    person_add
+                </span>
+                <h3>User Account Management</h3>
+            </a>
 
-                            <a href="admin.php" id="admin-link">
-                                <span class="material-icons-sharp">
-                                    person_outline
-                                </span>
-                                <h3>Admin</h3>
-                            </a>
+            <a href="admin.php" id="admin-link">
+                <span class="material-icons-sharp">
+                    person_outline
+                </span>
+                <h3>Admin</h3>
+            </a>
         <?php endif; ?>
 
 
         <?php if ($role === 'Member' || $role === 'Admin' || $role === 'Admin Officer' || $role === 'Finance Officer'): ?>
-                            <a href="profile_page.php" id="profile-link">
-                                <span class="material-icons-sharp">
-                                    person
-                                </span>
-                                <h3>Profile</h3>
-                            </a>
+            <a href="profile_page.php" id="profile-link">
+                <span class="material-icons-sharp">
+                    person
+                </span>
+                <h3>Profile</h3>
+            </a>
         <?php endif; ?>
 
 

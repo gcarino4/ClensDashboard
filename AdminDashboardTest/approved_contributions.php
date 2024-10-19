@@ -13,7 +13,7 @@ if (!isset($_SESSION['member_id'])) {
 $member_id = $_SESSION['member_id'];
 
 // Query to fetch contributions data only for the current session member_id
-$sql = "SELECT * FROM contributions WHERE member_id = '$member_id'";
+$sql = "SELECT * FROM contributions";
 $result = $conn->query($sql);
 ?>
 
@@ -61,6 +61,9 @@ $result = $conn->query($sql);
             </h2>
             <br>
             <form id="contributionPaymentForm" enctype="multipart/form-data">
+                <h4>Contribution amount must not be less than 1500 PHP or more than 5000 PHP</h4>
+                <br>
+
                 <input type="text" name="contribution_id" id="contribution_id" readonly>
                 <label for="payment_amount">Payment Amount:</label>
                 <input type="number" name="payment_amount" id="payment_amount" required>
@@ -115,6 +118,7 @@ $result = $conn->query($sql);
 
                                 // Close the modal
                                 closeContributionModal();
+                                location.reload(true);
                             } else {
                                 // Show error alert
                                 alert('Payment failed: ' + data.message);

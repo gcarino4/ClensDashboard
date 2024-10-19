@@ -218,7 +218,7 @@ echo '</table>';
 
             const paymentDue = (interestRate + principalAmount) / (paymentPlanFactor * loanTerm);
 
-            console.log('Interest:', principalAmount - 50);
+
 
             // Display the calculated payment_due in the modal
             document.getElementById('paymentDue').value = paymentDue.toFixed(0); // Show 2 decimal places
@@ -274,6 +274,7 @@ echo '</table>';
                     if (data.success) {
                         alert('Payment processed successfully! Transaction Number: ' + data.transaction_number);
                         closeLoanModal();
+                        location.reload(true);
                     } else {
                         alert('Error: ' + data.message); // Display the error message for overdue payment
                     }

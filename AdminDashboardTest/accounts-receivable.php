@@ -114,6 +114,7 @@ $conn->close();
                 <?php
                 include 'connection.php';
 
+
                 $sql = "SELECT * FROM receivable";
                 $result = $conn->query($sql);
 
@@ -163,6 +164,7 @@ $conn->close();
 
 
                 ?>
+
 
 
 

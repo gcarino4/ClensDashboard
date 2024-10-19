@@ -226,10 +226,10 @@ include 'check_user.php';
 
 
           <label for="editVerified">Verified:</label>
-          <select id="editVerified" name="verified">
-            <option value="True">True</option>
-            <option value="False">False</option>
-          </select><br>
+          <input type="hidden" name="verified" value="False">
+          <!-- This hidden input sends "False" when checkbox is unchecked -->
+          <input type="checkbox" id="editVerified" name="verified" value="True"><br>
+
 
           <button type="submit" id="editSubmitBtn">Update</button>
           <br>
@@ -315,7 +315,8 @@ include 'check_user.php';
         document.getElementById("editAddress").value = row.cells[6].textContent;
         document.getElementById("editContactNumber").value = row.cells[7].textContent;
         document.getElementById("editRole").value = row.cells[8].textContent;
-        document.getElementById("editVerified").value = row.cells[9].textContent;
+        var verifiedValue = row.cells[9].textContent.trim();
+        document.getElementById("editVerified").checked = (verifiedValue === "True");
         document.getElementById("editDateOfCreation").value = row.cells[10].textContent;
 
         // Show the modal

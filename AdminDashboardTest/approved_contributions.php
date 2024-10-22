@@ -40,17 +40,18 @@ $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             // Output data of each row
             while ($row = $result->fetch_assoc()) {
-                echo "<tr onclick='opencontributionPaymentForm(\"" . $row["contribution_id"] . "\")'>";
+                echo "<tr onclick='opencontributionPaymentForm(\"" . $row["contribution_id"] . "\", \"" . $row["member_id"] . "\")'>";
                 echo "<td>" . $row["contribution_id"] . "</td>";
                 echo "<td>" . $row["member_id"] . "</td>";
                 echo "<td id='amount_" . $row["contribution_id"] . "'>" . $row["contribution_amount"] . "</td>";
-                echo "<td><button onClick='opencontributionPaymentForm'>Make Payment</button</td>";
+                echo "<td><button type='button' onClick='opencontributionPaymentForm(\"" . $row["contribution_id"] . "\", \"" . $row["member_id"] . "\")'>Make Payment</button></td>";
                 echo "</tr>";
             }
         } else {
-            echo "<tr><td colspan='3'>No records found</td></tr>";
+            echo "<tr><td colspan='4'>No records found</td></tr>";
         }
         ?>
+
     </table>
 
     <!-- Payment Modal -->
@@ -65,6 +66,7 @@ $result = $conn->query($sql);
                 <br>
 
                 <input type="text" name="contribution_id" id="contribution_id" readonly>
+                <input type="text" name="member_id" id="member_id" readonly>
                 <label for="payment_amount">Payment Amount:</label>
                 <input type="number" name="payment_amount" id="payment_amount" required>
                 <label for="payment_image">Upload Image:</label>
@@ -76,10 +78,14 @@ $result = $conn->query($sql);
 
     <script>
         // Function to open the payment modal
-        function opencontributionPaymentForm(contribution_id) {
+        // Function to open the payment modal
+        function opencontributionPaymentForm(contribution_id, member_id) {
             document.getElementById('contribution_id').value = contribution_id;
+            document.getElementById('member_id').value = member_id;
+
             document.getElementById('contributionPaymentModal').style.display = 'block';
         }
+
 
         // Function to close the modal
         function closeContributionModal() {

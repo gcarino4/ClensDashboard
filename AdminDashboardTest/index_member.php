@@ -219,11 +219,20 @@ $conn->close();
                                 value="<?php echo isset($_SESSION['address']) ? htmlspecialchars($_SESSION['address']) : ''; ?>"
                                 readonly required><br>
 
-                            <label for="bank_info">Bank Detail:</label>
-                            <input type="text" id="bank_info" name="bank_info" required><br>
+                            <label for="bank_name">Bank Name:</label>
+                            <input type="text" id="bank_name" name="bank_name" required><br>
 
-                            <label for="applicantIncome">Annual Income:</label>
-                            <input type="number" id="applicantIncome" name="annual_income" step="0.01" required><br>
+                            <label for="bank_id">Bank ID:</label>
+                            <input type="text" id="bank_id" name="bank_id" required><br>
+
+                            <label for="branch">Branch:</label>
+                            <input type="text" id="branch" name="branch" required><br>
+
+
+                            <label for="applicantIncome">Salary:</label>
+                            <input type="number" id="applicantIncome" name="annual_income"
+                                value="<?php echo isset($_SESSION['member_salary']) ? htmlspecialchars($_SESSION['member_salary']) : ''; ?>"
+                                readonly required><br>
 
                             <label for="loanAmount">Loan Amount Requested:</label>
                             <input type="number" id="loanAmount" name="loan_amount" step="0.01" required><br>

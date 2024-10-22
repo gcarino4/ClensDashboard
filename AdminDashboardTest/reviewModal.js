@@ -9,7 +9,9 @@ document.getElementById('loanSubmitBtn').addEventListener('click', function(even
     const applicantEmail = document.getElementById('applicantEmail').value;
     const applicantPhone = document.getElementById('applicantPhone').value;
     const applicantAddress = document.getElementById('applicantAddress').value;
-    const bankInfo = document.getElementById('bank_info').value;
+    const bankName = document.getElementById('bank_name').value;
+    const bankId = document.getElementById('bank_id').value;
+    const branch = document.getElementById('branch').value;
     const applicantIncome = document.getElementById('applicantIncome').value;
     const loanAmount = document.getElementById('loanAmount').value;
     const loanTerm = document.getElementById('loanTerm').value;
@@ -52,7 +54,9 @@ const reviewContent = `
     <p><strong>Email:</strong> ${applicantEmail}</p>
     <p><strong>Phone Number:</strong> ${applicantPhone}</p>
     <p><strong>Address:</strong> ${applicantAddress}</p>
-    <p><strong>Bank Details:</strong> ${bankInfo}</p>
+    <p><strong>Bank Name:</strong> ${bankName}</p>
+    <p><strong>Bank Id:</strong> ${bankId}</p>
+    <p><strong>Branch:</strong> ${branch}</p>
     <p><strong>Annual Income:</strong> ${applicantIncome}</p>
     <p><strong>Loan Amount Requested:</strong> ${loanAmount}</p>
     <p><strong>Loan Term:</strong> ${loanTerm}</p>

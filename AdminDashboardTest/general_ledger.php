@@ -70,6 +70,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     echo "<h2>Member Contribution Payments</h2>";
                     include 'contribution_payments_table.php';
                 endif;
+
                 if ($role === 'Member'):
                     include 'general_ledger_receivables_member.php';
 

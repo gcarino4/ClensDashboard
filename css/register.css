@@ -1,44 +1,53 @@
+
 body {
     background-color: #f8f9fa; /* Light gray background for body */
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin-top: 150px; /* Ensure no extra margin on body */
+    align-items: flex-start; /* Align content at the top to avoid hidden elements */
+    min-height: 100vh; /* Ensure the body takes the full viewport height */
+    margin: 0; /* Remove any default margin */
+    padding: 20px; /* Add padding to avoid touching the edges of the screen */
+    overflow-y: auto; /* Enable vertical scrolling in case the form overflows the viewport */
 }
 
 .container {
-    max-width: 500px;
+    max-width: 1200px; /* Set a much larger max-width for the container */
+    width: 100%; /* Ensure the container is responsive and fills available space */
+    margin: 20px 0; /* Add margin to avoid elements touching the top of the screen */
 }
 
 .card {
-    border-radius: 10px; /* Slightly reduced border radius */
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Slightly more pronounced shadow */
+    border-radius: 12px; /* Increased border radius for a smoother look */
+    box-shadow: 0 6px 15px rgba(0,0,0,0.4); /* Stronger shadow for a prominent look */
     overflow: hidden; /* Ensure rounded corners and shadow are visible */
     border: 1px solid #e0e0e0; /* Light gray border for card */
     background-color: #ffffff; /* White background for card */
+    max-height: 90vh; /* Limit card height to prevent overflow */
+    overflow-y: auto; /* Enable scrolling if content exceeds available space */
 }
 
 .card-header {
     background-color: #28a745; /* Green background for card header */
     color: #ffffff;
     border-bottom: 1px solid #e0e0e0; /* Light gray border at the bottom */
-    padding: 1rem; /* Add padding for better spacing */
+    padding: 2rem; /* Add generous padding for the header */
     text-align: center; /* Center align the title text */
-    font-size: 1.5rem; /* Increased font size */
+    font-size: 2.5rem; /* Larger font size */
     font-weight: bold; /* Make the title bold */
-    position: relative; /* Ensure positioning context */
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 4rem; /* Increased padding for a more spacious form */
 }
 
 .form-control {
     border: 2px solid #ced4da; /* Light gray border for input fields */
-    border-radius: 5px; /* Rounded corners for input fields */
-    padding: 0.75rem; /* Padding inside the input fields */
+    border-radius: 8px; /* Larger rounded corners for input fields */
+    padding: 1.5rem; /* Generous padding inside the input fields */
+    margin-bottom: 2rem; /* Increased spacing between input fields */
     box-sizing: border-box; /* Include border and padding in element's total width and height */
+    font-size: 1.25rem; /* Larger text in form fields */
+    width: 100%; /* Ensure form controls take full width */
 }
 
 .form-control:focus {
@@ -49,9 +58,11 @@ body {
 .btn-primary {
     background-color: #28a745; /* Green background for primary buttons */
     border: none;
-    border-radius: 5px; /* Rounded corners for buttons */
-    padding: 0.75rem 1.5rem; /* Increased padding for buttons */
-    font-size: 1rem; /* Standard font size for buttons */
+    border-radius: 8px; /* Larger rounded corners for buttons */
+    padding: 1.5rem 3rem; /* Generous padding for buttons */
+    font-size: 1.5rem; /* Larger font size for buttons */
+    width: 100%; /* Make the button take full width */
+    margin-bottom: 2rem; /* Add more margin below the button */
 }
 
 .btn-primary:hover {
@@ -60,6 +71,29 @@ body {
 
 .alert {
     margin-top: 1rem;
-    padding: 1rem; /* Padding inside the alert */
-    border-radius: 5px; /* Rounded corners for alert */
+    padding: 1.5rem; /* Increased padding inside the alert */
+    border-radius: 8px; /* Larger rounded corners for alert */
 }
+
+/* Ensure the form is responsive on smaller screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 2rem;
+    }
+
+    .form-control {
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-primary {
+        padding: 1rem 2rem;
+        font-size: 1.25rem;
+    }
+}
+
+

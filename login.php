@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 				$_SESSION['date_of_creation'] = htmlspecialchars($row['date_of_creation']); // Ensure this is set
 				$_SESSION['loggedin'] = true;
 				$_SESSION['role'] = htmlspecialchars($row['role']);
+				$_SESSION['member_salary'] = htmlspecialchars($row['member_salary']);
 				echo $row['role'];
 
 			} else {

@@ -23,6 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $collateral_image = isset($_FILES['collateral_image']['tmp_name']) ? $_FILES['collateral_image']['tmp_name'] : null; // Handle upload
     $payment_plan = $conn->real_escape_string($_POST['payment_plan']);  // Collect the selected payment plan
 
+    // New fields
+    $bank_name = $conn->real_escape_string($_POST['bank_name']);
+    $bank_id = $conn->real_escape_string($_POST['bank_id']);
+    $branch = $conn->real_escape_string($_POST['branch']);
+
     // Generate a 10-digit auto-generated application ID with prefix 'loan'
     $random_number = mt_rand(100000000, 999999999); // Generate a 9-digit random number
     $application_id = 'loan' . $random_number; // Concatenate 'loan' with the random number
@@ -135,12 +140,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 
-    // Prepare SQL statement
-    // Corrected SQL statement
-    // Prepare SQL statement
-    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, principal_amount, bank_info, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
-
-VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', '$collateral', $annual_income, $loan_amount, $principal_amount, '$bank_info', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
+    // SQL query to insert data into loan_applications
+    $sql = "INSERT INTO loan_applications (application_id, member_id, name, email, phone_number, address, collateral, annual_income, loan_amount, principal_amount, bank_name, bank_id, branch, loan_term, interest_rate, loan_purpose, employment_status, collateral_image, payment_plan, status, supporting_document_1, supporting_document_2)
+            VALUES ('$application_id', '$member_id', '$name', '$email', '$phone_number', '$address', '$collateral', $annual_income, $loan_amount, $principal_amount, '$bank_name', '$bank_id', '$branch', $loan_term, $interest_rate, '$loan_purpose', '$employment_status', '$collateral_image', '$payment_plan', '$status', '$supporting_document_1', '$supporting_document_2')";
 
 
     if ($conn->query($sql) === TRUE) {

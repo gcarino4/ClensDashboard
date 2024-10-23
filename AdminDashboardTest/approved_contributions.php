@@ -3,16 +3,7 @@ namespace approved_contributions;
 
 include 'connection.php';
 
-
-// Get the member_id from the session
-if (!isset($_SESSION['member_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Member ID is not set in the session.']);
-    exit;
-}
-
-$member_id = $_SESSION['member_id'];
-
-// Query to fetch contributions data only for the current session member_id
+// Query to fetch all contributions data
 $sql = "SELECT * FROM contributions";
 $result = $conn->query($sql);
 ?>
@@ -23,7 +14,6 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 </head>
 
 <body>
@@ -78,14 +68,12 @@ $result = $conn->query($sql);
 
     <script>
         // Function to open the payment modal
-        // Function to open the payment modal
         function opencontributionPaymentForm(contribution_id, member_id) {
             document.getElementById('contribution_id').value = contribution_id;
             document.getElementById('member_id').value = member_id;
 
             document.getElementById('contributionPaymentModal').style.display = 'block';
         }
-
 
         // Function to close the modal
         function closeContributionModal() {
@@ -175,7 +163,6 @@ $result = $conn->query($sql);
             }
         }
     </script>
-
 
 </body>
 

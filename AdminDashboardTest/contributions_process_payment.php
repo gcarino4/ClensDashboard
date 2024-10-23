@@ -4,13 +4,13 @@ include 'connection.php';
 // Start the session
 session_start();
 
-// Check if the member_id is set in the session
-if (!isset($_SESSION['member_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Member ID is not set in the session.']);
+// Get the member ID from POST request
+if (!isset($_POST['member_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Member ID is not set.']);
     exit;
 }
 
-$member_id = $_SESSION['member_id'];
+$member_id = $_POST['member_id'];
 
 // Get the contribution ID and payment amount from POST request
 if (!isset($_POST['contribution_id']) || !isset($_POST['payment_amount'])) {
@@ -64,7 +64,6 @@ try {
 
     $conn->commit();
     echo json_encode(['success' => true, 'message' => 'Payment processed successfully.', 'contribution_id' => $contribution_id, 'new_amount' => $new_contribution_amount]);
-
 
 } catch (Exception $e) {
     $conn->rollback();

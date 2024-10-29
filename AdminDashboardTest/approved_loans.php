@@ -267,6 +267,7 @@ echo '</table>';
                     member_id: memberId,
                     payment_amount: paymentAmount,
                     payment_image_base64: paymentImageBase64 // Include Base64-encoded image
+
                 })
             })
                 .then(response => response.json())

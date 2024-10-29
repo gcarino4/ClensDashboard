@@ -51,9 +51,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($contact_no)) {
         $errors[] = "Contact number is required.";
     }
+
     if (!preg_match('/^\d{11}$/', $contact_no)) {
         $errors[] = "Contact number must be 11 digits.";
     }
+
     if (empty($email)) {
         $errors[] = "Email address is required.";
     }

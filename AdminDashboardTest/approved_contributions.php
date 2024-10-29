@@ -21,6 +21,7 @@ $result = $conn->query($sql);
     <table>
         <tr>
             <th>Contribution ID</th>
+            <th>Member Name</th>
             <th>Member ID</th>
             <th>Contribution Amount</th>
             <th>Action</th>
@@ -32,6 +33,7 @@ $result = $conn->query($sql);
             while ($row = $result->fetch_assoc()) {
                 echo "<tr onclick='opencontributionPaymentForm(\"" . $row["contribution_id"] . "\", \"" . $row["member_id"] . "\")'>";
                 echo "<td>" . $row["contribution_id"] . "</td>";
+                echo "<td>" . $row["name"] . "</td>";
                 echo "<td>" . $row["member_id"] . "</td>";
                 echo "<td id='amount_" . $row["contribution_id"] . "'>" . $row["contribution_amount"] . "</td>";
                 echo "<td><button type='button' onClick='opencontributionPaymentForm(\"" . $row["contribution_id"] . "\", \"" . $row["member_id"] . "\")'>Make Payment</button></td>";

@@ -239,9 +239,9 @@ $conn->close();
 
                             <label for="loanTerm">Loan Term:</label>
                             <select id="loanTerm" name="loan_term" required>
-                                <option value="1">6 Months - 1 Year</option>
-                                <option value="3">1 Year - 3 Years</option>
-                                <option value="5">3 Years - 5 Years</option>
+                                <option value="1">Short Term</option>
+                                <option value="3">Mid Term</option>
+                                <option value="5">Long Term</option>
                             </select><br>
 
                             <label for="loanPurpose">Purpose of Loan:</label>

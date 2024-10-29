@@ -38,7 +38,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
                 <h3>Services</h3>
             </a>
 
-            <a href="general_ledger.php" id="general-ledger-link">
+            <a href="general_ledger.php">
                 <span class="material-icons-sharp">
                     menu_book
                 </span>
@@ -55,11 +55,9 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
         <?php endif; ?>
 
 
-
-
         <?php if ($role === 'Admin' || $role === 'Finance Officer'): ?>
 
-            <a href="general_ledger.php" id="general-ledger-link">
+            <a href="general_ledger.php">
                 <span class="material-icons-sharp">
                     menu_book
                 </span>
@@ -67,7 +65,8 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
             </a>
 
 
-            <a href="contribution_admin.php" id="general-ledger-link">
+
+            <a href="contribution_admin.php">
                 <span class="material-icons-sharp">
                     payment
                 </span>
@@ -81,12 +80,50 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
                 <h3>Analytics</h3>
             </a>
 
+            <a href="cashflow.php">
+                <span class="material-icons-sharp">
+                    import_export
+                </span>
+                <h3>Cashflow</h3>
+                <span class="message-count">80</span>
+            </a>
+
+            <a href="income_statement.php">
+                <span class="material-icons-sharp">
+                    receipt
+                </span>
+                <h3>Income Statement</h3>
+                <span class="message-count">80</span>
+            </a>
+
+            <a href="balance_sheet.php">
+                <span class="material-icons-sharp">
+                    payments
+                </span>
+                <h3>Balance Sheet</h3>
+                <span class="message-count">80</span>
+            </a>
+
             <a href="accounts-payable.php">
                 <span class="material-icons-sharp">
                     payments
                 </span>
                 <h3>Accounts Payable</h3>
                 <span class="message-count">80</span>
+            </a>
+
+            <a href="accounts-equity.php">
+                <span class="material-icons-sharp">
+                    equalizer
+                </span>
+                <h3>Accounts Equity</h3>
+            </a>
+
+            <a href="accounts-revenue.php">
+                <span class="material-icons-sharp">
+                    equalizer
+                </span>
+                <h3>Revenue</h3>
             </a>
 
             <a href="accounts-receivable.php">

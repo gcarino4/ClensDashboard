@@ -147,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 include 'connection.php';
 
                 // Define the SQL query to retrieve all records
-                $sql = "SELECT id, type, amount, date, details FROM payments";
+                $sql = "SELECT * FROM payments";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {  // Check if there are more than 0 rows

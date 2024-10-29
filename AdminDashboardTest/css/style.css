@@ -181,7 +181,7 @@ aside .sidebar a span{
 }
 
 aside .sidebar a:last-child{
-    position: absolute;
+    position: relative;
     bottom: 2rem;
     width: 100%;
 }
@@ -637,7 +637,7 @@ main .recent-orders a{
     }
 
     aside .sidebar a:last-child{
-        position: absolute;
+        position: relative;
         bottom: 5rem;
     }
 

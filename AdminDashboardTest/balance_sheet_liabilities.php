@@ -20,8 +20,6 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
     } else {
         echo "<p style='color: red; text-align: center;'>Start date cannot be greater than end date.</p>";
     }
-} else {
-    echo "<p style='color: red; text-align: center;'>Please select a valid date range.</p>";
 }
 ?>
 
@@ -41,21 +39,22 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
             </thead>
             <tbody>
                 <?php
-                // Only proceed if $result is set and the query was successful
                 if (isset($result) && $result->num_rows > 0) {
                     $current_type = null;
-                    $type_total = 0;
+                    $type_total_liabilities = 0;
+                    $total_liabilities = 0; // Initialize total liabilities
                     $index = 0; // Index for unique collapsible IDs
                 
                     while ($row = $result->fetch_assoc()) {
                         if ($current_type != $row['type']) {
                             if ($current_type !== null) {
-                                // Display the total for the previous type
-                                echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total, 2) . "</td></tr>";
+                                // Display the total for the previous type and add to total liabilities
+                                echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total_liabilities, 2) . "</td></tr>";
+                                $total_liabilities += $type_total_liabilities; // Add to total liabilities
                                 echo "</div>"; // Close the collapsible content
                             }
                             $current_type = $row['type'];
-                            $type_total = 0;
+                            $type_total_liabilities = 0;
                             $index++; // Increment index for the next type
                 
                             echo "<tr>";
@@ -66,7 +65,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                             echo "<div id='collapsible-$index' class='collapsible-content' style='display: none;'>"; // Collapsible content starts
                         }
 
-                        $type_total += $row['amount'];
+                        $type_total_liabilities += $row['amount'];
 
                         echo "<tr class='collapsible-$index' style='display: none;'>";
                         echo "<td style='padding: 8px; text-align: left; border-bottom: 1px solid #ddd;'>" . $row['type'] . "</td>";
@@ -76,13 +75,15 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                         echo "</tr>";
                     }
                     // Display the total for the last type
-                    echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total, 2) . "</td></tr>";
+                    echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #e9e9e9;'>Total: " . number_format($type_total_liabilities, 2) . "</td></tr>";
+                    $total_liabilities += $type_total_liabilities; // Add last type total to total liabilities
                     echo "</div>"; // Close the last collapsible content
+                
+                    // Display total liabilities
+                    echo "<tr><td colspan='4' style='padding: 8px; text-align: right; font-weight: bold; background-color: #d9d9d9;'>Total Liabilities: " . number_format($total_liabilities, 2) . "</td></tr>";
                 } else {
                     echo "<tr><td colspan='4' style='padding: 8px; text-align: center;'>No payments found</td></tr>";
                 }
-
-                $total_payments = $type_total;
                 ?>
             </tbody>
         </table>

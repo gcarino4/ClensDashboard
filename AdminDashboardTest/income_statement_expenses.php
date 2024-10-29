@@ -28,7 +28,7 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
 <div class="recent-orders"
     style="margin: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
     <h2 style="text-align: center; margin-bottom: 20px; cursor: pointer;" onclick="toggleCollapse('ledger-matrix')">
-        Liabilities</h2>
+        Expenses</h2>
     <div id="ledger-matrix" style="display: none;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -81,8 +81,6 @@ if (isset($_GET['start_date']) && isset($_GET['end_date'])) {
                 } else {
                     echo "<tr><td colspan='4' style='padding: 8px; text-align: center;'>No payments found</td></tr>";
                 }
-
-                $total_payments = $type_total;
                 ?>
             </tbody>
         </table>

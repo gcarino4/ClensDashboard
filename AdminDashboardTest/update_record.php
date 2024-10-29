@@ -16,8 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $role = $_POST['role'];
     $verified = $_POST['verified'];
     $date_of_creation = $_POST['date_of_creation'];
+    $password = $_POST['password'];
 
-    // Prepare the SQL query to update the user record
+    // Start building the SQL query
     $sql = "UPDATE members 
         SET name = ?, 
             age = ?, 
@@ -28,9 +29,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             contact_no = ?, 
             role = ?, 
             verified = ?, 
-            date_of_creation = ? 
-        WHERE member_id = ?";
+            date_of_creation = ?";
 
+    // Add password to the SQL query if provided
+    $params = [$name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $date_of_creation];
+    $types = "ssssssssss"; // Parameter types for bind_param
+
+    if (!empty($password)) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $sql .= ", password = ?";
+        $params[] = $hashedPassword; // Add hashed password to parameters
+        $types .= "s"; // Add string type for hashed password
+    }
+
+    $sql .= " WHERE member_id = ?";
+    $params[] = $id; // Add ID to parameters
+    $types .= "i"; // Add integer type for ID
 
     // Prepare the statement
     $stmt = $conn->prepare($sql);
@@ -38,8 +52,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Error preparing the statement: " . $conn->error);
     }
 
-    $stmt->bind_param("ssssssssssi", $name, $age, $birthday, $sex, $civil_status, $address, $contact_no, $role, $verified, $date_of_creation, $id);
-
+    // Bind parameters dynamically
+    $stmt->bind_param($types, ...$params);
 
     // Execute the query
     if ($stmt->execute()) {

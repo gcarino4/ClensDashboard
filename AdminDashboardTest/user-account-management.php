@@ -187,6 +187,9 @@ include 'check_user.php';
           <label for="editName">Name:</label>
           <input type="text" id="editName" name="name"><br>
 
+          <label for="editPassword">New Password:</label>
+          <input type="password" id="editPassword" name="password"><br>
+
           <label for="editBirthday">Birthday:</label>
           <input type="date" id="editBirthday" name="birthday"><br>
 
@@ -229,6 +232,7 @@ include 'check_user.php';
           <input type="hidden" name="verified" value="False">
           <!-- This hidden input sends "False" when checkbox is unchecked -->
           <input type="checkbox" id="editVerified" name="verified" value="True"><br>
+
 
 
           <button type="submit" id="editSubmitBtn">Update</button>
@@ -284,6 +288,8 @@ include 'check_user.php';
         // Prevent the default form submission behavior
         event.preventDefault();
 
+        var password = document.getElementById("editPassword").value;
+
         // Get the form data
         var formData = new FormData(editForm);
 
@@ -317,7 +323,7 @@ include 'check_user.php';
         document.getElementById("editRole").value = row.cells[8].textContent;
         var verifiedValue = row.cells[9].textContent.trim();
         document.getElementById("editVerified").checked = (verifiedValue === "True");
-        document.getElementById("editDateOfCreation").value = row.cells[10].textContent;
+        document.getElementById("editDateOfCreation").value = row.cells[11].textContent;
 
         // Show the modal
         document.getElementById("editModal").style.display = 'block';

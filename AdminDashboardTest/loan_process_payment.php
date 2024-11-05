@@ -71,6 +71,7 @@ try {
         throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount, 2));
     }
 
+    /*
     // Calculate the new next payment due date based on the payment plan
     switch ($payment_plan) {
         case 'monthly':
@@ -92,7 +93,7 @@ try {
     if (!$update_due_date_stmt->execute()) {
         throw new Exception('Failed to update next payment due date: ' . $update_due_date_stmt->error);
     }
-
+*/
     // Insert payment record into loan_payments table
     $transaction_number = uniqid('txn_', true);
     $insert_sql = "INSERT INTO loan_payments 

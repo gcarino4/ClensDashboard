@@ -130,7 +130,10 @@ include 'check_user.php';
 
                         // Determine if the application ID is for a loan or health application
                         if (strpos($application_id, 'loan') === 0) {
-                            $sql = "SELECT * FROM loan_applications WHERE application_id = ?";
+                            $sql = "SELECT la.*, al.next_payment_due_date, al.loan_end_date, al.minimum_payment 
+                                    FROM loan_applications la 
+                                    JOIN approved_loans al ON la.application_id = al.application_id 
+                                    WHERE la.application_id = ?";
                             $comaker_sql = "SELECT comaker_name FROM comakers WHERE application_id = ?";
 
                         } elseif (strpos($application_id, 'hlt') === 0) {
@@ -168,7 +171,6 @@ include 'check_user.php';
                                       </div>";
 
                                 if (strpos($application_id, 'loan') === 0) {
-
                                     echo "<div class='report-section'>
                                                 <label>Member ID:</label>
                                                 <p>{$row['member_id']}</p>
@@ -191,30 +193,35 @@ include 'check_user.php';
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Bank Info:</label>
-                                                <p>{$row['bank_info']}</p>
+                                                <p>{$row['bank_name']} - {$row['bank_id']} - {$row['branch']}</p>
                                               </div>";
                                     echo "<div class='report-section'>
-                                                <label>Loan Amount:</label>
+                                                <label>Loan Amount + Interest:</label>
                                                 <p>{$row['loan_amount']}</p>
+                                              </div>";
+                                    echo "<div class='report-section'>
+                                                <label>Principal Amount:</label>
+                                                <p>{$row['principal_amount']}</p>
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Loan Term:</label>
                                                 <p>{$row['loan_term']}</p>
                                               </div>";
                                     echo "<div class='report-section'>
-                                                <label>Purpose:</label>
+                                                <label>Loan Type:</label>
                                                 <p>{$row['loan_purpose']}</p>
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Collateral:</label>
                                                 <p>{$row['collateral']}</p>
                                               </div>";
+
+                                    // Display co-maker names
                                     $comaker_stmt = $conn->prepare($comaker_sql);
                                     $comaker_stmt->bind_param("s", $application_id);
                                     $comaker_stmt->execute();
                                     $comaker_result = $comaker_stmt->get_result();
 
-                                    // Display co-maker names
                                     if ($comaker_result->num_rows > 0) {
                                         echo "<div class='report-section'>
                                                           <label>Co-maker Names:</label>";
@@ -233,8 +240,18 @@ include 'check_user.php';
 
                                     $comaker_stmt->close(); // Close the statement
                     
-
-
+                                    echo "<div class='report-section'>
+                                                <label>Next Payment Due Date:</label>
+                                                <p>{$row['next_payment_due_date']}</p>
+                                            </div>";
+                                    echo "<div class='report-section'>
+                                                <label>Loan End Date:</label>
+                                                <p>{$row['loan_end_date']}</p>
+                                            </div>";
+                                    echo "<div class='report-section'>
+                                                <label>Minimum Payment:</label>
+                                                <p>{$row['minimum_payment']}</p>
+                                            </div>";
                                     echo "<div class='report-section'>
                                                 <label>Collateral Image:</label>
                                                 <img src='data:image/jpeg;base64," . htmlspecialchars($row["collateral_image"]) . "' class='img-preview' alt='No Collateral Image' onclick='openModal(this.src)'/>
@@ -245,65 +262,87 @@ include 'check_user.php';
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Supporting Document 1:</label>
-                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_1"]) . "' class='img-preview' alt='Supporting Document 1' onclick='openModal(this.src)'/>
+                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_1"]) . "' class='img-preview' alt='No Document' onclick='openModal(this.src)'/>
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Supporting Document 2:</label>
-                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_2"]) . "' class='img-preview' alt='Supporting Document 2' onclick='openModal(this.src)'/>
+                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_2"]) . "' class='img-preview' alt='No Document' onclick='openModal(this.src)'/>
                                               </div>";
+                                    echo "<div class='report-section'>
+                                                <label>Application Status:</label>
+                                                <p>{$row['status']}</p>
+                                              </div>";
+                                    echo "</div>"; // Close report-details div
                                 } else {
-
+                                    // Health insurance application details
                                     echo "<div class='report-section'>
-                                    <label>Member ID:</label>
-                                    <p>{$row['member_id']}</p>
-                                  </div>";
+                                            <label>Member ID:</label>
+                                            <p>{$row['member_id']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Birthday:</label>
-                                    <p>{$row['birthday']}</p>
-                                  </div>";
+                                            <label>Email:</label>
+                                            <p>{$row['email']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Email:</label>
-                                    <p>{$row['email']}</p>
-                                  </div>";
+                                            <label>Phone Number:</label>
+                                            <p>{$row['phone_number']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Phone Number:</label>
-                                    <p>{$row['phone_number']}</p>
-                                  </div>";
+                                            <label>Policy Type:</label>
+                                            <p>{$row['policy_type']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Address:</label>
-                                    <p>{$row['address']}</p>
-                                  </div>";
+                                            <label>Coverage Amount:</label>
+                                            <p>{$row['coverage_amount']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Insurance Type:</label>
-                                    <p>{$row['insurance_type']}</p>
-                                  </div>";
+                                            <label>Application Date:</label>
+                                            <p>{$row['application_date']}</p>
+                                          </div>";
                                     echo "<div class='report-section'>
-                                    <label>Coverage Amount:</label>
-                                    <p>{$row['coverage_amount']}</p>
-                                  </div>";
-                                    echo "<div class='report-section'>
-                                    <label>Application Date:</label>
-                                    <p>{$row['application_date']}</p>
-                                  </div>";
+                                            <label>Application Status:</label>
+                                            <p>{$row['status']}</p>
+                                          </div>";
+                                    echo "</div>"; // Close report-details div
                                 }
-                                echo "<div class='report-section'>
-                                        <label>Status:</label>
-                                        <p>{$row['status']}</p>
-                                      </div>";
-                                echo "</div>"; // Close report-details
                             }
                         } else {
-                            echo "<p class='no-results'>No records found for Application ID: $application_id</p>";
+                            echo "<p class='no-results'>No records found for this Application ID.</p>";
                         }
 
-                        // Close the statement and the connection
-                        $stmt->close();
-                        $conn->close();
+                        $stmt->close(); // Close the statement
+                        $conn->close(); // Close the database connection
                     }
                     ?>
                 </div>
             </div>
+            <script>
+                function openModal(imageSrc) {
+                    // Code to open modal and display image
+                    const modal = document.createElement('div');
+                    modal.style.position = 'fixed';
+                    modal.style.top = '0';
+                    modal.style.left = '0';
+                    modal.style.width = '100%';
+                    modal.style.height = '100%';
+                    modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                    modal.style.display = 'flex';
+                    modal.style.alignItems = 'center';
+                    modal.style.justifyContent = 'center';
 
+                    const img = document.createElement('img');
+                    img.src = imageSrc;
+                    img.style.maxWidth = '90%';
+                    img.style.maxHeight = '90%';
+
+                    modal.appendChild(img);
+                    document.body.appendChild(modal);
+
+                    modal.addEventListener('click', function () {
+                        modal.remove();
+                    });
+                }
+            </script>
             <script>
                 // Prevent resubmission on page reload by clearing the form after submission
                 document.getElementById('searchForm').onsubmit = function () {
@@ -322,10 +361,6 @@ include 'check_user.php';
                 <button id="menu-btn">
                     <span class="material-icons-sharp">menu</span>
                 </button>
-                <div class="dark-mode">
-                    <span class="material-icons-sharp active">light_mode</span>
-                    <span class="material-icons-sharp">dark_mode</span>
-                </div>
 
                 <?php include 'profile.php'; ?>
             </div>

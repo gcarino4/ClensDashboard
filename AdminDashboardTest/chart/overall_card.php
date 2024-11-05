@@ -65,7 +65,9 @@ if ($result->num_rows > 0) {
 }
 
 $equity = $total_due - $total_payments;
+
 $total_equity_amount = $total_equity + $equity;
+
 
 
 $conn->close();
@@ -92,5 +94,5 @@ $conn->close();
         <h3>Equity</h3>
         <span class="material-icons-outlined">scale</span>
     </div>
-    <h1><?php echo number_format($total_equity, 0); ?></h1>
+    <h1><?php echo number_format($total_equity_amount, 0); ?></h1>
 </div>

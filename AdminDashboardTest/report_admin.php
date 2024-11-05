@@ -125,7 +125,6 @@ include 'check_user.php';
                     <?php
                     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search']) && !empty($_POST['application_id'])) {
                         include 'connection.php'; // Database connection
-                    
                         $application_id = $_POST['application_id'];
 
                         // Determine if the application ID is for a loan or health application
@@ -135,11 +134,9 @@ include 'check_user.php';
                                     JOIN approved_loans al ON la.application_id = al.application_id 
                                     WHERE la.application_id = ?";
                             $comaker_sql = "SELECT comaker_name FROM comakers WHERE application_id = ?";
-
                         } elseif (strpos($application_id, 'hlt') === 0) {
                             // Health insurance application query
                             $sql = "SELECT * FROM health_insurance_applications WHERE application_id = ?";
-
                         } else {
                             echo "<p class='no-results'>Invalid Application ID format.</p>";
                             exit;
@@ -205,7 +202,7 @@ include 'check_user.php';
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Loan Term:</label>
-                                                <p>{$row['loan_term']}</p>
+                                                <p>{$row['loan_term']} Year/s</p>
                                               </div>";
                                     echo "<div class='report-section'>
                                                 <label>Loan Type:</label>
@@ -215,6 +212,29 @@ include 'check_user.php';
                                                 <label>Collateral:</label>
                                                 <p>{$row['collateral']}</p>
                                               </div>";
+
+                                    // Determine interest percentage based on loan term
+                                    $loan_term = $row['loan_term'];
+                                    $interest_percentage = 0;
+
+                                    switch ($loan_term) {
+                                        case 1:
+                                            $interest_percentage = 12;
+                                            break;
+                                        case 3:
+                                            $interest_percentage = 20;
+                                            break;
+                                        case 5:
+                                            $interest_percentage = 24;
+                                            break;
+                                        default:
+                                            $interest_percentage = 0; // or handle as needed
+                                    }
+
+                                    echo "<div class='report-section'>
+                                                <label>Interest Percentage:</label>
+                                                <p>{$interest_percentage}%</p>
+                                          </div>";
 
                                     // Display co-maker names
                                     $comaker_stmt = $conn->prepare($comaker_sql);
@@ -252,66 +272,31 @@ include 'check_user.php';
                                                 <label>Minimum Payment:</label>
                                                 <p>{$row['minimum_payment']}</p>
                                             </div>";
-                                    echo "<div class='report-section'>
-                                                <label>Collateral Image:</label>
-                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["collateral_image"]) . "' class='img-preview' alt='No Collateral Image' onclick='openModal(this.src)'/>
-                                              </div>";
-                                    echo "<div class='report-section'>
-                                                <label>Application Date:</label>
-                                                <p>{$row['application_date']}</p>
-                                              </div>";
-                                    echo "<div class='report-section'>
-                                                <label>Supporting Document 1:</label>
-                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_1"]) . "' class='img-preview' alt='No Document' onclick='openModal(this.src)'/>
-                                              </div>";
-                                    echo "<div class='report-section'>
-                                                <label>Supporting Document 2:</label>
-                                                <img src='data:image/jpeg;base64," . htmlspecialchars($row["supporting_document_2"]) . "' class='img-preview' alt='No Document' onclick='openModal(this.src)'/>
-                                              </div>";
-                                    echo "<div class='report-section'>
-                                                <label>Application Status:</label>
-                                                <p>{$row['status']}</p>
-                                              </div>";
-                                    echo "</div>"; // Close report-details div
                                 } else {
-                                    // Health insurance application details
+                                    // Health insurance application fields
                                     echo "<div class='report-section'>
                                             <label>Member ID:</label>
                                             <p>{$row['member_id']}</p>
                                           </div>";
                                     echo "<div class='report-section'>
-                                            <label>Email:</label>
-                                            <p>{$row['email']}</p>
+                                            <label>Type of Insurance:</label>
+                                            <p>{$row['insurance_type']}</p>
                                           </div>";
                                     echo "<div class='report-section'>
-                                            <label>Phone Number:</label>
-                                            <p>{$row['phone_number']}</p>
+                                            <label>Insurance Amount:</label>
+                                            <p>{$row['insurance_amount']}</p>
                                           </div>";
                                     echo "<div class='report-section'>
-                                            <label>Policy Type:</label>
-                                            <p>{$row['policy_type']}</p>
+                                            <label>Coverage Period:</label>
+                                            <p>{$row['coverage_period']}</p>
                                           </div>";
-                                    echo "<div class='report-section'>
-                                            <label>Coverage Amount:</label>
-                                            <p>{$row['coverage_amount']}</p>
-                                          </div>";
-                                    echo "<div class='report-section'>
-                                            <label>Application Date:</label>
-                                            <p>{$row['application_date']}</p>
-                                          </div>";
-                                    echo "<div class='report-section'>
-                                            <label>Application Status:</label>
-                                            <p>{$row['status']}</p>
-                                          </div>";
-                                    echo "</div>"; // Close report-details div
                                 }
+                                echo "</div>"; // Close report details
                             }
                         } else {
-                            echo "<p class='no-results'>No records found for this Application ID.</p>";
+                            echo "<p class='no-results'>No results found for Application ID: $application_id.</p>";
                         }
-
                         $stmt->close(); // Close the statement
-                        $conn->close(); // Close the database connection
                     }
                     ?>
                 </div>

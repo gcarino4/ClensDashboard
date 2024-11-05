@@ -57,8 +57,8 @@ $conn->close();
             <div class="recent-orders">
 
                 <?php
-                echo " <h2>Rerpo</h2>";
-
+                echo " <h2>Member Contributions</h2>";
+                include 'approved_contributions.php';
                 ?>
 
 

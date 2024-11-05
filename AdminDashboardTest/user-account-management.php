@@ -42,7 +42,6 @@ include 'check_user.php';
       <h1>User Account Management</h1>
       <br>
       <br>
-      <h2>New Users</h2>
       <!-- Analyses -->
 
       <?php

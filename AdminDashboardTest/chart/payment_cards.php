@@ -32,7 +32,7 @@ if ($result_payments->num_rows > 0) {
 }
 
 // Query to total loan_amount for the current member_id from loan_applications table
-$sql_loans = "SELECT SUM(payment_amount) as total_loans FROM loan_payments WHERE member_id = ?";
+$sql_loans = "SELECT SUM(payment_amount) as total_loans FROM loan_payments WHERE member_id = ? AND status = 'approved'";
 $stmt_loans = $conn->prepare($sql_loans);
 $stmt_loans->bind_param("s", $member_id); // Use "s" for string
 $stmt_loans->execute();
@@ -70,7 +70,7 @@ if ($result_contributions->num_rows > 0) {
 }
 
 // Query to total payment_due for the current member_id from health_insurance_applications table
-$sql_health_insurance = "SELECT SUM(payment_amount) as total_payment_amount FROM health_payments WHERE member_id = ?";
+$sql_health_insurance = "SELECT SUM(payment_amount) as total_payment_amount FROM health_payments WHERE member_id = ? AND status = 'approved'";
 $stmt_health_insurance = $conn->prepare($sql_health_insurance);
 $stmt_health_insurance->bind_param("s", $member_id); // Use "s" for string
 $stmt_health_insurance->execute();

@@ -3,6 +3,17 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
 ?>
 
 <!-- Sidebar Section -->
+
+<head>
+    <style>
+        .sidebar {
+
+            height: 100%;
+            overflow-y: scroll;
+        }
+    </style>
+
+</head>
 <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <aside>
@@ -80,6 +91,13 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
                 <h3>Analytics</h3>
             </a>
 
+            <a href="report_admin.php">
+                <span class="material-icons-sharp">
+                    format_list_numbered
+                </span>
+                <h3>Generate Report</h3>
+            </a>
+
             <a href="cashflow.php">
                 <span class="material-icons-sharp">
                     import_export
@@ -153,23 +171,13 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : ''; // Get the role from 
             </a>
         <?php endif; ?>
 
-
-        <?php if ($role === 'Member' || $role === 'Admin' || $role === 'Admin Officer' || $role === 'Finance Officer'): ?>
-            <a href="profile_page.php" id="profile-link">
-                <span class="material-icons-sharp">
-                    person
-                </span>
-                <h3>Profile</h3>
-            </a>
-        <?php endif; ?>
-
-
-        <a href="../logout.php">
+        <a href="profile_page.php" id="profile-link">
             <span class="material-icons-sharp">
-                logout
+                person
             </span>
-            <h3>Logout</h3>
+            <h3>Profile</h3>
         </a>
+
 
     </div>
 </aside>

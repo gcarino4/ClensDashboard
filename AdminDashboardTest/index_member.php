@@ -4,7 +4,8 @@ include 'connection.php';
 
 // Initialize eligibility variables
 $canApply = false;
-$isContributionEligible = false; // New variable for contribution eligibility
+$isContributionEligibleForLoan = false; // Eligibility for Loan Application Modal
+$isContributionEligibleForHealth = false; // Eligibility for Health Insurance Modal
 
 // Check if the user is logged in and has a member ID
 if (isset($_SESSION['member_id'])) {
@@ -48,11 +49,12 @@ if (isset($_SESSION['member_id'])) {
             $row = $result->fetch_assoc();
             $totalContribution = $row['total_contribution'];
 
-            // Check if total contribution is over 10,000
+            // Check if total contribution meets criteria for loan and health insurance
             if ($totalContribution >= 10000) {
-                $isContributionEligible = true; // Eligible based on contribution
-            } else {
-                $isContributionEligible = false; // Not eligible based on contribution
+                $isContributionEligibleForLoan = true; // Eligible for loan
+            }
+            if ($totalContribution >= 660) {
+                $isContributionEligibleForHealth = true; // Eligible for health insurance
             }
         } else {
             echo "No contributions found!";
@@ -62,10 +64,8 @@ if (isset($_SESSION['member_id'])) {
         echo "Error preparing statement.";
     }
 }
-
-// Close the database connection
-$conn->close();
 ?>
+
 
 
 <!DOCTYPE html>
@@ -244,13 +244,13 @@ $conn->close();
                                 <option value="5">Long Term</option>
                             </select><br>
 
-                            <label for="loanPurpose">Purpose of Loan:</label>
+                            <label for="loanPurpose">Loan Type:</label>
                             <select id="loanPurpose" name="loan_purpose" required>
-                                <option value="Home">Home</option>
-                                <option value="Car">Car</option>
-                                <option value="Education">Education</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Fidelity">Fidelity</option>
+                                <option value="LBP">LBP Loan Assisted Livelihood Program</option>
                                 <option value="Personal">Personal</option>
-                                <option value="Other">Other</option>
+                                <option value="Business">Business</option>
                             </select><br>
 
                             <label for="employmentStatus">Employment Status:</label>
@@ -263,8 +263,7 @@ $conn->close();
 
                             <!-- Collateral Checkbox -->
                             <label for="useCollateral">Use Collateral: <input type="checkbox" id="useCollateral"
-                                    name="use_collateral"></label>
-
+                                    name="use_collateral" onchange="toggleCollateralFields()"></label>
 
                             <!-- Collateral Fields (Initially Hidden) -->
                             <div id="collateralFields" style="display: none;">
@@ -275,6 +274,14 @@ $conn->close();
                                 <input type="file" id="collateral_image" name="collateral_image" accept="image/*"><br>
                             </div>
 
+                            <script>
+                                function toggleCollateralFields() {
+                                    const checkbox = document.getElementById('useCollateral');
+                                    const collateralFields = document.getElementById('collateralFields');
+                                    collateralFields.style.display = checkbox.checked ? 'block' : 'none';
+                                }
+                            </script>
+
                             <label for="paymentPlan">Payment Plan:</label>
                             <select id="paymentPlan" name="payment_plan" required>
                                 <option value="">Select Payment Plan</option>
@@ -282,6 +289,15 @@ $conn->close();
                                 <option value="quarterly">Quarterly</option>
                                 <option value="annually">Annually</option>
                             </select><br>
+
+                            <div id="comakersSection">
+                                <label>Co-Maker's Name:</label>
+                                <div class="comaker-entry">
+                                    <input type="text" name="comakers_name[]" class="comakers_name" required>
+                                    <button type="button" class="remove-comaker" style="display:none;">Remove</button>
+                                </div>
+                            </div>
+                            <button type="button" id="addComakerBtn">Add Another Co-Maker</button><br>
 
                             <label for="supportingDocument1">Co-Makers Statement document (Image):</label>
                             <input type="file" id="supportingDocument1" name="supporting_document_1" accept="image/*"
@@ -383,18 +399,77 @@ $conn->close();
                 </div>
 
                 <script src="reviewModal.js"></script>
+                <script src="comakers_script.js"></script>
 
-                <script>
-                    // Toggle visibility of collateral fields
-                    document.getElementById('useCollateral').addEventListener('change', function () {
-                        var collateralFields = document.getElementById('collateralFields');
-                        if (this.checked) {
-                            collateralFields.style.display = 'block';
+
+                <?php
+                // Initialize eligibility variables
+                $canApply = false;
+                $isContributionEligibleForLoan = false; // Eligibility for Loan Application Modal
+                $isContributionEligibleForHealth = false; // Eligibility for Health Insurance Modal
+                
+                // Check if the user is logged in and has a member ID
+                if (isset($_SESSION['member_id'])) {
+                    $member_id = $_SESSION['member_id'];
+
+                    // Query to get the date_of_creation based on member_id
+                    $sql = "SELECT date_of_creation FROM members WHERE member_id = ?";
+                    if ($stmt = $conn->prepare($sql)) {
+                        $stmt->bind_param("s", $member_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+
+                        if ($result && $result->num_rows > 0) {
+                            $row = $result->fetch_assoc();
+                            $date_of_creation = new DateTime($row['date_of_creation']);
+                            $current_date = new DateTime();
+                            $interval = $current_date->diff($date_of_creation);
+
+                            // Check if the interval is greater than or equal to 6 months
+                            if ($interval->m >= 6 || $interval->y > 0) {
+                                $canApply = true; // Eligible to apply
+                            } else {
+                                $canApply = false; // Not eligible to apply
+                            }
                         } else {
-                            collateralFields.style.display = 'none';
+                            echo "No member found!";
                         }
-                    });
-                </script>
+                        $stmt->close();
+                    } else {
+                        echo "Error preparing statement.";
+                    }
+
+                    // Query to get total contribution amount
+                    $sql = "SELECT SUM(contribution_amount) AS total_contribution FROM contributions WHERE member_id = ?";
+                    if ($stmt = $conn->prepare($sql)) {
+                        $stmt->bind_param("s", $member_id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+
+                        if ($result && $result->num_rows > 0) {
+                            $row = $result->fetch_assoc();
+                            $totalContribution = $row['total_contribution'];
+
+                            // Check if total contribution meets criteria for loan and health insurance
+                            if ($totalContribution >= 10000) {
+                                $isContributionEligibleForLoan = true; // Eligible for loan
+                            }
+                            if ($totalContribution >= 660) {
+                                $isContributionEligibleForHealth = true; // Eligible for health insurance
+                            }
+                        } else {
+                            echo "No contributions found!";
+                        }
+                        $stmt->close();
+                    } else {
+                        echo "Error preparing statement.";
+                    }
+                }
+
+                // Close the database connection
+                $conn->close();
+                ?>
+
 
                 <?php
                 include 'pending_applications.php';
@@ -478,17 +553,23 @@ $conn->close();
                     </div>
                 </div>
 
-                <div id="contributionModal" class="modal" style="display: none;">
+                <div id="contributionErrorModal" class="modal" style="display: none;">
                     <div class="modal-content">
-                        <span class="close-btn" id="closeContributionModal">&times;</span>
+                        <span class="close-btn" id="closecontributionErrorModal">&times;</span>
                         <h2>Eligibility Information</h2>
-                        <p>Your total contributions must exceed 10,000 to apply.</p>
+                        <p>Your total contributions must exceed 10,000 PHP to apply.</p>
                     </div>
                 </div>
 
+                <div id="contributionErrorModalHealth" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="close-btn" id="closecontributionErrorModalHealth">&times;</span>
+                        <h2>Eligibility Information</h2>
+                        <p>Your total contributions must exceed 660 PHP to apply.</p>
+                    </div>
+                </div>
 
                 <script>
-
                     document.addEventListener('DOMContentLoaded', function () {
                         // Modal elements
                         const loanApplicationModal = document.getElementById('loanApplicationModal');
@@ -496,7 +577,8 @@ $conn->close();
                         const savingsApplicationModal = document.getElementById('savingsApplicationModal');
                         const verificationModal = document.getElementById('verificationModal');
                         const eligibilityModal = document.getElementById('eligibilityModal');
-                        const contributionModal = document.getElementById('contributionModal');
+                        const contributionErrorModal = document.getElementById('contributionErrorModal');
+                        const contributionErrorModalHealth = document.getElementById('contributionErrorModalHealth');
                         // Open buttons
                         const openLoanApplicationModalBtn = document.getElementById('openLoanApplicationModalBtn');
                         const openHealthInsuranceModalBtn = document.getElementById('openHealthInsuranceModalBtn');
@@ -507,60 +589,63 @@ $conn->close();
                         const closeSavingsApplicationModal = document.getElementById('closeSavingsApplicationModal');
                         const closeVerificationModal = document.getElementById('closeVerificationModal');
                         const closeEligibilityModal = document.getElementById('closeEligibilityModal');
-                        const closeContributionModal = document.getElementById('closeContributionModal');
-
-                        // Assuming isVerified, canApply, and isContributionEligible variables are set from the server-side PHP code
+                        const closecontributionErrorModal = document.getElementById('closecontributionErrorModal');
+                        const closecontributionErrorModalHealth = document.getElementById('closecontributionErrorModalHealth');
+                        // Pass server-side variables to JavaScript
                         const isVerified = <?php echo json_encode($_SESSION['verified'] === 'True'); ?>; // Pass verified status to JS
                         const canApply = <?php echo json_encode($canApply); ?>; // Pass eligibility to JS
-                        const isContributionEligible = <?php echo json_encode($isContributionEligible); ?>; // Pass contribution eligibility to JS
+                        const isContributionEligibleForLoan = <?php echo json_encode($isContributionEligibleForLoan); ?>; // Loan contribution eligibility
+                        const isContributionEligibleForHealth = <?php echo json_encode($isContributionEligibleForHealth); ?>; // Health contribution eligibility
 
-                        // Function to open the modal based on verification, eligibility, and contribution status
-                        function openModal(modal) {
+                        // Function to open the loan application modal with verification and eligibility checks
+                        function openLoanModal() {
                             if (!isVerified) {
-                                verificationModal.style.display = 'block'; // Show verification modal if not verified
+                                verificationModal.style.display = 'block';
+                            } else if (!canApply) {
+                                eligibilityModal.style.display = 'block';
+                            } else if (!isContributionEligibleForLoan) {
+                                contributionErrorModal.style.display = 'block'; // Show contribution modal if not eligible for loan
+                            } else {
+                                loanApplicationModal.style.display = 'block'; // Show loan application modal if all conditions met
                             }
-
-                            else if (!canApply) {
-                                eligibilityModal.style.display = 'block'; // Show eligibility modal if not eligible
-                            }
-
-                            else if (!isContributionEligible) {
-                                contributionModal.style.display = 'block'; // Show eligibility modal if contribution is not eligible
-                            }
-                            else {
-                                modal.style.display = 'block'; // Show the intended modal if both verified and eligible
-                            }
-
-
                         }
 
-                        // Open modals based on verification and eligibility
-                        openLoanApplicationModalBtn.onclick = function () {
-                            openModal(loanApplicationModal); // Pass intended modal
-                        };
+                        // Function to open the health insurance modal with verification and eligibility checks
+                        function openHealthModal() {
+                            if (!isVerified) {
+                                verificationModal.style.display = 'block';
+                            } else if (!canApply) {
+                                eligibilityModal.style.display = 'block';
+                            } else if (!isContributionEligibleForHealth) {
+                                contributionErrorModalHealth.style.display = 'block'; // Show contribution modal if not eligible for health insurance
+                            }
+                            else {
+                                healthInsuranceModal.style.display = 'block'; // Show health insurance modal if all conditions met
+                            }
+                        }
 
-                        openHealthInsuranceModalBtn.onclick = function () {
-                            openModal(healthInsuranceModal); // Pass intended modal
-                        };
+                        // Set onclick events for opening modals
+                        openLoanApplicationModalBtn.onclick = openLoanModal;
+                        openHealthInsuranceModalBtn.onclick = openHealthModal;
 
-                        // Close modals
+                        // Close modal events
                         closeLoanApplicationModal.onclick = function () {
                             loanApplicationModal.style.display = 'none';
                         };
-
                         closeHealthInsuranceModal.onclick = function () {
                             healthInsuranceModal.style.display = 'none';
                         };
-
                         closeVerificationModal.onclick = function () {
                             verificationModal.style.display = 'none';
                         };
-
                         closeEligibilityModal.onclick = function () {
                             eligibilityModal.style.display = 'none';
                         };
-                        closeContributionModal.onclick = function () {
-                            contributionModal.style.display = 'none';
+                        closecontributionErrorModal.onclick = function () {
+                            contributionErrorModal.style.display = 'none';
+                        };
+                        closecontributionErrorModalHealth.onclick = function () {
+                            contributionErrorModalHealth.style.display = 'none';
                         };
 
                         // Close modals if user clicks outside of them
@@ -575,20 +660,22 @@ $conn->close();
                                 verificationModal.style.display = 'none';
                             } else if (event.target === eligibilityModal) {
                                 eligibilityModal.style.display = 'none';
-                            } else if (event.target === contributionModal) {
-                                contributionModal.style.display = 'none';
+                            } else if (event.target === contributionErrorModal) {
+                                contributionErrorModal.style.display = 'none';
+                            } else if (event.target === contributionErrorModalHealth) {
+                                contributionErrorModalHealth.style.display = 'none';
                             }
                         };
                     });
-
                 </script>
+
 
                 <?php
 
                 echo "<script>console.log('isVerified: ', " . json_encode($_SESSION['verified'] === 'True') . ");</script>";
                 echo "<script>console.log('canApply: ', " . json_encode($canApply) . ");</script>";
-                echo "<script>console.log('isContributionEligible: ', " . json_encode($isContributionEligible) . ");</script>";
-
+                echo "<script>console.log('isContributionEligible: ', " . json_encode($isContributionEligibleForHealth) . ");</script>";
+                echo "<script>console.log('isContributionEligible: ', " . json_encode($isContributionEligibleForLoan) . ");</script>";
                 ?>
             </div>
 

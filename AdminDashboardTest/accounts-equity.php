@@ -63,7 +63,7 @@ $conn->close();
 
         <!-- Main Content -->
         <main>
-            <h1>Income Statement</h1>
+            <h1>Equity</h1>
 
             <!-- Analyses -->
             <div class="analyse">

@@ -2,30 +2,6 @@
 include 'connection.php'; // Assuming this file contains your database connection details
 include 'check_user.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $invoice_date = $_POST['invoice_date'];
-    $amount_paid = $_POST['amount_paid'];
-    $note = $_POST['note'];
-    $type = $_POST['type'];
-    $invoiced_by = $_SESSION['name'];
-
-    if (!empty($invoice_date)) {
-        $sql = "INSERT INTO receivable (invoiced_by, invoice_date, amount_paid, note, type)
-                VALUES (?, ?, ?, ?, ?)";
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssss", $invoiced_by, $invoice_date, $amount_paid, $note, $type);
-
-        if ($stmt->execute()) {
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        } else {
-            echo "Error: " . $stmt->error;
-        }
-    } else {
-        echo "Error: Invoice date cannot be empty.";
-    }
-}
 
 $conn->close();
 ?>
@@ -81,8 +57,8 @@ $conn->close();
             <div class="recent-orders">
 
                 <?php
-                echo " <h2>Member Contributions</h2>";
-                include 'approved_contributions.php';
+                echo " <h2>Rerpo</h2>";
+
                 ?>
 
 

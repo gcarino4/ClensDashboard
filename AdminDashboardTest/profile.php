@@ -34,5 +34,11 @@ $role = htmlspecialchars($user['role']);
             <img src="<?php echo $profilePic; ?>" alt="Profile Picture"
                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
         </div>
+
     </div>
+    <a href="../logout.php" style="color: red">
+        <span class="material-icons-sharp">
+            logout
+        </span>
+    </a>
 </a>

@@ -20,15 +20,26 @@ document.getElementById('loanSubmitBtn').addEventListener('click', function(even
     const useCollateral = document.getElementById('useCollateral').checked ? "Yes" : "No";
     const collateral = document.getElementById('collateral').value;
     const paymentPlan = document.getElementById('paymentPlan').value;
+    const loanTermText = parseInt(document.getElementById('loanTerm').value, 10);
 
     // Calculate interest rate based on loan term
 let interestRate = 0;
+
 if (loanTerm == 1) {
-    interestRate = 0.02; // 2% for 6 months - 1 year
+    interestRate = 0.12; // 12% for 6 months - 1 year
 } else if (loanTerm == 3) {
-    interestRate = 0.06; // 6% for 1 year - 3 years
+    interestRate = 0.20; // 20% for 1 year - 3 years
 } else if (loanTerm == 5) {
-    interestRate = 0.10; // 10% for 3 years - 5 years
+    interestRate = 0.24; // 24% for 3 years - 5 years
+}
+
+let loanTermTextField = '';
+if (loanTermText === 1) {
+    loanTermTextField = "Short Term"; // 2% for 6 months - 1 year
+} else if (loanTermText === 3) {
+    loanTermTextField = "Mid Term"; // 6% for 1 year - 3 years
+} else if (loanTermText === 5) {
+    loanTermTextField = "Long Term"; // 10% for 3 years - 5 years
 }
 
 // Calculate total interest
@@ -36,11 +47,11 @@ const interest = loanAmount * interestRate;
 
 // Calculate the number of dates to pay based on payment plan
 let datesToPay = 0;
-if (paymentPlan === "monthly") {
+if (paymentPlan == "monthly") {
     datesToPay = loanTerm * 12; // 12 months in a year
-} else if (paymentPlan === "quarterly") {
+} else if (paymentPlan == "quarterly") {
     datesToPay = loanTerm * 4; // 4 quarters in a year
-} else if (paymentPlan === "annually") {
+} else if (paymentPlan == "annually") {
     datesToPay = loanTerm; // Pay once a year
 }
 
@@ -59,7 +70,7 @@ const reviewContent = `
     <p><strong>Branch:</strong> ${branch}</p>
     <p><strong>Annual Income:</strong> ${applicantIncome}</p>
     <p><strong>Loan Amount Requested:</strong> ${loanAmount}</p>
-    <p><strong>Loan Term:</strong> ${loanTerm}</p>
+    <p><strong>Loan Term:</strong> ${loanTermTextField}</p>
     <p><strong>Purpose of Loan:</strong> ${loanPurpose}</p>
     <p><strong>Employment Status:</strong> ${employmentStatus}</p>
     <p><strong>Use Collateral:</strong> ${useCollateral}</p>

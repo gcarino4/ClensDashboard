@@ -29,70 +29,46 @@ try {
     $member_data = $member_name_result->fetch_assoc();
     $member_name = $member_data['name'];
 
-    // Fetch the original loan amount from loan_applications
-    $loan_app_sql = "SELECT loan_amount FROM loan_applications WHERE application_id = ? AND member_id = ?";
-    $loan_app_stmt = $conn->prepare($loan_app_sql);
-    $loan_app_stmt->bind_param("ss", $application_id, $member_id);
-    $loan_app_stmt->execute();
-    $loan_app_result = $loan_app_stmt->get_result();
-    if ($loan_app_result->num_rows === 0) {
-        throw new Exception('Loan application not found.');
-    }
-    $loan_app_data = $loan_app_result->fetch_assoc();
-    $original_loan_amount = $loan_app_data['loan_amount'];
-
-    // Fetch loan details from approved_loans
-    $select_sql = "SELECT loan_term, payment_plan, loan_amount, next_payment_due_date FROM approved_loans WHERE application_id = ? AND member_id = ?";
-    $select_stmt = $conn->prepare($select_sql);
-    $select_stmt->bind_param("ss", $application_id, $member_id);
-    $select_stmt->execute();
-    $select_result = $select_stmt->get_result();
-    if ($select_result->num_rows === 0) {
+    // Fetch loan details from approved_loans, including loan_amount as the initial updated_loan_amount
+    $loan_sql = "SELECT loan_amount, loan_term, payment_plan, next_payment_due_date FROM approved_loans WHERE application_id = ? AND member_id = ?";
+    $loan_stmt = $conn->prepare($loan_sql);
+    $loan_stmt->bind_param("ss", $application_id, $member_id);
+    $loan_stmt->execute();
+    $loan_result = $loan_stmt->get_result();
+    if ($loan_result->num_rows === 0) {
         throw new Exception('Approved loan not found.');
     }
-    $loan_data = $select_result->fetch_assoc();
+    $loan_data = $loan_result->fetch_assoc();
+    $updated_loan_amount = $loan_data['loan_amount'];
     $loan_term = $loan_data['loan_term'];
     $payment_plan = $loan_data['payment_plan'];
-    $remaining_loan_amount = $loan_data['loan_amount'];  // Dynamic amount
     $next_payment_due_date = new DateTime($loan_data['next_payment_due_date']);
     $current_date = new DateTime();
 
-    // Calculate minimum payment based on the original loan amount, loan term, and payment plan
+    // Calculate minimum payment based on the updated_loan_amount, loan term, and payment plan
     $min_payment_amount = 0;
-
     switch ($payment_plan) {
         case 'monthly':
-            $min_payment_amount = ($original_loan_amount / ($loan_term * 12));
+            $min_payment_amount = $updated_loan_amount / ($loan_term * 12);
             break;
         case 'quarterly':
-            $min_payment_amount = ($original_loan_amount / ($loan_term * 4));
+            $min_payment_amount = $updated_loan_amount / ($loan_term * 4);
             break;
         case 'annually':
-            $min_payment_amount = ($original_loan_amount / $loan_term);
+            $min_payment_amount = $updated_loan_amount / $loan_term;
             break;
         default:
             throw new Exception('Invalid payment plan specified.');
     }
 
-    // Check if payment is overdue
+    // Apply a 1% penalty if payment is overdue
     if ($current_date > $next_payment_due_date) {
-        // Apply a 1% penalty to the minimum payment amount if overdue
         $min_payment_amount += $min_payment_amount * 0.01;
     }
 
-
-    // Check if the payment amount is valid (should be at least the minimum payment)
+    // Validate the payment amount (should be at least the minimum payment)
     if ($payment_amount < $min_payment_amount) {
         throw new Exception('Payment amount must not be less than ' . number_format($min_payment_amount, 2));
-    }
-
-    // Update the remaining loan amount in the approved_loans table
-    $updated_loan_amount = $remaining_loan_amount - $payment_amount;
-    $update_sql = "UPDATE approved_loans SET loan_amount = ? WHERE application_id = ? AND member_id = ?";
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bind_param("dss", $updated_loan_amount, $application_id, $member_id);
-    if (!$update_stmt->execute()) {
-        throw new Exception('Failed to update loan amount in approved_loans: ' . $update_stmt->error);
     }
 
     // Calculate the new next payment due date based on the payment plan

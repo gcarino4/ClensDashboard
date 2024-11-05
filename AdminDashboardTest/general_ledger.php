@@ -15,6 +15,24 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
     <link rel="stylesheet" href="css/style.css">
     <script src="index.js"></script>
     <title>CoLens Dashboard</title>
+
+    <style>
+        .custom-button-reject,
+        .rejectBtn {
+            margin: 5px 5px;
+            background-color: red;
+            padding: 5px;
+            color: white;
+        }
+
+        .custom-button-approve,
+        .approveBtn {
+            margin: 5px 5px;
+            background-color: green;
+            padding: 5px;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -39,42 +57,38 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
 
             </div>
             <!-- End of New Users Section -->
+
             <div class="recent-orders">
-                <div class="date-range-form"
-                    style="margin: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
-                    <h2 style="text-align: center; margin-bottom: 20px;">Select Date Range</h2>
-                    <form method="GET" action="">
-                        <label for="start_date" style="margin-right: 10px;">Start Date:</label>
-                        <input type="date" id="start_date" name="start_date" required style="margin-right: 20px;">
-                        <label for="end_date" style="margin-right: 10px;">End Date:</label>
-                        <input type="date" id="end_date" name="end_date" required style="margin-right: 20px;">
-                        <button type="submit" style="padding: 5px 15px;">Filter</button>
-                    </form>
-                </div>
+                <?php if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Member'): ?>
+                    <div class="date-range-form"
+                        style="margin: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; background-color: #f9f9f9;">
+                        <h2 style="text-align: center; margin-bottom: 20px;">Select Date Range</h2>
+                        <form method="GET" action="">
+                            <label for="start_date" style="margin-right: 10px;">Start Date:</label>
+                            <input type="date" id="start_date" name="start_date" required style="margin-right: 20px;">
+                            <label for="end_date" style="margin-right: 10px;">End Date:</label>
+                            <input type="date" id="end_date" name="end_date" required style="margin-right: 20px;">
+                            <button type="submit" style="padding: 5px 15px;">Filter</button>
+                        </form>
+                    </div>
+                <?php endif ?>
 
                 <!-- Ledger Table -->
                 <?php
-
-                if ($role === 'Admin' || 'Finance Officer'):
-
+                if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'Member') {
                     include 'general_ledger_payments.php';
                     echo "<br>";
                     include 'general_ledger_receivables.php';
-                    echo "<br>";
-                    echo "<h2>Loan Payments</h2>";
-                    include 'loan_payments_table.php';
-                    echo "<br>";
-                    echo "<h2>Health Insurance Payments</h2>";
-                    include 'health_payments_table.php';
-                    echo "<br>";
-                    echo "<h2>Member Contribution Payments</h2>";
-                    include 'contribution_payments_table.php';
-                endif;
-
-                if ($role === 'Member'):
-                    include 'general_ledger_receivables_member.php';
-
-                endif;
+                }
+                echo "<br>";
+                echo "<h2>Loan Payments</h2>";
+                include 'loan_payments_table.php';
+                echo "<br>";
+                echo "<h2>Health Insurance Payments</h2>";
+                include 'health_payments_table.php';
+                echo "<br>";
+                echo "<h2>Member Contribution Payments</h2>";
+                include 'contribution_payments_table.php';
                 ?>
 
 

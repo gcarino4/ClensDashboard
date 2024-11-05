@@ -48,27 +48,6 @@ try {
         throw new Exception("A payment has already been made for this contribution this month.");
     }
 
-    // Update the contribution amount based on the contribution ID
-    $update_sql = "UPDATE contributions SET contribution_amount = contribution_amount + ? WHERE contribution_id = ?";
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("ds", $payment_amount, $contribution_id);
-    if (!$stmt->execute()) {
-        throw new Exception("Database error updating contributions.");
-    }
-
-    // Fetch the new total contribution amount after the update
-    $select_sql = "SELECT contribution_amount FROM contributions WHERE contribution_id = ?";
-    $stmt = $conn->prepare($select_sql);
-    $stmt->bind_param("s", $contribution_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows === 0) {
-        throw new Exception("Contribution ID not found.");
-    }
-
-    $row = $result->fetch_assoc();
-    $new_contribution_amount = $row['contribution_amount'];
-
     // Insert payment record
     $insert_sql = "INSERT INTO contribution_payments (contribution_id, member_id, payment_amount, payment_image, payment_date) 
                    VALUES (?, ?, ?, ?, NOW())";
@@ -78,8 +57,9 @@ try {
         throw new Exception("Error inserting into contribution_payments.");
     }
 
+    // Commit the transaction
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Payment processed successfully.', 'contribution_id' => $contribution_id, 'new_amount' => $new_contribution_amount]);
+    echo json_encode(['success' => true, 'message' => 'Payment processed successfully.', 'contribution_id' => $contribution_id]);
 
 } catch (Exception $e) {
     $conn->rollback();

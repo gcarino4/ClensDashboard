@@ -8,6 +8,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Fetch the loan's payment plan and approval date
     $sql = "SELECT payment_plan, approval_date FROM loan_applications WHERE application_id = ?";
     $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        die('Prepare failed: ' . $conn->error);
+    }
+
     $stmt->bind_param('s', $application_id);
     $stmt->execute();
     $stmt->bind_result($payment_plan, $approval_date);
@@ -21,42 +26,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $approval_date = date('Y-m-d');
         }
 
-        // Calculate the due date based on the payment plan
-        switch ($payment_plan) {
-            case 'monthly':
-                $due_date = date('Y-m-d', strtotime('+1 month', strtotime($approval_date)));
-                break;
-            case 'quarterly':
-                $due_date = date('Y-m-d', strtotime('+3 months', strtotime($approval_date)));
-                break;
-            case 'annually':
-                $due_date = date('Y-m-d', strtotime('+1 year', strtotime($approval_date)));
-                break;
-            default:
-                $due_date = $approval_date; // Default fallback if no plan
-        }
-
-        // Update the loan's status to 'approved', set the approval_date and initial due_date
+        // Update the loan's status to 'approved' and set the approval_date
         $update_sql = "UPDATE loan_applications 
-                       SET status = ?, approval_date = ?, due_date = ? 
+                       SET status = ?, approval_date = ? 
                        WHERE application_id = ?";
         $update_stmt = $conn->prepare($update_sql);
-        $update_stmt->bind_param('ssss', $status, $approval_date, $due_date, $application_id);
+
+        if (!$update_stmt) {
+            die('Prepare failed: ' . $conn->error);
+        }
+
+        $update_stmt->bind_param('sss', $status, $approval_date, $application_id);
         if ($update_stmt->execute()) {
             echo 'success';
         } else {
-            echo 'error';
+            echo 'Error updating status: ' . $update_stmt->error; // Added error reporting
         }
         $update_stmt->close();
+
     } elseif ($status === 'rejected') {
         // If rejecting, just update the status
         $update_sql = "UPDATE loan_applications SET status = ? WHERE application_id = ?";
         $update_stmt = $conn->prepare($update_sql);
+
+        if (!$update_stmt) {
+            die('Prepare failed: ' . $conn->error);
+        }
+
         $update_stmt->bind_param('ss', $status, $application_id);
         if ($update_stmt->execute()) {
             echo 'success';
         } else {
-            echo 'error';
+            echo 'Error updating status: ' . $update_stmt->error; // Added error reporting
         }
         $update_stmt->close();
     }

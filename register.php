@@ -39,7 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $business_previous = $mysqli->real_escape_string($_POST['business_previous']);
     $affiliation = $mysqli->real_escape_string($_POST['affiliation']);
     $member_salary = $mysqli->real_escape_string($_POST['member_salary']);
-    $spouse_income = $mysqli->real_escape_string($_POST['spouse_income']);
     $other_income = $mysqli->real_escape_string($_POST['other_income']);
     $crime = $mysqli->real_escape_string($_POST['crime']);
 
@@ -97,11 +96,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-
-
-    // Prepare the insert statement
-    $sql = "INSERT INTO members (member_id, name, contact_no, email, birthday, sex, civil_status, address, place_of_birth, spouse_name, children, education_date, education_school, education_course, employment_date, employment_position, employment_school, cooperative_experience_date, cooperative_experience_position, cooperative_experience_name, training_date, training_course, training_hours, business_present, business_previous, affiliation, member_salary, spouse_income, other_income, crime, role, age)
-         VALUES ('$member_id', '$name', '$contact_no', '$email', '$birthday', '$sex', '$civil_status', '$address', '$place_of_birth', '$spouse_name', '$children', '$education_date', '$education_school', '$education_course', '$employment_date', '$employment_position', '$employment_school', '$cooperative_experience_date', '$cooperative_experience_position', '$cooperative_experience_name', '$training_date', '$training_course', '$training_hours', '$business_present', '$business_previous', '$affiliation', '$member_salary', '$spouse_income', '$other_income', '$crime', 'Member', '$age')";
+    // Prepare the insert statement without spouse_income
+    $sql = "INSERT INTO members (member_id, name, contact_no, email, birthday, sex, civil_status, address, place_of_birth, spouse_name, children, education_date, education_school, education_course, employment_date, employment_position, employment_school, cooperative_experience_date, cooperative_experience_position, cooperative_experience_name, training_date, training_course, training_hours, business_present, business_previous, affiliation, member_salary, other_income, crime, role, age)
+         VALUES ('$member_id', '$name', '$contact_no', '$email', '$birthday', '$sex', '$civil_status', '$address', '$place_of_birth', '$spouse_name', '$children', '$education_date', '$education_school', '$education_course', '$employment_date', '$employment_position', '$employment_school', '$cooperative_experience_date', '$cooperative_experience_position', '$cooperative_experience_name', '$training_date', '$training_course', '$training_hours', '$business_present', '$business_previous', '$affiliation', '$member_salary', '$other_income', '$crime', 'Member', '$age')";
 
     if ($mysqli->query($sql) === TRUE) {
         echo json_encode(['New record created successfully!']);

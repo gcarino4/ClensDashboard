@@ -53,7 +53,7 @@
                                     }
                                 </style>
 
-                                <a href="#" id="forgotPassword">Forgot Password?</a>
+
                             </div>
                         </form>
                     </div>
@@ -240,11 +240,11 @@
                             type: 'POST',
                             data: $(this).serialize(),
                             success: function (response) {
-                                if (response == "Admin" || 'Admin Officer' || 'Finance Officer') {
+                                // Check if the response is one of the admin roles
+                                if (response === "Admin" || response === "Admin Officer" || response === "Finance Officer") {
                                     location.replace("AdminDashboardTest/index.php");
-
-                                } else if (response == "Member") {
-                                    location.replace("AdminDashboardTest/profile_page.php");
+                                } else if (response === "Member") {
+                                    location.replace("AdminDashboardTest/index_member.php");
                                 } else {
                                     $('#alert').html("<div class='alert alert-danger'>" + response + "</div>");
                                     $('#alert').fadeIn(500); // Show alert
@@ -261,6 +261,7 @@
                                 }, 3000); // Display alert for 3 seconds
                             }
                         });
+
                     }
                 });
             });

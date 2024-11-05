@@ -3,7 +3,7 @@
 include 'connection.php';
 
 // Query to get the sum of payments made from loan_payments
-$sql_loan_payments = "SELECT SUM(payment_amount) as total_loaned_paid FROM loan_payments";
+$sql_loan_payments = "SELECT SUM(payment_amount) as total_loaned_paid FROM loan_payments WHERE status = 'approved' ";
 
 $result_loan_payments = $conn->query($sql_loan_payments);
 
@@ -22,7 +22,6 @@ if ($result_due->num_rows > 0) {
     $total_due = $row_due['total_due'];
 }
 
-$total_due = $total_due + $total_loaned_paid;
 
 
 // Query to total amount from payments table
@@ -44,6 +43,14 @@ if ($result_loans->num_rows > 0) {
     $total_loans = $row_loans['total_loans'];
 }
 
+$sql_equity = "SELECT SUM(amount_paid) as total_equity FROM equity";
+$result_equity = $conn->query($sql_equity);
+$total_equity = 0;
+if ($result_equity->num_rows > 0) {
+    $row_loans = $result_equity->fetch_assoc();
+    $total_equity = $row_loans['total_equity'];
+}
+
 // Query to count all users in the members table
 $sql = "SELECT COUNT(*) as total_users FROM members";
 
@@ -57,8 +64,8 @@ if ($result->num_rows > 0) {
     echo "0 results";
 }
 
-$total_equity = $total_due - $total_payments;
-
+$equity = $total_due - $total_payments;
+$total_equity_amount = $total_equity + $equity;
 
 
 $conn->close();

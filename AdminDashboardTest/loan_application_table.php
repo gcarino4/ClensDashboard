@@ -28,6 +28,7 @@ if ($result->num_rows > 0) {
             top: 0; /* Position the sticky header at the top */
             background-color: white; /* Background color to cover content below */
             z-index: 1; /* Ensure it stays above other content */
+            
         }
 
         .custom-table th,
@@ -36,6 +37,7 @@ if ($result->num_rows > 0) {
             text-align: center;
             vertical-align: middle; /* Aligns content vertically in the center */
             padding: 15px;
+            
         }
 
         .custom-button-reject, .rejectBtn {
@@ -134,7 +136,7 @@ if ($result->num_rows > 0) {
             <td>" . htmlspecialchars($row["phone_number"]) . "</td>
             <td>" . htmlspecialchars($row["address"]) . "</td>
             <td>" . htmlspecialchars($row["annual_income"]) . "</td>
-            <td>" . htmlspecialchars($row["bank_info"]) . "</td>
+            <td>" . htmlspecialchars('Bank Name:') . "" . htmlspecialchars($row["bank_name"]) . "  " . htmlspecialchars('Bank ID:') . "" . htmlspecialchars($row["bank_id"]) . " " . htmlspecialchars('Bank Branch:') . " " . htmlspecialchars($row["branch"]) . "</td>
             <td>" . htmlspecialchars($row["loan_amount"]) . "</td>
             <td>" . htmlspecialchars($row["payment_plan"]) . "</td>
             <td>" . htmlspecialchars($row["loan_term"]) . "</td>

@@ -38,13 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Determine the interest rate based on loan term
     switch ($loan_term) {
         case 1:
-            $interest_rate = (2 / 100) * $loan_amount;  // 2% interest rate for 1 year term
+            $interest_rate = (12 / 100) * $loan_amount;  // 2% interest rate for 1 year term
             break;
         case 3:
-            $interest_rate = (6 / 100) * $loan_amount;  // 6% interest rate for 3 years term
+            $interest_rate = (20 / 100) * $loan_amount;  // 6% interest rate for 3 years term
             break;
         case 5:
-            $interest_rate = (10 / 100) * $loan_amount; // 10% interest rate for 5 years term
+            $interest_rate = (24 / 100) * $loan_amount; // 10% interest rate for 5 years term
             break;
         default:
             $interest_rate = 0;  // Default to 0 if the term doesn't match
@@ -147,9 +147,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($conn->query($sql) === TRUE) {
         echo "<script>alert('Application submitted successfully.'); window.location = 'index_member.php';</script>";
-        exit; // Ensure no further code is executed
+
+        echo "Application ID: $application_id<br>";
+
+        // Retrieve the co-maker names array from POST data
+        if (isset($_POST['comakers_name']) && !empty($_POST['comakers_name'])) {
+            echo '<pre>';
+            print_r($_POST['comakers_name']); // Debug: Print the co-maker names array
+            echo '</pre>';
+
+            foreach ($_POST['comakers_name'] as $comaker_name) {
+                // Sanitize each co-maker name
+                $comaker_name = $conn->real_escape_string($comaker_name);
+
+                // Insert each co-maker into the comakers table
+                $coMakerSql = "INSERT INTO comakers (application_id, comaker_name) VALUES ('$application_id', '$comaker_name')";
+
+                if (!$conn->query($coMakerSql)) {
+                    // Log query error
+                    echo "Error inserting co-maker: " . $conn->error . "<br>";
+                    echo "Query: " . $coMakerSql . "<br>";
+                } else {
+                    echo "Co-maker '$comaker_name' added successfully.<br>";
+                }
+            }
+        } else {
+            echo "No co-makers found.<br>"; // Debug: Check if the co-makers are missing
+        }
+
+        echo "<script>alert('Application submitted successfully, including co-makers.'); window.location = 'index_member.php';</script>";
+        exit;
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 
     // Close connection

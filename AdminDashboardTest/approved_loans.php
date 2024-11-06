@@ -73,7 +73,7 @@ echo '</table>';
 ?>
 
 
-<!-- Modal HTML -->
+
 <!-- Modal HTML -->
 <div id="loanPaymentModal"
     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5);">
@@ -83,6 +83,10 @@ echo '</table>';
         <form id="paymentForm">
             <input type="text" id="modalApplicationId" hidden>
             <input type="text" id="modalMemberId" readonly>
+
+            <!-- Late Payment Message -->
+            <p id="latePaymentMessage" style="color: red; display: none;">Late Payment: A 1% late fee has been added.
+            </p>
 
             <label for="minimumPayment">Payment Due:</label>
             <input type="number" id="minimumPayment" readonly>
@@ -109,31 +113,39 @@ echo '</table>';
             const row = event.target.closest('tr');
             const applicationId = row.getAttribute('data-application-id');
             const memberId = row.getAttribute('data-member-id');
-            const loanAmount = parseFloat(row.getAttribute('data-loan-amount')); // Ensure loanAmount is a float
-            const loanTerm = parseInt(row.getAttribute('data-loan-term')); // Assuming loanTerm is in years
-            const paymentPlan = row.getAttribute('data-payment-plan');
-            const principalAmount = parseFloat(row.getAttribute('data-principal-amount')) || 0; // Ensure principalAmount is a float
-            const minimumPayment = parseFloat(row.getAttribute('data-minimum-payment')) || 0; // Ensure minimumPayment is a float
-            const interestRate = parseFloat(row.getAttribute('data-interest-rate')) || 0; // Ensure interestRate is a float and convert to decimal
+            const loanAmount = parseFloat(row.getAttribute('data-loan-amount'));
+            const minimumPayment = parseFloat(row.getAttribute('data-minimum-payment')) || 0;
             const nextPaymentDueDate = row.getAttribute('data-next-payment-due-date');
 
             document.getElementById('modalApplicationId').value = applicationId;
             document.getElementById('modalMemberId').value = memberId;
 
-            // Set max payment to loan amount
-            document.getElementById('paymentAmount').setAttribute('max', loanAmount);
+            // Check if today's date is greater than nextPaymentDueDate
+            const today = new Date();
+            const dueDate = new Date(nextPaymentDueDate);
+            let paymentDue = minimumPayment;
+            const latePaymentMessage = document.getElementById('latePaymentMessage');
 
+            if (today > dueDate) {
+                const overdueFee = minimumPayment * 0.01; // 1% of minimumPayment
+                paymentDue += overdueFee;
+                latePaymentMessage.style.display = 'block'; // Show late payment message
+            } else {
+                latePaymentMessage.style.display = 'none'; // Hide late payment message if not overdue
+            }
 
             // Display the calculated payment_due in the modal
-            document.getElementById('minimumPayment').value = minimumPayment.toFixed(0); // Show 2 decimal places
+            document.getElementById('minimumPayment').value = paymentDue.toFixed(2); // Show 2 decimal places
+            document.getElementById('nextPaymentDueDate').value = nextPaymentDueDate;
 
-            // Set the next payment due date in the modal
-            document.getElementById('nextPaymentDueDate').value = nextPaymentDueDate; // Display next payment due date
-
-            // Show the modal
             document.getElementById('loanPaymentModal').style.display = 'block';
         });
     });
+
+    function closeLoanModal() {
+        document.getElementById('loanPaymentModal').style.display = 'none';
+    }
+
 
     function closeLoanModal() {
         document.getElementById('loanPaymentModal').style.display = 'none'; // Hide the modal

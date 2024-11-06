@@ -1,7 +1,5 @@
 <?php
 
-namespace health_process_payment;
-
 include 'connection.php';
 
 session_start();
@@ -29,8 +27,8 @@ if (isset($_FILES['payment_image']) && $_FILES['payment_image']['error'] === UPL
     exit;
 }
 
-// Fetch the payment_due from the approved_health_insurance table
-$sql_due = "SELECT payment_due FROM approved_health_insurance WHERE application_id = ? AND member_id = ?";
+// Fetch the payment_due and next_payment_due_date from the approved_health_insurance table
+$sql_due = "SELECT payment_due, next_payment_due_date FROM approved_health_insurance WHERE application_id = ? AND member_id = ?";
 $stmt_due = $conn->prepare($sql_due);
 $stmt_due->bind_param("ss", $application_id, $session_member_id);
 $stmt_due->execute();
@@ -39,9 +37,20 @@ $result_due = $stmt_due->get_result();
 if ($result_due->num_rows > 0) {
     $due_data = $result_due->fetch_assoc();
     $payment_due = floatval($due_data['payment_due']);
+    $next_payment_due_date = $due_data['next_payment_due_date'];
 } else {
-    echo json_encode(['success' => false, 'message' => 'Payment due not found for this application.']);
+    echo json_encode(['success' => false, 'message' => 'Payment due or next payment due date not found for this application.']);
     exit;
+}
+
+// Check if the current date is greater than the next payment due date
+$current_date = new DateTime(); // Get current date
+$next_payment_due_date_obj = new DateTime($next_payment_due_date); // Convert next payment due date from string
+
+if ($current_date > $next_payment_due_date_obj) {
+    // Apply 1% late fee
+    $late_fee = $payment_due * 0.01;
+    $payment_due += $late_fee;
 }
 
 // Fetch the member_name from the members table

@@ -14,69 +14,12 @@ if (!isset($_SESSION['member_id'])) {
 
 $session_member_id = $_SESSION['member_id'];
 
-// Step 1: Query the `health_insurance_applications` table for approved insurance
-$sql = "SELECT application_id, member_id, insurance_type, coverage_amount, payment_plan, coverage_term, payment_due
-        FROM health_insurance_applications 
-        WHERE member_id = ? AND status = 'approved'";
-
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    die("Failed to prepare statement for health_insurance_applications: " . $conn->error);
-}
-
-$stmt->bind_param("s", $session_member_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Step 2: Insert the approved insurance into the `approved_health_insurance` table
-if ($result->num_rows > 0) {
-    while ($insurance = $result->fetch_assoc()) {
-        // Check for missing or null values
-        if (
-            empty($insurance['application_id']) ||
-            empty($insurance['member_id']) ||
-            empty($insurance['insurance_type']) ||
-            empty($insurance['coverage_amount']) ||
-            empty($insurance['payment_plan']) ||
-            empty($insurance['coverage_term']) ||
-            empty($insurance['payment_due'])
-        ) {
-            echo "Skipping record due to missing data.";
-            continue;
-        }
-
-        // Insert into approved_health_insurance
-        $insert_sql = "INSERT IGNORE INTO approved_health_insurance (application_id, member_id, insurance_type, coverage_amount, payment_plan, coverage_term, payment_due) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?)";
-        $insert_stmt = $conn->prepare($insert_sql);
-
-        if ($insert_stmt) {
-            $insert_stmt->bind_param(
-                "sssssss",
-                $insurance['application_id'],
-                $insurance['member_id'],
-                $insurance['insurance_type'],
-                $insurance['coverage_amount'],
-                $insurance['payment_plan'],
-                $insurance['coverage_term'],
-                $insurance['payment_due']
-            );
-            if (!$insert_stmt->execute()) {
-                echo "Error inserting record: " . $insert_stmt->error;
-            }
-        } else {
-            echo "Error preparing insert statement: " . $conn->error;
-        }
-    }
-} else {
-    echo '<p>No approved health insurance applications found.</p>';
-}
-$stmt->close();
 
 // Step 3: Display the approved insurance from `approved_health_insurance`
-$sql = "SELECT application_id, member_id, insurance_type, coverage_amount, payment_plan, coverage_term, payment_due 
+$sql = "SELECT application_id, member_id, insurance_type, coverage_amount, payment_plan, coverage_term, payment_due, next_payment_due_date 
         FROM approved_health_insurance 
         WHERE member_id = ?";
+
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     die("Failed to prepare statement for approved_health_insurance: " . $conn->error);
@@ -94,6 +37,7 @@ echo '<th>Member ID</th>';
 echo '<th>Insurance Type</th>';
 echo '<th>Coverage Amount</th>';
 echo '<th>Payment Plan</th>';
+echo '<th>Payment Deadline</th>';
 echo '<th>Coverage Term</th>';
 echo '<th>Payment Due</th>';
 echo '<th>Actions</th>'; // Add a new Actions column for the button
@@ -107,10 +51,12 @@ if ($result->num_rows > 0) {
         echo '<td>' . htmlspecialchars($insurance['insurance_type']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['coverage_amount']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['payment_plan']) . '</td>';
+        echo '<td>' . htmlspecialchars($insurance['next_payment_due_date']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['coverage_term']) . '</td>';
         echo '<td>' . htmlspecialchars($insurance['payment_due']) . '</td>';
         // Add "Pay Now" button
-        echo '<td><button onclick="openHealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ')">Make Payment</button></td>';
+        echo '<td><button onclick="openHealthPaymentModal(\'' . htmlspecialchars($insurance['application_id']) . '\', ' . htmlspecialchars($insurance['payment_due']) . ', \'' . htmlspecialchars($insurance['next_payment_due_date']) . '\')">Make Payment</button></td>';
+
         echo '</tr>';
     }
 } else {
@@ -135,6 +81,14 @@ echo '</table>';
                     <label for="applicationId">Application ID</label>
                     <input type="text" id="applicationId" name="application_id" readonly>
                 </div>
+
+                <!-- Late Payment Text -->
+                <p id="lateText" style="display:none; color:red;"></p> <!-- Add the element to display the late text -->
+
+                <div>
+                    <label for="paymentDue">Payment Due</label>
+                    <input type="text" id="paymentDue" name="payment_due" readonly>
+                </div>
                 <div>
                     <label for="paymentAmount">Payment Amount</label>
                     <input type="number" id="paymentAmount" name="payment_amount" required>
@@ -156,22 +110,67 @@ echo '</table>';
 
                 <button type="submit">Submit Payment</button>
             </form>
+
+
         </div>
     </div>
 </div>
 
+
 <script>
     // Function to open the payment modal and set the current date
-    function openHealthPaymentModal(applicationId, paymentValue) {
+    function openHealthPaymentModal(applicationId, paymentDue, nextPaymentDueDate) {
         document.getElementById('applicationId').value = applicationId;
-        document.getElementById('paymentAmount').value = paymentValue;
+        document.getElementById('paymentDue').value = paymentDue;
+        document.getElementById('paymentAmount').value = paymentDue; // Default to payment due
 
-        // Set the current date as the default value for the payment date
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('paymentDate').value = today;
 
+        const currentDate = new Date(today);
+        const nextPaymentDueDateObj = new Date(nextPaymentDueDate);
+
+        const lateText = document.getElementById('lateText'); // Get the element to display late message
+
+        if (currentDate > nextPaymentDueDateObj) {
+            const lateFee = paymentDue * 0.01; // 1% late fee
+            const updatedPaymentAmount = paymentDue + lateFee;
+            document.getElementById('paymentAmount').value = updatedPaymentAmount.toFixed(2);
+
+            // Update the paymentDue value to reflect the late fee
+            document.getElementById('paymentDue').value = paymentDue + lateFee;
+
+            // Display "Late - 1% fee added" message next to the payment amount
+            const lateMessage = document.createElement('span');
+            lateMessage.style.color = 'red';
+            lateMessage.textContent = 'Late - 1% fee added';
+            document.getElementById('paymentAmount').after(lateMessage);
+
+            // Display late text indicating the payment is overdue
+            lateText.style.display = 'block'; // Show the late text
+            lateText.style.color = 'red';
+            lateText.textContent = 'This payment is overdue. A 1% late fee has been added.';
+        } else {
+            // If payment is not late, remove the "Late" message and late text
+            const existingLateMessage = document.querySelector('#paymentAmount + span');
+            if (existingLateMessage) {
+                existingLateMessage.remove();
+            }
+
+            // Hide the late text when the payment is not overdue
+            lateText.style.display = 'none';
+
+            // Ensure paymentAmount and paymentDue are reset to the original values
+            document.getElementById('paymentAmount').value = paymentDue.toFixed(2);
+            document.getElementById('paymentDue').value = paymentDue;
+        }
+
+        // Show the modal
         document.getElementById('healthPaymentModal').style.display = 'block';
     }
+
+
+
 
     // Function to close the payment modal
     function closeHealthPaymentModal() {

@@ -47,10 +47,14 @@ if ($result_due->num_rows > 0) {
 $current_date = new DateTime(); // Get current date
 $next_payment_due_date_obj = new DateTime($next_payment_due_date); // Convert next payment due date from string
 
+// Late fee calculation if overdue
+$late_fee = 0;
+$late_portion = 0; // Initialize late portion
 if ($current_date > $next_payment_due_date_obj) {
     // Apply 1% late fee
     $late_fee = $payment_due * 0.01;
-    $payment_due += $late_fee;
+    $late_portion = $late_fee; // Store the late portion value
+    $payment_due += $late_fee; // Add the late fee to the due amount
 }
 
 // Fetch the member_name from the members table
@@ -78,8 +82,8 @@ if (abs(floatval($payment_amount) - $payment_due) > 1) {
 $transaction_number = uniqid('txn_', true);
 
 // Insert payment details into the database including the Base64 image
-$sql = "INSERT INTO health_payments (application_id, member_id, member_name, payment_amount, payment_date, notes, payment_due, transaction_number, payment_image) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO health_payments (application_id, member_id, member_name, payment_amount, payment_date, notes, payment_due, transaction_number, payment_image, late_portion) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
 
 if (!$stmt) {
@@ -87,10 +91,10 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("sssssssss", $application_id, $session_member_id, $member_name, $payment_amount, $payment_date, $payment_notes, $payment_due, $transaction_number, $payment_image);
+$stmt->bind_param("ssssssssss", $application_id, $session_member_id, $member_name, $payment_amount, $payment_date, $payment_notes, $payment_due, $transaction_number, $payment_image, $late_portion);
 
 if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'transaction_number' => $transaction_number]);
+    echo json_encode(['success' => true, 'transaction_number' => $transaction_number, 'late_portion' => $late_portion]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Error executing statement: ' . $stmt->error]);
 }

@@ -61,10 +61,14 @@ try {
             throw new Exception('Invalid payment plan specified.');
     }
 
-    // Apply a 1% penalty if payment is overdue
+    // Calculate late portion (1% penalty if payment is overdue)
+    $late_portion = 0;
     if ($current_date > $next_payment_due_date) {
-        $min_payment_amount += $min_payment_amount * 0.01;
+        $late_portion = $min_payment_amount * 0.01; // 1% late penalty
     }
+
+    // Apply the late portion to the payment amount if overdue
+    $payment_amount_with_late = $payment_amount + $late_portion;
 
     // Validate the payment amount (should be at least the minimum payment)
     if ($payment_amount < $min_payment_amount) {
@@ -74,10 +78,10 @@ try {
     // Insert payment record into loan_payments table
     $transaction_number = uniqid('txn_', true);
     $insert_sql = "INSERT INTO loan_payments 
-        (application_id, member_id, member_name, loan_term, payment_plan, payment_amount, transaction_number, updated_loan_amount, payment_image) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        (application_id, member_id, member_name, loan_term, payment_plan, payment_amount, transaction_number, updated_loan_amount, payment_image, late_portion) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param("sssssssss", $application_id, $member_id, $member_name, $loan_term, $payment_plan, $payment_amount, $transaction_number, $updated_loan_amount, $payment_image_base64);
+    $insert_stmt->bind_param("ssssssssss", $application_id, $member_id, $member_name, $loan_term, $payment_plan, $payment_amount_with_late, $transaction_number, $updated_loan_amount, $payment_image_base64, $late_portion);
     if (!$insert_stmt->execute()) {
         throw new Exception('Failed to record the payment transaction: ' . $insert_stmt->error);
     }

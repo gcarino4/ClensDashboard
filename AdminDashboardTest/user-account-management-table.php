@@ -1,7 +1,5 @@
 <?php
 
-namespace user_account_table;
-
 
 include 'connection.php';
 
@@ -66,6 +64,7 @@ if ($result->num_rows > 0) {
       echo "<td>
               <button class='editBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>✏️</button>
               <button class='archiveBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>📁</button>
+               <button class='passwordBtn' data-id='" . htmlspecialchars($row["member_id"]) . "'>🔒 </button>
             </td>";
     }
 

@@ -54,7 +54,7 @@ $result = $conn->query($sql);
             </h2>
             <br>
             <form id="contributionPaymentForm" enctype="multipart/form-data">
-                <h4>Contribution amount must not be less than 1500 PHP or more than 5000 PHP</h4>
+
                 <br>
 
                 <input type="text" name="contribution_id" id="contribution_id" readonly>

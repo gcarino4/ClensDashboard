@@ -22,8 +22,8 @@ $contribution_id = $_POST['contribution_id'];
 $payment_amount = $_POST['payment_amount'];
 
 // Validate payment amount
-if ($payment_amount < 1500 || $payment_amount > 5000) {
-    echo json_encode(['success' => false, 'message' => 'Payment amount must not be less than 1500 or more than 5000.']);
+if ($payment_amount < 1500 || $payment_amount > 50000) {
+    echo json_encode(['success' => false, 'message' => 'Payment amount must not be less than 1500 or more than 50000.']);
     exit;
 }
 
@@ -33,22 +33,7 @@ $image_data = isset($_POST['payment_image_base64']) ? $_POST['payment_image_base
 $conn->begin_transaction();
 
 try {
-    // Check if a payment record already exists for this member and contribution within the current month
-    $check_sql = "SELECT * FROM contribution_payments 
-                  WHERE member_id = ? 
-                  AND contribution_id = ? 
-                  AND MONTH(payment_date) = MONTH(CURRENT_DATE())
-                  AND YEAR(payment_date) = YEAR(CURRENT_DATE())";
-    $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("ss", $member_id, $contribution_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        throw new Exception("A payment has already been made for this contribution this month.");
-    }
-
-    // Insert payment record
+    // Insert payment record without checking for duplicates
     $insert_sql = "INSERT INTO contribution_payments (contribution_id, member_id, payment_amount, payment_image, payment_date) 
                    VALUES (?, ?, ?, ?, NOW())";
     $stmt = $conn->prepare($insert_sql);

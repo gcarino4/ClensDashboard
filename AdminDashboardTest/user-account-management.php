@@ -1,5 +1,4 @@
 <?php
-namespace user_account_management;
 
 include 'check_user.php';
 
@@ -21,6 +20,33 @@ include 'check_user.php';
   <style>
     .hidden {
       ` display: none;
+    }
+
+    .passwordModal {
+      display: none;
+      /* Hidden by default */
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .passwordModal-modal-content {
+      background-color: #fefefe;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 30%;
+    }
+
+    .closePasswordModal {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
     }
   </style>
 
@@ -53,6 +79,21 @@ include 'check_user.php';
         <!--
         <button onclick="showCreateAccountModal()" class="btn">Add User</button>
       -->
+
+        <div id="passwordModal" class="passwordModal">
+          <div class="passwordModal-modal-content">
+            <span class="closePasswordModal">&times;</span>
+            <h2>Update Password</h2>
+            <form id="passwordUpdateForm">
+              <input type="hidden" name="member_id" id="modal_member_id" value="">
+              <label for="new_password">New Password:</label>
+              <input type="password" name="new_password" id="new_password" required>
+              <label for="confirm_password">Confirm Password:</label>
+              <input type="password" name="confirm_password" id="confirm_password" required>
+              <button type="submit">Update Password</button>
+            </form>
+          </div>
+        </div>
 
         <div id="create-account-modal" class="modal"><br><br>
           <div class="modal-content">
@@ -150,17 +191,6 @@ include 'check_user.php';
             </script>
 
 
-            <script>
-              document.getElementById('create-account-form').addEventListener('submit', function (event) {
-                var password = document.getElementById('password').value;
-                var confirmPassword = document.getElementById('confirm_password').value;
-
-                if (password !== confirmPassword) {
-                  alert('Passwords do not match.');
-                  event.preventDefault(); // Prevent form submission
-                }
-              });
-            </script>
 
 
           </div>
@@ -185,9 +215,6 @@ include 'check_user.php';
 
           <label for="editName">Name:</label>
           <input type="text" id="editName" name="name"><br>
-
-          <label for="editPassword">New Password:</label>
-          <input type="password" id="editPassword" name="password"><br>
 
           <label for="editBirthday">Birthday:</label>
           <input type="date" id="editBirthday" name="birthday"><br>
@@ -243,6 +270,52 @@ include 'check_user.php';
     </div>
 
     <script>
+      // Get modal element and close button
+      var modal = document.getElementById("passwordModal");
+      var closeBtn = document.getElementsByClassName("closePasswordModal")[0];
+
+      // Open modal when "Change Password" button is clicked
+      document.querySelectorAll('.passwordBtn').forEach(button => {
+        button.addEventListener('click', function () {
+          document.getElementById('modal_member_id').value = this.getAttribute('data-id');
+          modal.style.display = "block";
+        });
+      });
+
+      // Close modal when X is clicked
+      closeBtn.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      // Close modal when clicking outside of it
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+
+      // Handle form submission
+      document.getElementById('passwordUpdateForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        // AJAX request to update password
+        fetch('update_password.php', {
+          method: 'POST',
+          body: formData
+        })
+          .then(response => response.text())
+          .then(data => {
+            alert(data);
+            modal.style.display = "none";
+            location.reload(); // Refresh to reflect the changes
+          })
+          .catch(error => console.error('Error:', error));
+      });
+    </script>
+
+    <script>
       // Function to show the create account modal
       function showCreateAccountModal() {
         document.getElementById('create-account-modal').style.display = 'block';
@@ -287,7 +360,7 @@ include 'check_user.php';
         // Prevent the default form submission behavior
         event.preventDefault();
 
-        var password = document.getElementById("editPassword").value;
+
 
         // Get the form data
         var formData = new FormData(editForm);

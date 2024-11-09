@@ -140,35 +140,113 @@ $conn->close();
                     <tbody>
                         <tr>
                             <th class="text-end">Member ID:</th>
-                            <td><?php echo htmlspecialchars($user['member_id']); ?></td>
+                            <td><?php echo htmlspecialchars($user['member_id']) ?: 'Not available'; ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Name:</th>
-                            <td><?php echo htmlspecialchars($user['name']); ?></td>
+                            <td><?php echo htmlspecialchars($user['name']) ?: 'Not available'; ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Age:</th>
-                            <td><?php echo htmlspecialchars($user['age']); ?></td>
+                            <td><?php echo htmlspecialchars($user['age']) ?: 'Not available'; ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Birthday:</th>
-                            <td><?php echo htmlspecialchars($user['birthday']); ?></td>
+                            <td><?php echo htmlspecialchars($user['birthday']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Birth Place:</th>
+                            <td><?php echo htmlspecialchars($user['place_of_birth']) ?: 'Not available'; ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Gender:</th>
-                            <td><?php echo htmlspecialchars($user['sex']); ?></td>
+                            <td><?php echo htmlspecialchars($user['sex']) ?: 'Not available'; ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Civil Status:</th>
-                            <td><?php echo htmlspecialchars($user['civil_status']); ?></td>
+                            <td><?php echo htmlspecialchars($user['civil_status']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Spouse Name:</th>
+                            <td><?php echo htmlspecialchars($user['spouse_name']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Children:</th>
+                            <td><?php echo nl2br(htmlspecialchars($user['children']) ?: 'Not available'); ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Education:</th>
+                            <td>
+                                <?php
+                                echo "Date: " . nl2br(htmlspecialchars($user['education_date']) ?: 'Not available') . "<br>";
+                                echo "School: " . nl2br(htmlspecialchars($user['education_school']) ?: 'Not available') . "<br>";
+                                echo "Course: " . nl2br(htmlspecialchars($user['education_course']) ?: 'Not available') . "<br>";
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Employment:</th>
+                            <td>
+                                <?php
+                                echo "Date: " . nl2br(htmlspecialchars($user['employment_date']) ?: 'Not available') . "<br>";
+                                echo "Position: " . nl2br(htmlspecialchars($user['employment_position']) ?: 'Not available') . "<br>";
+                                echo "School: " . nl2br(htmlspecialchars($user['employment_school']) ?: 'Not available') . "<br>";
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Cooperative Experience:</th>
+                            <td>
+                                <?php
+                                echo "Date: " . nl2br(htmlspecialchars($user['cooperative_experience_date']) ?: 'Not available') . "<br>";
+                                echo "Position: " . nl2br(htmlspecialchars($user['cooperative_experience_position']) ?: 'Not available') . "<br>";
+                                echo "Name: " . nl2br(htmlspecialchars($user['cooperative_experience_name']) ?: 'Not available') . "<br>";
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Training:</th>
+                            <td>
+                                <?php
+                                echo "Date: " . nl2br(htmlspecialchars($user['training_date']) ?: 'Not available') . "<br>";
+                                echo "Course: " . nl2br(htmlspecialchars($user['training_course']) ?: 'Not available') . "<br>";
+                                echo "Hours: " . nl2br(htmlspecialchars($user['training_hours']) ?: 'Not available') . "<br>";
+                                ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Business Present:</th>
+                            <td><?php echo nl2br(htmlspecialchars($user['business_present']) ?: 'Not available'); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Business Previous:</th>
+                            <td><?php echo nl2br(htmlspecialchars($user['business_previous']) ?: 'Not available'); ?>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Affiliation:</th>
+                            <td><?php echo nl2br(htmlspecialchars($user['affiliation']) ?: 'Not available'); ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Member Salary:</th>
+                            <td><?php echo htmlspecialchars($user['member_salary']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Spouse Income:</th>
+                            <td><?php echo htmlspecialchars($user['spouse_income']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Other Income:</th>
+                            <td><?php echo htmlspecialchars($user['other_income']) ?: 'Not available'; ?></td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Crime:</th>
+                            <td><?php echo nl2br(htmlspecialchars($user['crime']) ?: 'Not available'); ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Address:</th>
-                            <td><?php echo htmlspecialchars($user['address']); ?></td>
-                        </tr>
-                        <tr>
-                            <th class="text-end">Contact Number:</th>
-                            <td><?php echo htmlspecialchars($user['contact_no']); ?></td>
+                            <td><?php echo nl2br(htmlspecialchars($user['address']) ?: 'Not available'); ?></td>
                         </tr>
                         <tr>
                             <th class="text-end">Email:</th>
@@ -201,7 +279,6 @@ $conn->close();
                 <!-- Profile Section -->
                 <?php include 'profile.php'; ?>
             </div>
-
         </div>
     </div>
 </body>
